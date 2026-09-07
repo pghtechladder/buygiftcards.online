@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { AuthModalProvider } from "@/context/AuthModalContext";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { DemoBanner } from "@/components/DemoBanner";
 import { NewsletterModal } from "@/components/NewsletterModal";
+import { AuthModal } from "@/components/AuthModal";
+import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
@@ -38,14 +41,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans text-[15px] text-ink-900 antialiased">
-        <CartProvider>
-          <DemoBanner />
-          <Nav />
-          {children}
-          <Footer />
-          <CartDrawer />
-          <NewsletterModal />
-        </CartProvider>
+        <SessionProviderWrapper>
+          <CartProvider>
+            <AuthModalProvider>
+              <DemoBanner />
+              <Nav />
+              {children}
+              <Footer />
+              <CartDrawer />
+              <NewsletterModal />
+              <AuthModal />
+            </AuthModalProvider>
+          </CartProvider>
+        </SessionProviderWrapper>
       </body>
     </html>
   );

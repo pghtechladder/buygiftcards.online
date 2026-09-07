@@ -50,8 +50,14 @@ model Order {
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @updatedAt
   items                 OrderItem[]
+  // Optional: set at checkout time when the customer was signed in, so their
+  // order history can be looked up by account instead of just by email.
+  // Nullable — guest checkout (no account) remains fully supported.
+  user                  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId                String?
 
   @@index([customerEmail])
+  @@index([userId])
 }
 
 model OrderItem {
@@ -123,4 +129,77 @@ model BusinessInvoiceItem {
   brandName   String
   denomCents  Int
   quantity    Int
+}
+
+// ---- Accounts (Auth.js / next-auth v5 + @auth/prisma-adapter) ----
+// Session strategy is "jwt" (required alongside the Credentials provider),
+// so the Session table below exists to satisfy the PrismaAdapter's schema
+// contract but isn't actually read from at runtime — Account is what
+// matters, since it's how a Google/Apple/Facebook login gets linked to a
+// User row.
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  emailVerified  DateTime?
+  firstName      String?
+  lastName       String?
+  phone          String?
+  image          String?
+  // Null for accounts created purely via an OAuth provider (no password set).
+  passwordHash   String?
+  marketingOptIn Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  accounts       Account[]
+  sessions       Session[]
+  orders         Order[]
+  resetTokens    PasswordResetToken[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Our own table for the "Forgot password" flow — separate from
+// VerificationToken above (which Auth.js reserves for magic-link email
+// sign-in, a feature we don't use). One-time use: usedAt is set the moment
+// the token is redeemed so it can't be replayed.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }

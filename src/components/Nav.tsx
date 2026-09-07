@@ -4,7 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
+import { useAuthModal } from "@/context/AuthModalContext";
 import { Icon } from "./Icon";
 
 const NAV_LINKS = [
@@ -50,6 +52,9 @@ function NavLinks() {
 
 export function Nav() {
   const { count, setOpen } = useCart();
+  const { data: authSession, status } = useSession();
+  const { open: openAuthModal } = useAuthModal();
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [q, setQ] = useState("");
   const router = useRouter();
 
@@ -86,6 +91,46 @@ export function Nav() {
             >
               My Orders
             </Link>
+            {status === "loading" ? null : authSession ? (
+              <div className="relative">
+                <button
+                  onClick={() => setAccountMenuOpen((v) => !v)}
+                  className="hidden md:block px-3 py-2 text-sm font-semibold text-ink-600 hover:text-ink-900 rounded-lg hover:bg-ink-50 transition"
+                >
+                  Hi, {authSession.user.firstName ?? authSession.user.email}
+                </button>
+                {accountMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setAccountMenuOpen(false)} />
+                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-ink-100 rounded-lg shadow-lg py-1 z-20">
+                      <Link
+                        href="/account"
+                        onClick={() => setAccountMenuOpen(false)}
+                        className="block px-4 py-2 text-sm font-medium text-ink-600 hover:text-ink-900 hover:bg-ink-50"
+                      >
+                        My Account
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setAccountMenuOpen(false);
+                          signOut();
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm font-medium text-ink-600 hover:text-ink-900 hover:bg-ink-50"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => openAuthModal("signin")}
+                className="hidden md:block px-3 py-2 text-sm font-semibold text-ink-600 hover:text-ink-900 rounded-lg hover:bg-ink-50 transition"
+              >
+                Sign In
+              </button>
+            )}
             <button
               onClick={() => setOpen(true)}
               aria-label="Open cart"

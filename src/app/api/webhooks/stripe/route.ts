@@ -37,6 +37,10 @@ async function fulfillOrder(session: Stripe.Checkout.Session) {
   const cartRaw = session.metadata?.cart;
   if (!cartRaw || !session.customer_details?.email) return;
   const cart = JSON.parse(cartRaw) as Array<{ s: string; a: number; q: number; d: "egift" | "physical"; p?: string }>;
+  // Populated only when the customer was signed in at checkout (see
+  // src/app/api/checkout/route.ts) — links the order to their account.
+  // Guest checkouts have no "u" key, so userId stays undefined.
+  const userId = session.metadata?.u;
 
   const address = session.customer_details.address;
   const taxCents = session.total_details?.amount_tax;
@@ -59,6 +63,7 @@ async function fulfillOrder(session: Stripe.Checkout.Session) {
       billingState: address?.state ?? undefined,
       billingPostalCode: address?.postal_code ?? undefined,
       billingCountry: address?.country ?? undefined,
+      userId: userId ?? undefined,
     },
   });
 

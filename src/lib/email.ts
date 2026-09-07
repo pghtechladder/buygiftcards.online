@@ -81,3 +81,50 @@ export async function sendOrderConfirmationEmail(order: FullOrder): Promise<Emai
     return { sent: false, error: message };
   }
 }
+
+// "Forgot password" email — same Resend call pattern/error-checking as
+// sendOrderConfirmationEmail above (check both the thrown-exception path and
+// the returned { data, error } field, since Resend doesn't throw on
+// API-level rejection).
+export async function sendPasswordResetEmail(email: string, resetUrl: string): Promise<EmailResult> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn(`[email] RESEND_API_KEY not set — skipping password reset email for ${email}`);
+    return { sent: false, error: "RESEND_API_KEY not configured" };
+  }
+
+  const resend = new Resend(apiKey);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:520px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <img src="${siteUrl}/logo-full.png" alt="buygiftcards.online" width="220" style="max-width:220px;height:auto;" />
+      </div>
+      <h2 style="color:#0f8c66;">Reset your password</h2>
+      <p style="color:#333;">We received a request to reset the password on your buygiftcards.online account. This link expires in 1 hour.</p>
+      <p style="margin-top:20px;"><a href="${resetUrl}" style="background:#0f8c66;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;">Reset Password</a></p>
+      <p style="color:#666;font-size:13px;margin-top:20px;">If you didn't request this, you can safely ignore this email — your password won't be changed.</p>
+    </div>
+  `;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || "orders@buygiftcards.online",
+      to: email,
+      subject: "Reset your buygiftcards.online password",
+      html,
+    });
+
+    if (error) {
+      console.error(`[email] Resend rejected password reset for ${email}:`, error);
+      return { sent: false, error: error.message || JSON.stringify(error) };
+    }
+    console.log(`[email] Sent password reset to ${email}, Resend id ${data?.id}`);
+    return { sent: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[email] Failed to send password reset to ${email}:`, err);
+    return { sent: false, error: message };
+  }
+}

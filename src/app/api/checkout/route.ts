@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { stripe } from "@/lib/stripe";
 import { getBrand, isValidDenomination, chargeAmountCents } from "@/lib/brands";
+import { auth } from "@/lib/auth";
 
 const CartItemSchema = z.object({
   brandSlug: z.string(),
@@ -20,6 +21,10 @@ const BodySchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // If the customer is signed in, we link the resulting order to their
+    // account (and pre-fill their email at Stripe Checkout) — but guest
+    // checkout (no session) keeps working exactly as before.
+    const authSession = await auth();
     const parsed = BodySchema.safeParse(await req.json());
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid cart payload" }, { status: 400 });
@@ -103,6 +108,7 @@ export async function POST(req: NextRequest) {
         // tax rather than fail, so this is safe to ship ahead of that setup.
         automatic_tax: { enabled: true },
         billing_address_collection: "required",
+        ...(authSession?.user?.email ? { customer_email: authSession.user.email } : {}),
         metadata: {
           cart: JSON.stringify(
             parsed.data.items.map((i, idx) => ({
@@ -113,6 +119,7 @@ export async function POST(req: NextRequest) {
               ...(photoByLine[idx] ? { p: photoByLine[idx] } : {}),
             }))
           ),
+          ...(authSession?.user?.id ? { u: authSession.user.id } : {}),
         },
       },
       parsed.data.idempotencyKey ? { idempotencyKey: parsed.data.idempotencyKey } : undefined
