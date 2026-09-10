@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/brands";
+import { CategoryIcon } from "./CategoryIcon";
 
 // Same color system as the brand tiles (brand green / accent orange / ink),
 // just cycled per category so the row reads as one family of colors rather
@@ -18,10 +19,10 @@ export function CategoryStrip() {
             className="flex flex-col items-center gap-2 flex-shrink-0 w-20 group"
           >
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center text-white font-extrabold text-xl shadow-sm group-hover:-translate-y-1 group-hover:shadow-lg transition"
+              className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-sm group-hover:-translate-y-1 group-hover:shadow-lg transition"
               style={{ background: PALETTE[i % PALETTE.length] }}
             >
-              {c.charAt(0)}
+              <CategoryIcon name={c} size={26} />
             </div>
             <span className="text-[11px] font-semibold text-ink-600 text-center leading-tight group-hover:text-brand-600 transition">
               {c}
