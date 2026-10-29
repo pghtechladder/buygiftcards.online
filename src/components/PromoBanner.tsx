@@ -11,44 +11,43 @@ type Slide = {
   ctaLabel: string;
   ctaHref: string;
   icon: "zap" | "package" | "gift" | "lock" | "shield";
+  holiday?: boolean;
 };
 
-// Rotating marketing messages only — no discount percentages here. Every
-// claim below is a real, always-true feature of the storefront; if a real
-// promo (e.g. a brand-specific discount) is added to brands.ts later, add a
-// slide for it here rather than hardcoding a number that could go stale.
 const SLIDES: Slide[] = [
   {
-    eyebrow: "Labor Day Weekend",
-    title: "Gift cards for the long weekend",
-    copy: "Browse 165+ brands and send one in minutes — no lines, no waiting on shipping.",
-    ctaLabel: "Shop All Brands",
-    ctaHref: "/catalog",
+    eyebrow: "🎄 Holiday Gift Guide",
+    title: "Festive eGift Cards & Stocking Stuffers",
+    copy: "Send holiday cheer in minutes with custom holiday card designs, personal messages, and instant delivery.",
+    ctaLabel: "Shop Holiday Gifts",
+    ctaHref: "/occasions?occasion=holidays",
     icon: "gift",
+    holiday: true,
   },
   {
-    eyebrow: "New",
-    title: "Put your own photo on a Visa gift card",
-    copy: "Upload a picture and we print it right on the card face — a gift that's actually personal.",
+    eyebrow: "✨ Holiday Deals",
+    title: "Save up to 10% on top brands this season",
+    copy: "Instant discounts on Starbucks, DoorDash, Nike, Panera Bread, Sephora, Adidas, and Multi-Brand cards.",
+    ctaLabel: "View All Deals",
+    ctaHref: "/deals",
+    icon: "zap",
+    holiday: true,
+  },
+  {
+    eyebrow: "Custom Photo Card",
+    title: "Put your favorite holiday photo on a Visa® or Mastercard®",
+    copy: "Upload a family picture and create a personalized holiday gift card they will always remember.",
     ctaLabel: "Design a Card",
     ctaHref: "/product/visa",
     icon: "package",
   },
   {
-    eyebrow: "For Teams",
-    title: "Buying for the whole office?",
-    copy: "Bulk orders, invoicing, and volume pricing for corporate and team gifting.",
-    ctaLabel: "Get a Quote",
+    eyebrow: "Corporate Holiday Gifting",
+    title: "Reward your entire team or client list",
+    copy: "Bulk holiday orders, multi-brand choice links, and custom invoicing for teams of any size.",
+    ctaLabel: "Get a Business Quote",
     ctaHref: "/business",
     icon: "shield",
-  },
-  {
-    eyebrow: "Always On",
-    title: "Instant delivery, every order",
-    copy: "Secure Stripe checkout, and your gift card lands by email in minutes — not days.",
-    ctaLabel: "Start Shopping",
-    ctaHref: "/catalog",
-    icon: "zap",
   },
 ];
 
@@ -74,37 +73,38 @@ export function PromoBanner() {
 
   return (
     <div
-      className="relative bg-ink-950 text-white overflow-hidden"
+      className={`relative text-white overflow-hidden transition-colors duration-500 ${
+        slide.holiday ? "bg-gradient-to-r from-[#5c0f14] via-[#7f1d1d] to-[#0a4738]" : "bg-ink-950"
+      }`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* subtle brand-colored glow, purely decorative */}
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
-        style={{ background: "radial-gradient(600px circle at 15% 50%, rgba(26,173,125,0.25), transparent 70%)" }}
+        style={{ background: "radial-gradient(600px circle at 15% 50%, rgba(251,191,36,0.22), transparent 70%)" }}
       />
 
-      <div className="relative max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
+      <div className="relative max-w-7xl mx-auto px-6 py-3.5 flex items-center gap-4">
         <button
           aria-label="Previous offer"
           onClick={() => go(index - 1)}
-          className="hidden sm:flex flex-shrink-0 w-8 h-8 rounded-full border border-white/15 items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition"
+          className="hidden sm:flex flex-shrink-0 w-8 h-8 rounded-full border border-white/20 items-center justify-center text-white/70 hover:text-white hover:border-white/50 transition"
         >
           <Icon name="chevronRight" size={14} className="rotate-180" />
         </button>
 
         <div key={index} className="flex-1 min-w-0 flex flex-wrap items-center gap-x-4 gap-y-2 animate-[promoFade_.4s_ease]">
-          <span className="flex-shrink-0 w-9 h-9 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center">
+          <span className="flex-shrink-0 w-9 h-9 rounded-full bg-white/15 text-amber-300 flex items-center justify-center">
             <Icon name={slide.icon} size={17} />
           </span>
           <div className="min-w-0">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-accent-400 mr-2">{slide.eyebrow}</span>
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300 mr-2.5">{slide.eyebrow}</span>
             <span className="font-bold text-sm sm:text-[15px]">{slide.title}</span>
-            <span className="hidden md:inline text-white/60 text-sm ml-2">{slide.copy}</span>
+            <span className="hidden lg:inline text-white/75 text-sm ml-2">{slide.copy}</span>
           </div>
           <Link
             href={slide.ctaHref}
-            className="ml-auto flex-shrink-0 inline-flex items-center gap-1.5 bg-accent-500 hover:bg-accent-400 text-ink-950 text-xs font-extrabold px-4 py-2 rounded-full transition whitespace-nowrap"
+            className="ml-auto flex-shrink-0 inline-flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-ink-950 text-xs font-extrabold px-4 py-2 rounded-full transition whitespace-nowrap shadow"
           >
             {slide.ctaLabel}
             <Icon name="chevronRight" size={12} />
@@ -114,19 +114,19 @@ export function PromoBanner() {
         <button
           aria-label="Next offer"
           onClick={() => go(index + 1)}
-          className="hidden sm:flex flex-shrink-0 w-8 h-8 rounded-full border border-white/15 items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition"
+          className="hidden sm:flex flex-shrink-0 w-8 h-8 rounded-full border border-white/20 items-center justify-center text-white/70 hover:text-white hover:border-white/50 transition"
         >
           <Icon name="chevronRight" size={14} />
         </button>
       </div>
 
-      <div className="relative flex items-center justify-center gap-1.5 pb-3">
+      <div className="relative flex items-center justify-center gap-1.5 pb-2.5">
         {SLIDES.map((s, i) => (
           <button
             key={s.title}
             aria-label={`Go to offer ${i + 1}`}
             onClick={() => go(i)}
-            className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-accent-500" : "w-1.5 bg-white/25 hover:bg-white/40"}`}
+            className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-amber-400" : "w-1.5 bg-white/30 hover:bg-white/50"}`}
           />
         ))}
       </div>

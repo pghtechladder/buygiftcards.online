@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getBrand } from "@/lib/brands";
 import { generateOrderNumber } from "@/lib/order";
 import { giftCardProvider } from "@/lib/giftcard-provider";
-import { sendOrderConfirmationEmail } from "@/lib/email";
+import { sendOrderConfirmationEmail, sendRecipientGiftEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
-  } catch (err) {
-    return NextResponse.json({ error: `Signature verification failed` }, { status: 400 });
+  } catch {
+    return NextResponse.json({ error: "Signature verification failed" }, { status: 400 });
   }
 
   if (event.type === "checkout.session.completed") {
@@ -30,16 +30,24 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
-async function fulfillOrder(session: Stripe.Checkout.Session) {
+export async function fulfillOrder(session: Stripe.Checkout.Session) {
   const existing = await prisma.order.findUnique({ where: { stripeCheckoutSessionId: session.id } });
   if (existing) return; // idempotent — Stripe may retry webhooks
 
   const cartRaw = session.metadata?.cart;
   if (!cartRaw || !session.customer_details?.email) return;
-  const cart = JSON.parse(cartRaw) as Array<{ s: string; a: number; q: number; d: "egift" | "physical"; p?: string }>;
-  // Populated only when the customer was signed in at checkout (see
-  // src/app/api/checkout/route.ts) — links the order to their account.
-  // Guest checkouts have no "u" key, so userId stays undefined.
+  const cart = JSON.parse(cartRaw) as Array<{
+    s: string;
+    a: number;
+    q: number;
+    d: "egift" | "physical";
+    p?: string;
+    re?: string;
+    rn?: string;
+    sn?: string;
+    gm?: string;
+    oc?: string;
+  }>;
   const userId = session.metadata?.u;
 
   const address = session.customer_details.address;
@@ -82,21 +90,37 @@ async function fulfillOrder(session: Stripe.Checkout.Session) {
       },
     });
 
+    const issuedCodes: string[] = [];
     for (let i = 0; i < line.q; i++) {
-      const issued = await giftCardProvider.issue({ brandSlug: brand.slug, amountCents: Math.round(line.a * 100) });
+      const issued = await giftCardProvider.issue({
+        brandSlug: brand.slug,
+        amountCents: Math.round(line.a * 100),
+        deliveryType: line.d,
+      });
       await prisma.giftCardCode.create({
         data: { orderItemId: orderItem.id, code: issued.code, pin: issued.pin, isDemo: issued.isDemo },
       });
+      issuedCodes.push(issued.code);
+    }
+
+    if (line.re && line.re.toLowerCase() !== session.customer_details.email.toLowerCase()) {
+      await sendRecipientGiftEmail({
+        recipientEmail: line.re,
+        recipientName: line.rn,
+        senderName: line.sn || session.customer_details.name || session.customer_details.email,
+        giftMessage: line.gm,
+        occasion: line.oc,
+        brandName: brand.name,
+        amountDollars: line.a,
+        codes: issuedCodes,
+        orderNumber: order.orderNumber,
+        buyerEmail: session.customer_details.email,
+      }).catch((err) => console.warn(`[webhook] Recipient gift email failed for ${line.re}:`, err));
     }
   }
 
   await prisma.order.update({ where: { id: order.id }, data: { status: "FULFILLED" } });
 
-  // Fulfillment (payment recorded, codes issued) is already done and
-  // committed at this point regardless of what happens next — a failed
-  // confirmation email should never undo that or make the webhook return an
-  // error (which would just make Stripe retry and re-run all of the above
-  // against an already-fulfilled order). It's tracked separately below.
   const full = await prisma.order.findUnique({ where: { id: order.id }, include: { items: { include: { codes: true } } } });
   if (full) {
     try {

@@ -26,30 +26,33 @@ export type Brand = {
 // Server-side source of truth for prices. Checkout re-validates every line
 // item against this list — the client can never dictate what gets charged.
 export const BRANDS: Brand[] = [
+  { slug: "buygiftcards", name: "BuyGiftCards.online Gift Card", category: "Multi-Brand", domain: "buygiftcards.online", color: "#0f8c66", type: "egift", min: 10, max: 500, denominations: [25, 50, 75, 100, 150, 250, 500], badge: "ALL-IN-ONE CHOICE", description: "Our signature house gift card — recipients redeem their card number and PIN at buygiftcards.online/redeem to swap or split their balance across any of our 165+ top retail, dining, travel, and entertainment brands.", supportsCustomPhoto: true, discountPercent: 5 },
   { slug: "visa", name: "Visa Virtual Account", category: "Visa", domain: "visa.com", color: "#1a1f71", type: "both", min: 10, max: 250, denominations: [25, 50, 100, 150, 200, 250], badge: "BEST SELLER", description: "Use anywhere Visa debit cards are accepted in the US. Shop online or in stores with the freedom to choose.", supportsCustomPhoto: true },
-  { slug: "mastercard", name: "Mastercard Virtual Account", category: "Mastercard", domain: "mastercard.com", color: "#eb001b", type: "both", min: 10, max: 250, denominations: [25, 50, 100, 150, 200, 250], description: "Accepted worldwide wherever Mastercard debit is accepted. A flexible gift for any occasion." },
-  { slug: "amazon", name: "Amazon", category: "Shopping", domain: "amazon.com", color: "#ff9900", type: "egift", min: 15, max: 500, denominations: [25, 50, 100, 200, 500], description: "Millions of items to choose from on Amazon.com." },
-  { slug: "starbucks", name: "Starbucks", category: "Food & Drink", domain: "starbucks.com", color: "#00704a", type: "both", min: 10, max: 100, denominations: [10, 15, 25, 50, 100], description: "Redeemable at any participating US Starbucks location or via the app.", discountPercent: 5 },
+  { slug: "mastercard", name: "Mastercard Virtual Account", category: "Mastercard", domain: "mastercard.com", color: "#eb001b", type: "both", min: 10, max: 250, denominations: [25, 50, 100, 150, 200, 250], badge: "POPULAR", description: "Accepted worldwide wherever Mastercard debit is accepted. A flexible gift for any occasion.", supportsCustomPhoto: true },
+  { slug: "one4all", name: "One4all Multi-Brand Gift Card", category: "Multi-Brand", domain: "buygiftcards.online", color: "#0f8c66", type: "egift", min: 15, max: 500, denominations: [25, 50, 75, 100, 150, 250], badge: "MULTI-BRAND", description: "The ultimate choice gift card — recipient redeems at buygiftcards.online/redeem and chooses from 165+ top retail, dining, entertainment, and travel brands.", supportsCustomPhoto: true, discountPercent: 5 },
+  { slug: "holidayfavorites", name: "Holiday Favorites Multi-Brand", category: "Multi-Brand", domain: "buygiftcards.online", color: "#991b1b", type: "egift", min: 15, max: 500, denominations: [25, 50, 100, 200, 500], badge: "HOLIDAY PICK", description: "Spread holiday cheer with one card redeemable at buygiftcards.online/redeem for dozens of favorite holiday shopping, dining, and entertainment brands.", supportsCustomPhoto: true, discountPercent: 5 },
+  { slug: "amazon", name: "Amazon", category: "Shopping", domain: "amazon.com", color: "#ff9900", type: "egift", min: 15, max: 500, denominations: [25, 50, 100, 200, 500], badge: "TOP GIFT", description: "Millions of items to choose from on Amazon.com." },
+  { slug: "starbucks", name: "Starbucks", category: "Food & Drink", domain: "starbucks.com", color: "#00704a", type: "both", min: 10, max: 100, denominations: [10, 15, 25, 50, 100], badge: "5% OFF", description: "Redeemable at any participating US Starbucks location or via the app.", discountPercent: 5 },
   { slug: "apple", name: "Apple", category: "Tech", domain: "apple.com", color: "#333333", type: "egift", min: 25, max: 500, denominations: [25, 50, 100, 200], description: "App Store, Apple Music, iCloud+, Apple TV+, accessories, and more." },
-  { slug: "doordash", name: "DoorDash", category: "Food & Drink", domain: "doordash.com", color: "#ff3008", type: "egift", min: 15, max: 500, denominations: [20, 50, 100], description: "Restaurants and more, delivered to their door." },
-  { slug: "nike", name: "Nike", category: "Fashion", domain: "nike.com", color: "#111111", type: "both", min: 25, max: 250, denominations: [25, 50, 100, 150, 250], description: "Redeemable at Nike stores, Nike.com, and the Nike app." },
+  { slug: "doordash", name: "DoorDash", category: "Food & Drink", domain: "doordash.com", color: "#ff3008", type: "egift", min: 15, max: 500, denominations: [20, 50, 100], description: "Restaurants and more, delivered to their door.", discountPercent: 5 },
+  { slug: "nike", name: "Nike", category: "Fashion", domain: "nike.com", color: "#111111", type: "both", min: 25, max: 250, denominations: [25, 50, 100, 150, 250], description: "Redeemable at Nike stores, Nike.com, and the Nike app.", discountPercent: 5 },
   { slug: "netflix", name: "Netflix", category: "Entertainment", domain: "netflix.com", color: "#e50914", type: "egift", min: 25, max: 200, denominations: [25, 50, 100], description: "Apply to any Netflix subscription plan." },
-  { slug: "target", name: "Target", category: "Shopping", domain: "target.com", color: "#cc0000", type: "both", min: 10, max: 500, denominations: [25, 50, 75, 100, 200], description: "Redeemable at any Target store nationwide or on Target.com." },
+  { slug: "target", name: "Target", category: "Shopping", domain: "target.com", color: "#cc0000", type: "both", min: 10, max: 500, denominations: [25, 50, 75, 100, 200], badge: "HOLIDAY HIT", description: "Redeemable at any Target store nationwide or on Target.com." },
   { slug: "uber", name: "Uber", category: "Travel", domain: "uber.com", color: "#000000", type: "egift", min: 15, max: 200, denominations: [15, 25, 50, 100], description: "For rides and Uber Eats." },
   { slug: "steam", name: "Steam", category: "Gaming", domain: "store.steampowered.com", color: "#1b2838", type: "egift", min: 10, max: 100, denominations: [10, 20, 50, 100], description: "Redeemable on Steam for games, DLC, and in-game items." },
   { slug: "spotify", name: "Spotify", category: "Entertainment", domain: "spotify.com", color: "#1db954", type: "egift", min: 10, max: 60, denominations: [10, 30, 60], description: "Apply to Spotify Premium." },
   { slug: "chipotle", name: "Chipotle", category: "Food & Drink", domain: "chipotle.com", color: "#441500", type: "both", min: 10, max: 250, denominations: [10, 25, 50, 100], description: "Burritos, bowls, tacos, and salads." },
-  { slug: "airbnb", name: "Airbnb", category: "Travel", domain: "airbnb.com", color: "#ff5a5f", type: "egift", min: 25, max: 500, denominations: [25, 50, 100, 200, 500], description: "Stays and experiences worldwide." },
+  { slug: "airbnb", name: "Airbnb", category: "Travel", domain: "airbnb.com", color: "#ff5a5f", type: "egift", min: 25, max: 500, denominations: [25, 50, 100, 200, 500], description: "Stays and experiences worldwide.", discountPercent: 5 },
   { slug: "walmart", name: "Walmart", category: "Shopping", domain: "walmart.com", color: "#0071ce", type: "both", min: 10, max: 500, denominations: [25, 50, 100, 200], description: "Redeemable at any Walmart store or on Walmart.com." },
   { slug: "homedepot", name: "Home Depot", category: "Home", domain: "homedepot.com", color: "#f96302", type: "both", min: 25, max: 500, denominations: [25, 50, 100, 200, 500], description: "Tools, materials, and more." },
-  { slug: "sephora", name: "Sephora", category: "Fashion", domain: "sephora.com", color: "#000000", type: "egift", min: 10, max: 250, denominations: [25, 50, 100, 250], description: "Prestige cosmetics, skincare, fragrance, and hair care." },
-  { slug: "panera", name: "Panera Bread", category: "Food & Drink", domain: "panerabread.com", color: "#4e7c32", type: "both", min: 10, max: 200, denominations: [15, 25, 50, 100], description: "Fresh-baked breads, soups, salads, and sandwiches." },
-  { slug: "xbox", name: "Xbox", category: "Gaming", domain: "xbox.com", color: "#107c10", type: "egift", min: 10, max: 100, denominations: [10, 25, 50, 100], description: "Games, add-ons, devices, and more." },
+  { slug: "sephora", name: "Sephora", category: "Fashion", domain: "sephora.com", color: "#000000", type: "egift", min: 10, max: 250, denominations: [25, 50, 100, 250], description: "Prestige cosmetics, skincare, fragrance, and hair care.", discountPercent: 5 },
+  { slug: "panera", name: "Panera Bread", category: "Food & Drink", domain: "panerabread.com", color: "#4e7c32", type: "both", min: 10, max: 200, denominations: [15, 25, 50, 100], description: "Fresh-baked breads, soups, salads, and sandwiches.", discountPercent: 10 },
+  { slug: "xbox", name: "Xbox", category: "Gaming", domain: "xbox.com", color: "#107c10", type: "egift", min: 10, max: 100, denominations: [10, 25, 50, 100], description: "Games, add-ons, devices, and more.", discountPercent: 5 },
   { slug: "ikea", name: "IKEA", category: "Home", domain: "ikea.com", color: "#0058a3", type: "egift", min: 10, max: 500, denominations: [25, 50, 100, 250, 500], description: "Redeemable at any US IKEA store or IKEA.com." },
   { slug: "ubereats", name: "Uber Eats", category: "Food & Drink", domain: "ubereats.com", color: "#06c167", type: "egift", min: 15, max: 200, denominations: [15, 25, 50, 100], description: "Food delivery from favorite local restaurants." },
   { slug: "googleplay", name: "Google Play", category: "Tech", domain: "play.google.com", color: "#4285f4", type: "egift", min: 10, max: 200, denominations: [10, 25, 50, 100], description: "Apps, games, music, movies, books, and more." },
-  { slug: "lowes", name: "Lowe's", category: "Home", domain: "lowes.com", color: "#004990", type: "both", min: 25, max: 500, denominations: [25, 50, 100, 200, 500], description: "Home improvement made easy." },
-  { slug: "adidas", name: "Adidas", category: "Fashion", domain: "adidas.com", color: "#000000", type: "egift", min: 25, max: 250, denominations: [25, 50, 100, 250], description: "Shoes, clothing, and accessories." },
+  { slug: "lowes", name: "Lowe's", category: "Home", domain: "lowes.com", color: "#004990", type: "both", min: 25, max: 500, denominations: [25, 50, 100, 200, 500], description: "Home improvement made easy.", discountPercent: 5 },
+  { slug: "adidas", name: "Adidas", category: "Fashion", domain: "adidas.com", color: "#000000", type: "egift", min: 25, max: 250, denominations: [25, 50, 100, 250], description: "Shoes, clothing, and accessories.", discountPercent: 10 },
 
   // Gas & Auto
   { slug: "shell", name: "Shell", category: "Gas & Auto", domain: "shell.com", color: "#dd1d21", type: "both", min: 10, max: 300, denominations: [25, 50, 100, 200, 300], description: "Fuel, snacks, and essentials at Shell stations nationwide." },
@@ -215,7 +218,23 @@ export function getBrand(slug: string): Brand | undefined {
   return BRANDS.find((b) => b.slug === slug);
 }
 
+export const HOUSE_BRAND_SLUGS = ["buygiftcards", "one4all", "holidayfavorites"];
+
+export function isHouseBrand(slugOrName: string): boolean {
+  const lower = slugOrName.toLowerCase();
+  return (
+    HOUSE_BRAND_SLUGS.includes(lower) ||
+    lower.includes("buygiftcards.online") ||
+    lower.includes("one4all") ||
+    lower.includes("holiday favorites") ||
+    lower.includes("multi-brand")
+  );
+}
+
 export function logoUrl(domain: string, size = 128) {
+  if (domain === "buygiftcards.online") {
+    return "/logo-mark-512.png";
+  }
   const token = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN;
   return `https://img.logo.dev/${domain}?token=${token}&size=${size}&retina=true`;
 }

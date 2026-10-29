@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Icon } from "./Icon";
 
 const fmt = (cents: number) => `$${(cents / 100).toFixed(2)}`;
@@ -134,35 +135,75 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
             </span>
           </div>
           <div className="border-t border-ink-50 pt-3">
-            {item.codes.map((c) => (
-              <div key={c.id} className="py-3 border-b border-dashed border-ink-100 last:border-0">
-                {c.isDemo && (
-                  <div className="text-[11px] font-bold text-accent-600 mb-2">DEMO CODE — not redeemable</div>
-                )}
-                {revealed[c.id] ? (
-                  <div className="flex flex-wrap gap-3 items-center">
-                    <button
-                      onClick={() => copyCode(c.id, c.code)}
-                      className="flex items-center gap-2 font-mono font-bold bg-ink-50 hover:bg-ink-100 px-4 py-2 rounded-lg tracking-wider transition"
-                    >
-                      {c.code}
-                      <Icon name={copiedId === c.id ? "checkCircle" : "copy"} size={14} className={copiedId === c.id ? "text-green-600" : "text-ink-400"} />
-                    </button>
-                    <div className="font-mono font-bold bg-ink-50 px-4 py-2 rounded-lg">PIN {c.pin}</div>
-                  </div>
-                ) : (
-                  <div className="flex justify-between items-center">
-                    <span className="font-mono text-ink-400 tracking-widest">•••• •••• •••• {c.code.slice(-4)}</span>
-                    <button
-                      onClick={() => setRevealed((p) => ({ ...p, [c.id]: true }))}
-                      className="px-5 py-2 border-2 border-brand-600 text-brand-600 rounded-lg font-bold text-sm hover:bg-brand-600 hover:text-white transition"
-                    >
-                      Reveal Code
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
+            {item.codes.map((c) => {
+              const isClaimUrl = /^https?:\/\//i.test(c.code);
+              return (
+                <div key={c.id} className="py-3 border-b border-dashed border-ink-100 last:border-0">
+                  {c.isDemo && (
+                    <div className="text-[11px] font-bold text-accent-600 mb-2">DEMO CODE — not redeemable</div>
+                  )}
+                  {revealed[c.id] ? (
+                    <div className="flex flex-wrap gap-3 items-center">
+                      {isClaimUrl ? (
+                        <>
+                          <a
+                            href={c.code}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 transition"
+                          >
+                            <Icon name="gift" size={16} />
+                            Claim Gift Card
+                          </a>
+                          <button
+                            onClick={() => copyCode(c.id, c.code)}
+                            className="flex items-center gap-2 font-mono text-xs font-bold bg-ink-50 hover:bg-ink-100 px-3.5 py-2.5 rounded-lg transition max-w-full truncate"
+                            title={c.code}
+                          >
+                            <span className="truncate max-w-[260px] sm:max-w-[360px]">{c.code}</span>
+                            <Icon name={copiedId === c.id ? "checkCircle" : "copy"} size={14} className={copiedId === c.id ? "text-green-600" : "text-ink-400"} />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => copyCode(c.id, c.code)}
+                            className="flex items-center gap-2 font-mono font-bold bg-ink-50 hover:bg-ink-100 px-4 py-2 rounded-lg tracking-wider transition"
+                          >
+                            {c.code}
+                            <Icon name={copiedId === c.id ? "checkCircle" : "copy"} size={14} className={copiedId === c.id ? "text-green-600" : "text-ink-400"} />
+                          </button>
+                          {c.pin && (
+                            <div className="font-mono font-bold bg-ink-50 px-4 py-2 rounded-lg">PIN {c.pin}</div>
+                          )}
+                          {!c.pin.startsWith("REDEEMED") && (
+                            <Link
+                              href={`/redeem?code=${encodeURIComponent(c.code)}&pin=${encodeURIComponent(c.pin)}`}
+                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white font-bold text-xs hover:bg-brand-700 transition"
+                            >
+                              <Icon name="gift" size={14} />
+                              Redeem / Swap for Brand eGift Cards &rarr;
+                            </Link>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center">
+                      <span className="font-mono text-ink-400 tracking-widest">
+                        {isClaimUrl ? "Claim Link ••••" : `•••• •••• •••• ${c.code.slice(-4)}`}
+                      </span>
+                      <button
+                        onClick={() => setRevealed((p) => ({ ...p, [c.id]: true }))}
+                        className="px-5 py-2 border-2 border-brand-600 text-brand-600 rounded-lg font-bold text-sm hover:bg-brand-600 hover:text-white transition"
+                      >
+                        {isClaimUrl ? "Reveal Claim Link" : "Reveal Code"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}

@@ -13,6 +13,7 @@
     "db:studio": "prisma studio",
     "tango:catalog": "node scripts/fetch-tango-catalog.mjs",
     "tango:match": "node scripts/match-tango-catalog.mjs",
+    "giftbit:catalog": "node scripts/match-giftbit-catalog.mjs",
     "env:sync": "node scripts/sync-env-to-vercel.mjs"
   },
   "dependencies": {

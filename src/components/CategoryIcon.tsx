@@ -14,6 +14,7 @@ const CATEGORY_FILE: Record<string, string> = {
   Home: "home",
   Kids: "kids",
   Mastercard: "mastercard",
+  "Multi-Brand": "shopping",
   Shopping: "shopping",
   "Sports & Outdoors": "sports-outdoors",
   Tech: "tech",

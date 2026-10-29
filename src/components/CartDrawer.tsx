@@ -38,6 +38,12 @@ export function CartDrawer() {
             qty: i.qty,
             deliveryType: i.deliveryType,
             customPhotoUrl: i.customPhotoUrl,
+            recipientName: i.recipientName,
+            recipientEmail: i.recipientEmail,
+            senderName: i.senderName,
+            giftMessage: i.giftMessage,
+            occasion: i.occasion,
+            deliveryDate: i.deliveryDate,
           })),
         }),
       });
@@ -89,6 +95,11 @@ export function CartDrawer() {
                     {fmt(item.amount)} · {item.deliveryType === "egift" ? "eGift" : "Physical"}
                     {item.customPhotoUrl && " · Custom photo"}
                   </div>
+                  {item.recipientEmail && (
+                    <div className="text-[11px] text-brand-700 font-medium truncate mt-0.5">
+                      To: {item.recipientName ? `${item.recipientName} (${item.recipientEmail})` : item.recipientEmail}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2.5">
                   <div className="flex border border-ink-100 rounded-lg overflow-hidden">

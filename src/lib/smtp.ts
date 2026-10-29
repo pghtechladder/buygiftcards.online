@@ -1,10 +1,7 @@
 import nodemailer from "nodemailer";
+import path from "path";
+import fs from "fs";
 
-// Generic SMTP sender — configured for Zoho Mail by default (see
-// .env.example) but works with any standard SMTP provider via the same env
-// vars. Used for support-ticket notifications; order-confirmation emails
-// still go through Resend's API (src/lib/email.ts) since that's already
-// working — no reason to touch it.
 let transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
 
 function getTransporter() {
@@ -35,6 +32,21 @@ export async function sendSmtpMail(opts: { to: string; subject: string; html: st
     return { skipped: true };
   }
 
+  // Automatically embed `cid:bgc-logo` if referenced in the HTML email so the logo
+  // renders reliably in Outlook, Gmail, and Apple Mail even when sent from localhost.
+  const attachments: { filename: string; path: string; cid: string; contentDisposition: "inline" }[] = [];
+  if (opts.html.includes("cid:bgc-logo")) {
+    const logoPath = path.join(process.cwd(), "public", "logo-full.png");
+    if (fs.existsSync(logoPath)) {
+      attachments.push({
+        filename: "logo-full.png",
+        path: logoPath,
+        cid: "bgc-logo",
+        contentDisposition: "inline",
+      });
+    }
+  }
+
   const from = process.env.SMTP_FROM || process.env.SMTP_USER!;
   await t.sendMail({
     from,
@@ -42,6 +54,7 @@ export async function sendSmtpMail(opts: { to: string; subject: string; html: st
     replyTo: opts.replyTo,
     subject: opts.subject,
     html: opts.html,
+    attachments: attachments.length > 0 ? attachments : undefined,
   });
   return { skipped: false };
 }

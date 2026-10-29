@@ -1,42 +1,146 @@
 import { BrandGrid } from "@/components/BrandGrid";
 import { BRANDS, CATEGORIES } from "@/lib/brands";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 
 export default async function CatalogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; type?: string; category?: string }>;
+  searchParams: Promise<{ q?: string; type?: string; category?: string; price?: string; deals?: string }>;
 }) {
-  const { q, type, category } = await searchParams;
+  const { q, type, category, price, deals } = await searchParams;
   let items = BRANDS;
 
   if (q) {
     const needle = q.toLowerCase();
-    items = items.filter((b) => b.name.toLowerCase().includes(needle) || b.category.toLowerCase().includes(needle));
-  } else {
-    if (type === "egift") items = items.filter((b) => b.type !== "physical");
-    if (type === "physical") items = items.filter((b) => b.type === "both" || b.type === "physical");
-    if (category) items = items.filter((b) => b.category === category);
+    items = items.filter(
+      (b) =>
+        b.name.toLowerCase().includes(needle) ||
+        b.category.toLowerCase().includes(needle) ||
+        b.description.toLowerCase().includes(needle)
+    );
   }
+  if (type === "egift") items = items.filter((b) => b.type !== "physical");
+  if (type === "physical") items = items.filter((b) => b.type === "both" || b.type === "physical");
+  if (category) items = items.filter((b) => b.category === category);
+  if (deals === "1") items = items.filter((b) => Boolean(b.discountPercent));
+  if (price === "under25") items = items.filter((b) => b.min <= 25);
+  if (price === "under50") items = items.filter((b) => b.min <= 50);
 
-  const title = q ? `Results for "${q}"` : category || (type === "egift" ? "eGift Cards" : type === "physical" ? "Physical Cards" : "All Gift Cards");
+  const title = q
+    ? `Results for "${q}" (${items.length})`
+    : category
+    ? `${category} Gift Cards (${items.length})`
+    : deals === "1"
+    ? `Discounted Gift Cards (${items.length})`
+    : type === "egift"
+    ? `eGift Cards (${items.length})`
+    : type === "physical"
+    ? `Physical Gift Cards (${items.length})`
+    : `All Gift Cards (${items.length})`;
+
+  const buildHref = (patch: Record<string, string | undefined>) => {
+    const params = new URLSearchParams();
+    const merged: Record<string, string | undefined> = { q, type, category, price, deals, ...patch };
+    for (const [k, v] of Object.entries(merged)) {
+      if (v) params.set(k, v);
+    }
+    const qs = params.toString();
+    return qs ? `/catalog?${qs}` : "/catalog";
+  };
 
   return (
-    <div>
-      <div className="max-w-7xl mx-auto px-6 pt-6 flex gap-2 flex-wrap">
-        {CATEGORIES.map((c) => (
+    <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Filter Header */}
+      <div className="bg-white border border-ink-100 rounded-3xl p-6 mb-4 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-extrabold">{title}</h1>
+            <p className="text-xs text-ink-500 mt-0.5">
+              Filter by category, delivery format, or special offers. Instant email delivery on all eGift cards.
+            </p>
+          </div>
+          {(q || type || category || price || deals) && (
+            <Link
+              href="/catalog"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-ink-50 hover:bg-ink-100 text-xs font-bold text-ink-700 transition"
+            >
+              <Icon name="x" size={13} /> Clear Filters
+            </Link>
+          )}
+        </div>
+
+        {/* Format & Offer Pills */}
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-ink-50">
+          <span className="text-xs font-bold text-ink-400 uppercase mr-1">Format:</span>
+          {[
+            { label: "All Formats", val: undefined },
+            { label: "⚡ eGift Cards", val: "egift" },
+            { label: "📦 Physical Cards", val: "physical" },
+          ].map((f) => (
+            <Link
+              key={f.label}
+              href={buildHref({ type: f.val })}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
+                type === f.val || (!type && !f.val)
+                  ? "bg-ink-950 text-white border-ink-950"
+                  : "border-ink-100 text-ink-600 hover:border-brand-300"
+              }`}
+            >
+              {f.label}
+            </Link>
+          ))}
+
+          <span className="text-xs font-bold text-ink-400 uppercase ml-3 mr-1">Offers:</span>
           <Link
-            key={c}
-            href={`/catalog?category=${encodeURIComponent(c)}`}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${
-              category === c ? "bg-brand-600 text-white border-brand-600" : "border-ink-100 text-ink-600 hover:border-brand-300"
+            href={buildHref({ deals: deals === "1" ? undefined : "1" })}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
+              deals === "1"
+                ? "bg-accent-500 text-ink-950 border-accent-500"
+                : "border-ink-100 text-ink-600 hover:border-accent-400"
             }`}
           >
-            {c}
+            🏷️ On Sale / Discounted
           </Link>
-        ))}
+          <Link
+            href={buildHref({ price: price === "under25" ? undefined : "under25" })}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition ${
+              price === "under25"
+                ? "bg-brand-600 text-white border-brand-600"
+                : "border-ink-100 text-ink-600 hover:border-brand-300"
+            }`}
+          >
+            🎄 Under $25 (Stocking Stuffers)
+          </Link>
+        </div>
+
+        {/* Categories */}
+        <div className="flex gap-2 flex-wrap pt-2 border-t border-ink-50">
+          <Link
+            href={buildHref({ category: undefined })}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
+              !category ? "bg-brand-600 text-white border-brand-600" : "border-ink-100 text-ink-600 hover:border-brand-300"
+            }`}
+          >
+            All Categories
+          </Link>
+          {CATEGORIES.map((c) => (
+            <Link
+              key={c}
+              href={buildHref({ category: category === c ? undefined : c })}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
+                category === c
+                  ? "bg-brand-600 text-white border-brand-600"
+                  : "border-ink-100 text-ink-600 hover:border-brand-300"
+              }`}
+            >
+              {c}
+            </Link>
+          ))}
+        </div>
       </div>
-      <BrandGrid items={items} title={title} />
+
+      <BrandGrid items={items} />
     </div>
   );
 }

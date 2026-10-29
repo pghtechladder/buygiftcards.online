@@ -1,4 +1,5 @@
 import { generateDemoCode, generateDemoPin } from "./order";
+import { HOUSE_BRAND_SLUGS } from "./brands";
 
 /**
  * Fulfillment is intentionally behind an interface. DemoGiftCardProvider
@@ -6,7 +7,11 @@ import { generateDemoCode, generateDemoPin } from "./order";
  * checkout/order/email flow can be built and tested end-to-end before a real
  * supplier contract is in place.
  *
- * TangoCardProvider (below) implements this against Tango Card's RaaS API.
+ * GiftbitProvider (below) is the recommended live provider — $0 platform fee,
+ * instant sandbox access, and automatic 12-month expiry with partial credit
+ * return on unclaimed codes. Activates once GIFTBIT_API_KEY is set.
+ *
+ * TangoCardProvider (also below) implements this against Tango Card's RaaS API.
  * It activates automatically once TANGO_PLATFORM_NAME / TANGO_PLATFORM_KEY /
  * TANGO_ACCOUNT_IDENTIFIER / TANGO_CUSTOMER_IDENTIFIER are all set — see
  * .env.example. Until then, DemoGiftCardProvider stays active. Do not point
@@ -16,7 +21,11 @@ import { generateDemoCode, generateDemoPin } from "./order";
 export type IssuedCard = { code: string; pin: string; isDemo: boolean };
 
 export interface GiftCardProvider {
-  issue(params: { brandSlug: string; amountCents: number }): Promise<IssuedCard>;
+  issue(params: {
+    brandSlug: string;
+    amountCents: number;
+    deliveryType?: "egift" | "physical";
+  }): Promise<IssuedCard>;
 }
 
 export class DemoGiftCardProvider implements GiftCardProvider {
@@ -245,21 +254,367 @@ class HybridGiftCardProvider implements GiftCardProvider {
   }
 }
 
+// ---------------------------------------------------------------------------
+// GiftbitProvider — Recommended live provider
+// ---------------------------------------------------------------------------
+// $0 platform fee, instant sandbox, 1000+ global brand catalog.
+// Set expiry up to 1 year out: Giftbit auto-expires unclaimed rewards and
+// returns 75% breakage credit of face value back to your account balance
+// (verified via cost_entries BREAKAGE_PERCENTAGE in POST /direct_links).
+// Sign up free: https://app.giftbit.com/register
+//
+// Required env vars:
+//   GIFTBIT_API_KEY       — from Dashboard → Profile → API keys (JWT token)
+//   GIFTBIT_API_BASE_URL  — (optional) defaults to https://api-testbed.giftbit.com/papi/v1
+//                           Set to https://api.giftbit.com/papi/v1 for production.
+//   GIFTBIT_CLAIM_EXPIRY_DAYS (optional, default "360", max 365) — days before an
+//                           unclaimed direct link expires and credit is returned.
+//
+// How it works (Giftbit "direct_links" model):
+//   POST /papi/v1/direct_links — creates a single-use claim URL (`direct_links[0]`)
+//   synchronously in one HTTP call. Giftbit does NOT email anyone; we deliver
+//   the direct claim link to the customer via our own Resend email and order page.
+//
+// Brand mapping: run `npm run giftbit:catalog` to fetch the live brand_code
+// list from your account (`/papi/v1/brands`) and verify these IDs against it.
+// ---------------------------------------------------------------------------
+
+/**
+ * Maps our internal brand slugs (src/lib/brands.ts) to Giftbit brand_codes.
+ * Two shapes:
+ *   - string: a variable-value brand — works for any dollar amount within min/max.
+ *   - { [dollars]: brand_code }: a fixed-value brand — only specific denominations
+ *     are allowed by Giftbit.
+ *
+ * Verified against Giftbit's live API (`/papi/v1/brands` & `/papi/v1/brands/{code}`)
+ * using `npm run giftbit:catalog`.
+ *
+ * Brands NOT listed here fall back to TangoCardProvider (if configured) or
+ * DemoGiftCardProvider (isDemo=true) so checkout never breaks.
+ */
+export const BRAND_TO_GIFTBIT_CODE: Record<string, string | Record<number, string>> = {
+  // ── House / Multi-Brand Cards (redeemable on /redeem to swap for any brand) ─
+  buygiftcards:        "HOUSE_SWAP",            // BuyGiftCards.online Gift Card (Card # + PIN swapped on /redeem)
+  one4all:             "HOUSE_SWAP",            // One4all Multi-Brand Gift Card (Card # + PIN swapped on /redeem)
+  holidayfavorites:    "HOUSE_SWAP",            // Holiday Favorites Multi-Brand (Card # + PIN swapped on /redeem)
+  // ── Verified against live Giftbit Testbed USD catalog (region 2) ────────
+  amazon:              "amazonus",              // Amazon.com ($0.01–$2000)
+  visa:                "visavirtualus",         // Visa Incentive Virtual Card ($10–$2000; physical uses visaphysicalus)
+  walmart:             "walmart",               // Walmart ($5–$500)
+  googleplay:          "googleplayus",          // Google Play ($5–$200)
+  nike:                "nikeus",                // Nike ($5–$500)
+  petco:               "petcous",               // Petco ($10–$200)
+  michaels:            "michaelsus",            // Michael's ($5–$500)
+  ultabeauty:          "ultabeauty",            // Ulta Beauty ($5–$500)
+  uber:                "uber",                  // Uber ($15–$500)
+  // ── Additional Giftbit US catalog brand_codes (active in production) ────
+  apple:               "itunesus",
+  starbucks:           "starbucks",
+  mastercard:          "mastercardus",
+  netflix:             "netflix",
+  spotify:             "spotify",
+  doordash:            "doordash",
+  ubereats:            "ubereats",
+  grubhub:             "grubhub",
+  chipotle:            "chipotle",
+  mcdonalds:           "mcdonalds",
+  subway:              "subway",
+  dominos:             "dominos",
+  pizzahut:            "pizzahut",
+  panera:              "panerabread",
+  cheesecakefactory:   "cheesecakefactory",
+  olivegarden:         "olivegarden",
+  redlobster:          "redlobster",
+  outback:             "outbacksteakhouse",
+  applebees:           "applebees",
+  buffalowildwings:    "buffalowildwings",
+  chilis:              "chilis",
+  darden:              "darden",
+  burgerking:          "burgerking",
+  wendys:              "wendys",
+  arbys:               "arbys",
+  ihop:                "ihop",
+  dennys:              "dennys",
+  krispykreme:         "krispykreme",
+  peets:               "peetscoffee",
+  jerseymikes:         "jerseymikes",
+  coldstonecreamery:   "coldstonecreamery",
+  pandaexpress:        "pandaexpress",
+  longhornsteakhouse:  "longhornsteakhouse",
+  omahasteaks:         "omahasteaks",
+  bjsrestaurants:      "bjsrestaurants",
+  hellofresh:          "hellofresh",
+  redrobin:            "redrobin",
+  target:              "target",
+  homedepot:           "homedepot",
+  lowes:               "lowes",
+  kohls:               "kohls",
+  macys:               "macys",
+  sephora:             "sephora",
+  bathbodyworks:       "bathandbodyworks",
+  saks:                "saksfifthavenue",
+  bloomingdales:       "bloomingdales",
+  jcpenney:            "jcpenney",
+  gap:                 "gap",
+  wayfair:             "wayfair",
+  crateandbarrel:      "crateandbarrel",
+  barnesnoble:         "barnesandnoble",
+  containerstore:      "containerstore",
+  staples:             "staples",
+  groupon:             "groupon",
+  fanatics:            "fanatics",
+  belk:                "belk",
+  dillards:            "dillards",
+  shutterfly:          "shutterfly",
+  totalwine:           "totalwine",
+  adidas:              "adidas",
+  underarmour:         "underarmour",
+  footlocker:          "footlocker",
+  dsw:                 "dsw",
+  aeo:                 "americaneagle",
+  llbean:              "llbean",
+  finishline:          "finishline",
+  chicos:              "chicos",
+  hottopic:            "hottopic",
+  pacsun:              "pacsun",
+  aeropostale:         "aeropostale",
+  lanebryant:          "lanebryant",
+  torrid:              "torrid",
+  stitchfix:           "stitchfix",
+  steam:               "steam",
+  xbox:                "xbox",
+  playstation:         "playstation",
+  gamestop:            "gamestop",
+  airbnb:              "airbnb",
+  southwest:           "southwestairlines",
+  marriott:            "marriott",
+  amctheatres:         "amctheatres",
+  regal:               "regal",
+  cinemark:            "cinemark",
+  spafinder:           "spafinder",
+  shell:               "shell",
+  autozone:            "autozone",
+  advanceautoparts:    "advanceautoparts",
+  rei:                 "rei",
+  basspro:             "bassproshops",
+  academysports:       "academysports",
+  petsmart:            "petsmart",
+  chewy:               "chewy",
+};
+
+function resolveGiftbitBaseUrl(apiKey: string): string {
+  if (process.env.GIFTBIT_API_BASE_URL) {
+    return process.env.GIFTBIT_API_BASE_URL.replace(/\/+$/, "");
+  }
+  if (apiKey.startsWith("TEST-")) {
+    return "https://api-testbed.giftbit.com/papi/v1";
+  }
+  if (apiKey.startsWith("PROD-")) {
+    return "https://api.giftbit.com/papi/v1";
+  }
+  // Giftbit JWT tokens work on testbed or production depending on which dashboard
+  // generated them. Default to testbed (safe default, same as Tango) unless
+  // GIFTBIT_API_BASE_URL is explicitly set to https://api.giftbit.com/papi/v1.
+  return "https://api-testbed.giftbit.com/papi/v1";
+}
+
+export class GiftbitProvider implements GiftCardProvider {
+  private apiKey: string;
+  private claimExpiryDays: number;
+  private baseUrl: string;
+
+  constructor() {
+    const key = process.env.GIFTBIT_API_KEY;
+    if (!key) throw new Error("GIFTBIT_API_KEY is not set — required for GiftbitProvider");
+    this.apiKey = key;
+    // Giftbit rejects `expiry` dates more than 1 year in the future (`exceeded1Year`).
+    // Support either GIFTBIT_CLAIM_EXPIRY_DAYS (default 360) or legacy GIFTBIT_CLAIM_EXPIRY_MONTHS.
+    if (process.env.GIFTBIT_CLAIM_EXPIRY_DAYS) {
+      this.claimExpiryDays = Math.min(364, Math.max(1, parseInt(process.env.GIFTBIT_CLAIM_EXPIRY_DAYS, 10) || 360));
+    } else if (process.env.GIFTBIT_CLAIM_EXPIRY_MONTHS) {
+      const months = parseInt(process.env.GIFTBIT_CLAIM_EXPIRY_MONTHS, 10) || 12;
+      this.claimExpiryDays = Math.min(364, Math.max(1, months * 30));
+    } else {
+      this.claimExpiryDays = 360;
+    }
+    this.baseUrl = resolveGiftbitBaseUrl(key);
+  }
+
+  /** Returns a YYYY-MM-DD date string N days from now (strictly under 1 year for Giftbit). */
+  private expiryDate(): string {
+    const d = new Date(Date.now() + this.claimExpiryDays * 86_400_000);
+    return d.toISOString().slice(0, 10);
+  }
+
+  async issue({
+    brandSlug,
+    amountCents,
+    deliveryType,
+  }: {
+    brandSlug: string;
+    amountCents: number;
+    deliveryType?: "egift" | "physical";
+  }): Promise<IssuedCard> {
+    // House / Multi-Brand choice cards issue a 16-digit BuyGiftCards.online Card Number + 8-digit PIN
+    // that the recipient enters at `/redeem` to swap or split across 165+ merchant eGift cards!
+    if (HOUSE_BRAND_SLUGS.includes(brandSlug)) {
+      return {
+        code: generateDemoCode(),
+        pin: generateDemoPin(),
+        isDemo: false,
+      };
+    }
+
+    const mapping = BRAND_TO_GIFTBIT_CODE[brandSlug];
+    if (!mapping) {
+      throw new Error(
+        `No Giftbit brand_code mapped for brand "${brandSlug}". Add it to BRAND_TO_GIFTBIT_CODE or run \`npm run giftbit:catalog\`.`
+      );
+    }
+
+    let brandCode: string;
+    if (brandSlug === "visa" && deliveryType === "physical") {
+      brandCode = "visaphysicalus";
+    } else if (typeof mapping === "string") {
+      brandCode = mapping;
+    } else {
+      const dollars = amountCents / 100;
+      const found = mapping[dollars];
+      if (!found) {
+        throw new Error(
+          `Brand "${brandSlug}" has no Giftbit brand_code for $${dollars} — available: ${Object.keys(mapping).join(", ")}`
+        );
+      }
+      brandCode = found;
+    }
+
+    // POST /papi/v1/direct_links — creates a 1-link Direct Link order synchronously.
+    // Giftbit reserves funds and returns `direct_links: ["https://..."]` immediately.
+    const orderId = `bgc-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+    const payload: Record<string, unknown> = {
+      id: orderId,
+      price_in_cents: amountCents,
+      link_count: 1,
+      expiry: this.expiryDate(),
+    };
+    if (brandCode === "REGION_USA") {
+      // Multi-brand choice catalog link across top participating US brands
+      payload.brand_codes = [
+        "amazonus",
+        "visavirtualus",
+        "walmart",
+        "googleplayus",
+        "nikeus",
+        "ultabeauty",
+        "uber",
+        "petcous",
+        "michaelsus",
+      ];
+    } else {
+      payload.brand_codes = [brandCode];
+    }
+
+    const res = await fetch(`${this.baseUrl}/direct_links`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Giftbit direct_links create failed (${res.status}): ${body}`);
+    }
+
+    const data = await res.json();
+    const claimUrl: string = data?.direct_links?.[0] ?? "";
+    if (!claimUrl) {
+      throw new Error(`Giftbit direct_links response missing link: ${JSON.stringify(data)}`);
+    }
+
+    // The direct link is a unique Giftbit-hosted URL the customer visits to claim
+    // and receive their gift card. We store it as `code` (with empty `pin`).
+    return { code: claimUrl, pin: "", isDemo: false };
+  }
+}
+
+/**
+ * Per-brand hybrid: attempts GiftbitProvider when a brand_code is mapped.
+ * In Testbed mode, only a subset of brands (Amazon, Visa, Walmart, Google Play,
+ * Nike, Petco, Michael's, Ulta Beauty, Uber) exist in the USD sandbox catalog,
+ * so if Giftbit rejects a brand as unavailable in the current environment or if
+ * the brand is unmapped, it cleanly falls back to the secondary provider
+ * (TangoCardProvider if configured, otherwise DemoGiftCardProvider).
+ */
+class HybridGiftbitProvider implements GiftCardProvider {
+  constructor(
+    private giftbit: GiftCardProvider,
+    private demo: GiftCardProvider
+  ) {}
+
+  async issue(params: {
+    brandSlug: string;
+    amountCents: number;
+    deliveryType?: "egift" | "physical";
+  }): Promise<IssuedCard> {
+    if (BRAND_TO_GIFTBIT_CODE[params.brandSlug]) {
+      try {
+        return await this.giftbit.issue(params);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn(
+          `[giftcard-provider] Giftbit issue failed for "${params.brandSlug}" (${msg}) — issuing demo code fallback.`
+        );
+        return this.demo.issue(params);
+      }
+    }
+    console.warn(
+      `[giftcard-provider] "${params.brandSlug}" has no Giftbit brand_code mapping — issuing demo code. Add it to BRAND_TO_GIFTBIT_CODE.`
+    );
+    return this.demo.issue(params);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Factory — priority: Giftbit > Tango > Demo
+// ---------------------------------------------------------------------------
+
 function buildProvider(): GiftCardProvider {
-  const hasTangoConfig =
+  const demo = new DemoGiftCardProvider();
+
+  // 1. Giftbit (recommended): set GIFTBIT_API_KEY to activate.
+  if (process.env.GIFTBIT_API_KEY) {
+    const mappedCount = Object.keys(BRAND_TO_GIFTBIT_CODE).length;
+    const baseUrl = resolveGiftbitBaseUrl(process.env.GIFTBIT_API_KEY);
+    const isSandbox = baseUrl.includes("testbed");
+    console.log(
+      `[giftcard-provider] Using GiftbitProvider [${isSandbox ? "TESTBED" : "PRODUCTION"}] ` +
+        `(${mappedCount} brands mapped, 75% breakage credit on unclaimed links)`
+    );
+    return new HybridGiftbitProvider(new GiftbitProvider(), demo);
+  }
+
+  // 2. Tango Card (legacy): set all four TANGO_* vars to activate.
+  const hasTangoConfig = Boolean(
     process.env.TANGO_PLATFORM_NAME &&
-    process.env.TANGO_PLATFORM_KEY &&
-    process.env.TANGO_ACCOUNT_IDENTIFIER &&
-    process.env.TANGO_CUSTOMER_IDENTIFIER;
+      process.env.TANGO_PLATFORM_KEY &&
+      process.env.TANGO_ACCOUNT_IDENTIFIER &&
+      process.env.TANGO_CUSTOMER_IDENTIFIER
+  );
 
   if (hasTangoConfig) {
     console.log(
       `[giftcard-provider] Using TangoCardProvider for ${Object.keys(BRAND_TO_TANGO_UTID).length} mapped brands, DemoGiftCardProvider fallback for the rest`
     );
-    return new HybridGiftCardProvider(new TangoCardProvider(), new DemoGiftCardProvider());
+    return new HybridGiftCardProvider(new TangoCardProvider(), demo);
   }
-  console.warn("[giftcard-provider] Tango Card env vars not set — using DemoGiftCardProvider (non-redeemable codes)");
-  return new DemoGiftCardProvider();
+
+  // 3. Demo fallback — non-redeemable codes only.
+  console.warn("[giftcard-provider] No live provider configured — using DemoGiftCardProvider (non-redeemable codes)");
+  return demo;
 }
 
 export const giftCardProvider: GiftCardProvider = buildProvider();

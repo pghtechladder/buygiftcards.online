@@ -10,6 +10,12 @@ const CartItemSchema = z.object({
   qty: z.number().int().min(1).max(10),
   deliveryType: z.enum(["egift", "physical"]),
   customPhotoUrl: z.string().url().optional(),
+  recipientName: z.string().max(80).optional(),
+  recipientEmail: z.string().email().max(120).optional().or(z.literal("")),
+  senderName: z.string().max(80).optional(),
+  giftMessage: z.string().max(240).optional(),
+  occasion: z.string().max(40).optional(),
+  deliveryDate: z.string().max(20).optional(),
 });
 const BodySchema = z.object({
   items: z.array(CartItemSchema).min(1).max(20),
@@ -98,14 +104,6 @@ export async function POST(req: NextRequest) {
         success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${siteUrl}/catalog`,
         customer_creation: "always",
-        // Stripe Tax: needs a customer address to know which jurisdiction to
-        // calculate for, hence requiring billing address collection here.
-        // NOTE: you still need to (1) add tax registrations for every state
-        // you're collecting tax in at dashboard.stripe.com/settings/tax, and
-        // (2) confirm the right product tax category for gift cards there —
-        // don't guess a tax code in code for something with real tax/legal
-        // consequences. Until registrations exist, Stripe will calculate $0
-        // tax rather than fail, so this is safe to ship ahead of that setup.
         automatic_tax: { enabled: true },
         billing_address_collection: "required",
         ...(authSession?.user?.email ? { customer_email: authSession.user.email } : {}),
@@ -117,6 +115,11 @@ export async function POST(req: NextRequest) {
               q: i.qty,
               d: i.deliveryType,
               ...(photoByLine[idx] ? { p: photoByLine[idx] } : {}),
+              ...(i.recipientEmail ? { re: i.recipientEmail } : {}),
+              ...(i.recipientName ? { rn: i.recipientName } : {}),
+              ...(i.senderName ? { sn: i.senderName } : {}),
+              ...(i.giftMessage ? { gm: i.giftMessage.slice(0, 120) } : {}),
+              ...(i.occasion ? { oc: i.occasion } : {}),
             }))
           ),
           ...(authSession?.user?.id ? { u: authSession.user.id } : {}),
@@ -127,8 +130,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
-    // Stripe auth errors, network errors, etc. — always return JSON so the
-    // client's res.json() never chokes on an empty/HTML error body.
     const message = err instanceof Error ? err.message : "Checkout failed";
     console.error("[/api/checkout]", err);
     return NextResponse.json({ error: message }, { status: 500 });
