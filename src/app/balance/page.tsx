@@ -210,7 +210,7 @@ export default function BalancePage() {
                     <div className="font-extrabold text-sm">{c.brandName}</div>
                     <div className="text-xs text-ink-500 mt-0.5">
                       Issued Value: <span className="font-bold text-green-700">${(c.denomCents / 100).toFixed(2)}</span> ·{" "}
-                      {c.isDemo ? "Demo Credential" : "Live Giftbit Reward"}
+                      {c.isDemo ? "Demo Credential" : "Live Zendit Reward"}
                     </div>
                   </div>
                   {isUrl ? (

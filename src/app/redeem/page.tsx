@@ -350,7 +350,7 @@ function RedeemPortalContent() {
                           <div>
                             <div className="font-extrabold text-base text-ink-900">{item.brandName}</div>
                             <div className="text-xs text-ink-500">
-                              {isUrl ? "Live Giftbit Digital Reward Link" : "Instant eGift Code"}
+                              {isUrl ? "Live Zendit Digital Reward Link" : "Instant Zendit eGift Voucher"}
                             </div>
                           </div>
                         </div>
@@ -518,7 +518,7 @@ function RedeemPortalContent() {
                 <div>
                   <div className="text-xs font-extrabold text-brand-900">Want to test the redemption flow right now?</div>
                   <div className="text-[11px] text-brand-700 mt-0.5">
-                    Load a live <strong>$100.00 BuyGiftCards.online Gift Card</strong> and swap it for real Giftbit claim links!
+                    Load a live <strong>$100.00 BuyGiftCards.online Gift Card</strong> and swap it for real Zendit eGift cards &amp; claim links!
                   </div>
                 </div>
                 <button

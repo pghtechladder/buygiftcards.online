@@ -245,7 +245,15 @@ class HybridGiftCardProvider implements GiftCardProvider {
 
   async issue(params: { brandSlug: string; amountCents: number }): Promise<IssuedCard> {
     if (BRAND_TO_TANGO_UTID[params.brandSlug]) {
-      return this.tango.issue(params);
+      try {
+        return await this.tango.issue(params);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn(
+          `[giftcard-provider] Tango issue failed for "${params.brandSlug}" (${msg}) — issuing demo code fallback.`
+        );
+        return this.demo.issue(params);
+      }
     }
     console.warn(
       `[giftcard-provider] "${params.brandSlug}" has no Tango mapping — issuing a non-redeemable demo code instead of real fulfillment.`
@@ -255,208 +263,313 @@ class HybridGiftCardProvider implements GiftCardProvider {
 }
 
 // ---------------------------------------------------------------------------
-// GiftbitProvider — Recommended live provider
+// ZenditProvider — Primary live gift-card fulfillment provider
 // ---------------------------------------------------------------------------
-// $0 platform fee, instant sandbox, 1000+ global brand catalog.
-// Set expiry up to 1 year out: Giftbit auto-expires unclaimed rewards and
-// returns 75% breakage credit of face value back to your account balance
-// (verified via cost_entries BREAKAGE_PERCENTAGE in POST /direct_links).
-// Sign up free: https://app.giftbit.com/register
+// Uses Zendit's Prepaid-as-a-Service REST API (https://developers.zendit.io/api/).
+// Base URL: https://api.zendit.io/v1
+// Authentication: Authorization: Bearer <ZENDIT_API_KEY>
 //
 // Required env vars:
-//   GIFTBIT_API_KEY       — from Dashboard → Profile → API keys (JWT token)
-//   GIFTBIT_API_BASE_URL  — (optional) defaults to https://api-testbed.giftbit.com/papi/v1
-//                           Set to https://api.giftbit.com/papi/v1 for production.
-//   GIFTBIT_CLAIM_EXPIRY_DAYS (optional, default "360", max 365) — days before an
-//                           unclaimed direct link expires and credit is returned.
+//   ZENDIT_API_KEY       — Sandbox (`sand_...`) or Production API secret key
+//   ZENDIT_API_BASE_URL  — (optional) defaults to https://api.zendit.io/v1
+//   ZENDIT_USERNAME      — (optional) account username / email (e.g. sri@techladder.io)
 //
-// How it works (Giftbit "direct_links" model):
-//   POST /papi/v1/direct_links — creates a single-use claim URL (`direct_links[0]`)
-//   synchronously in one HTTP call. Giftbit does NOT email anyone; we deliver
-//   the direct claim link to the customer via our own Resend email and order page.
-//
-// Brand mapping: run `npm run giftbit:catalog` to fetch the live brand_code
-// list from your account (`/papi/v1/brands`) and verify these IDs against it.
+// How it works:
+//   1. House / Multi-Brand choice cards (`buygiftcards`, `one4all`, `holidayfavorites`)
+//      issue a 16-digit BuyGiftCards.online Card Number + 8-digit PIN redeemable on `/redeem`.
+//   2. Mapped Zendit catalog brands (`BRAND_TO_ZENDIT_OFFER`) submit `POST /v1/vouchers/purchases`
+//      with `offerId`, `transactionId`, `fields` (auto-populated for brands requiring
+//      `recipient.firstName`, `recipient.lastName`, `recipient.email`, etc.), and `value`
+//      (`{ type: "ZEND", value: amountCents }` for RANGE offers).
+//   3. Polls `GET /v1/vouchers/purchases/{transactionId}` until `status === "DONE"` (typically
+//      < 1 second) and extracts `receipt.redemptionUrl` or `receipt.voucherId` + `receipt.epin`.
 // ---------------------------------------------------------------------------
 
-/**
- * Maps our internal brand slugs (src/lib/brands.ts) to Giftbit brand_codes.
- * Two shapes:
- *   - string: a variable-value brand — works for any dollar amount within min/max.
- *   - { [dollars]: brand_code }: a fixed-value brand — only specific denominations
- *     are allowed by Giftbit.
- *
- * Verified against Giftbit's live API (`/papi/v1/brands` & `/papi/v1/brands/{code}`)
- * using `npm run giftbit:catalog`.
- *
- * Brands NOT listed here fall back to TangoCardProvider (if configured) or
- * DemoGiftCardProvider (isDemo=true) so checkout never breaks.
- */
-export const BRAND_TO_GIFTBIT_CODE: Record<string, string | Record<number, string>> = {
-  // ── House / Multi-Brand Cards (redeemable on /redeem to swap for any brand) ─
-  buygiftcards:        "HOUSE_SWAP",            // BuyGiftCards.online Gift Card (Card # + PIN swapped on /redeem)
-  one4all:             "HOUSE_SWAP",            // One4all Multi-Brand Gift Card (Card # + PIN swapped on /redeem)
-  holidayfavorites:    "HOUSE_SWAP",            // Holiday Favorites Multi-Brand (Card # + PIN swapped on /redeem)
-  // ── Verified against live Giftbit Testbed USD catalog (region 2) ────────
-  amazon:              "amazonus",              // Amazon.com ($0.01–$2000)
-  visa:                "visavirtualus",         // Visa Incentive Virtual Card ($10–$2000; physical uses visaphysicalus)
-  walmart:             "walmart",               // Walmart ($5–$500)
-  googleplay:          "googleplayus",          // Google Play ($5–$200)
-  nike:                "nikeus",                // Nike ($5–$500)
-  petco:               "petcous",               // Petco ($10–$200)
-  michaels:            "michaelsus",            // Michael's ($5–$500)
-  ultabeauty:          "ultabeauty",            // Ulta Beauty ($5–$500)
-  uber:                "uber",                  // Uber ($15–$500)
-  // ── Additional Giftbit US catalog brand_codes (active in production) ────
-  apple:               "itunesus",
-  starbucks:           "starbucks",
-  mastercard:          "mastercardus",
-  netflix:             "netflix",
-  spotify:             "spotify",
-  doordash:            "doordash",
-  ubereats:            "ubereats",
-  grubhub:             "grubhub",
-  chipotle:            "chipotle",
-  mcdonalds:           "mcdonalds",
-  subway:              "subway",
-  dominos:             "dominos",
-  pizzahut:            "pizzahut",
-  panera:              "panerabread",
-  cheesecakefactory:   "cheesecakefactory",
-  olivegarden:         "olivegarden",
-  redlobster:          "redlobster",
-  outback:             "outbacksteakhouse",
-  applebees:           "applebees",
-  buffalowildwings:    "buffalowildwings",
-  chilis:              "chilis",
-  darden:              "darden",
-  burgerking:          "burgerking",
-  wendys:              "wendys",
-  arbys:               "arbys",
-  ihop:                "ihop",
-  dennys:              "dennys",
-  krispykreme:         "krispykreme",
-  peets:               "peetscoffee",
-  jerseymikes:         "jerseymikes",
-  coldstonecreamery:   "coldstonecreamery",
-  pandaexpress:        "pandaexpress",
-  longhornsteakhouse:  "longhornsteakhouse",
-  omahasteaks:         "omahasteaks",
-  bjsrestaurants:      "bjsrestaurants",
-  hellofresh:          "hellofresh",
-  redrobin:            "redrobin",
-  target:              "target",
-  homedepot:           "homedepot",
-  lowes:               "lowes",
-  kohls:               "kohls",
-  macys:               "macys",
-  sephora:             "sephora",
-  bathbodyworks:       "bathandbodyworks",
-  saks:                "saksfifthavenue",
-  bloomingdales:       "bloomingdales",
-  jcpenney:            "jcpenney",
-  gap:                 "gap",
-  wayfair:             "wayfair",
-  crateandbarrel:      "crateandbarrel",
-  barnesnoble:         "barnesandnoble",
-  containerstore:      "containerstore",
-  staples:             "staples",
-  groupon:             "groupon",
-  fanatics:            "fanatics",
-  belk:                "belk",
-  dillards:            "dillards",
-  shutterfly:          "shutterfly",
-  totalwine:           "totalwine",
-  adidas:              "adidas",
-  underarmour:         "underarmour",
-  footlocker:          "footlocker",
-  dsw:                 "dsw",
-  aeo:                 "americaneagle",
-  llbean:              "llbean",
-  finishline:          "finishline",
-  chicos:              "chicos",
-  hottopic:            "hottopic",
-  pacsun:              "pacsun",
-  aeropostale:         "aeropostale",
-  lanebryant:          "lanebryant",
-  torrid:              "torrid",
-  stitchfix:           "stitchfix",
-  steam:               "steam",
-  xbox:                "xbox",
-  playstation:         "playstation",
-  gamestop:            "gamestop",
-  airbnb:              "airbnb",
-  southwest:           "southwestairlines",
-  marriott:            "marriott",
-  amctheatres:         "amctheatres",
-  regal:               "regal",
-  cinemark:            "cinemark",
-  spafinder:           "spafinder",
-  shell:               "shell",
-  autozone:            "autozone",
-  advanceautoparts:    "advanceautoparts",
-  rei:                 "rei",
-  basspro:             "bassproshops",
-  academysports:       "academysports",
-  petsmart:            "petsmart",
-  chewy:               "chewy",
+export type ZenditOfferSpec = {
+  /** RANGE offerId accepting any dollar amount between min and max */
+  rangeOfferId?: string;
+  /** FIXED denomination map: dollar amount -> exact Zendit offerId */
+  fixedOffers?: Record<number, string>;
+  /** Required recipient/sender fields declared by Zendit for this brand */
+  requiredFields?: string[];
 };
 
-function resolveGiftbitBaseUrl(apiKey: string): string {
-  if (process.env.GIFTBIT_API_BASE_URL) {
-    return process.env.GIFTBIT_API_BASE_URL.replace(/\/+$/, "");
-  }
-  if (apiKey.startsWith("TEST-")) {
-    return "https://api-testbed.giftbit.com/papi/v1";
-  }
-  if (apiKey.startsWith("PROD-")) {
-    return "https://api.giftbit.com/papi/v1";
-  }
-  // Giftbit JWT tokens work on testbed or production depending on which dashboard
-  // generated them. Default to testbed (safe default, same as Tango) unless
-  // GIFTBIT_API_BASE_URL is explicitly set to https://api.giftbit.com/papi/v1.
-  return "https://api-testbed.giftbit.com/papi/v1";
+export const BRAND_TO_ZENDIT_OFFER: Record<string, ZenditOfferSpec> = {
+  // ── House / Multi-Brand Cards (redeemable on /redeem to swap for any brand) ─
+  buygiftcards: { rangeOfferId: "HOUSE_SWAP" },
+  one4all: { rangeOfferId: "HOUSE_SWAP" },
+  holidayfavorites: { rangeOfferId: "HOUSE_SWAP" },
+
+  // ── Live Zendit US Catalog Brands — Open Range Offers (`priceType: RANGE`) ─
+  ultabeauty: {
+    rangeOfferId: "ULTA_US_OPEN", // $5–$500 open range
+  },
+  underarmour: {
+    rangeOfferId: "UNDERARMOUR_US_OPEN", // $15–$500 open range
+  },
+  disney: {
+    rangeOfferId: "DISNEY_US_OPEN", // $15–$500 open range
+  },
+
+  // ── Live Zendit US Catalog Brands — Fixed Denomination Offers (`priceType: FIXED`) ─
+  googleplay: {
+    fixedOffers: {
+      10: "GOOGLEPLAY_US_001",
+      25: "GOOGLEPLAY_US_002",
+      50: "GOOGLEPLAY_US_003",
+      75: "GOOGLEPLAY_US_004",
+      100: "GOOGLEPLAY_US_005",
+    },
+  },
+  sephora: {
+    fixedOffers: {
+      10: "SEPHORA_US_001_EGIFT",
+      25: "SEPHORA_US_002_EGIFT",
+      50: "SEPHORA_US_003_EGIFT",
+      75: "SEPHORA_US_004_EGIFT",
+      100: "SEPHORA_US_005_EGIFT",
+    },
+  },
+  playstation: {
+    fixedOffers: {
+      10: "PLAYSTATION_US_001",
+      25: "PLAYSTATION_US_002",
+      50: "PLAYSTATION_US_003",
+      75: "PLAYSTATION_US_004",
+      100: "PLAYSTATION_US_005",
+    },
+  },
+  xbox: {
+    fixedOffers: {
+      10: "XBOX_GPESSENTIAL_US_1M_WHS",
+      15: "XBOX_US_15_EGIFT_WHS",
+      25: "XBOX_US_25_EGIFT_WHS",
+      50: "XBOX_US_50_EGIFT_WHS",
+      100: "XBOX_US_100_EGIFT_WHS",
+    },
+  },
+  gamestop: {
+    fixedOffers: {
+      5: "GAMESTOP_US_001_EGIFT",
+      10: "GAMESTOP_US_002_EGIFT",
+      25: "GAMESTOP_US_25_WHS",
+      50: "GAMESTOP_US_50_WHS",
+      75: "GAMESTOP_US_003_EGIFT",
+      100: "GAMESTOP_US_004_EGIFT",
+    },
+  },
+  shell: {
+    fixedOffers: {
+      10: "SHELL_US_10_WHS",
+      15: "SHELL_US_15_WHS",
+      25: "SHELL_US_25_WHS",
+      50: "SHELL_US_50_WHS",
+      100: "SHELL_US_100_WHS",
+    },
+  },
+  autozone: {
+    fixedOffers: {
+      20: "AUTOZONE_US_20_EGIFT",
+      50: "AUTOZONE_US_50_EGIFT",
+    },
+    requiredFields: ["recipient.firstName"],
+  },
+  chevron: {
+    fixedOffers: {
+      25: "GT_CHEVRONTEXACO_US_25_EGIFT",
+      50: "GT_CHEVRONTEXACO_US_50_EGIFT",
+    },
+    requiredFields: ["recipient.firstName"],
+  },
+  albertsons: {
+    fixedOffers: {
+      5: "ALBERTSONS_US_5_EGIFT",
+      10: "ALBERTSONS_US_10_EGIFT",
+      25: "ALBERTSONS_US_25_EGIFT",
+      50: "ALBERTSONS_US_50_EGIFT",
+    },
+    requiredFields: ["recipient.firstName"],
+  },
+  burlington: {
+    fixedOffers: {
+      25: "BURLINGTON_US_001_EGIFT",
+      50: "BURLINGTON_US_002_EGIFT",
+      75: "BURLINGTON_US_003_EGIFT",
+      100: "BURLINGTON_US_004_EGIFT",
+    },
+    requiredFields: ["recipient.firstName", "recipient.lastName"],
+  },
+  dunkin: {
+    fixedOffers: {
+      5: "DUNKIN_US_5_WHS",
+      10: "DUNKIN_US_10_WHS",
+      25: "DUNKIN_US_25_WHS",
+      50: "DUNKIN_US_50_WHS",
+    },
+  },
+  eaplay: {
+    fixedOffers: {
+      15: "EAPLAY_US_001",
+      25: "EAPLAY_US_002",
+    },
+    requiredFields: ["recipient.firstName"],
+  },
+  fortnite: {
+    fixedOffers: {
+      25: "FORTNITE_US_25_WHS",
+      50: "FORTNITE_US_50_WHS",
+      75: "FORTNITE_US_75_WHS",
+      100: "FORTNITE_US_100_WHS",
+      150: "FORTNITE_US_150_WHS",
+    },
+  },
+  freefire: {
+    fixedOffers: {
+      1: "FREEFIRE_US_1_EGIFT",
+      2: "FREEFIRE_US_2_EGIFT",
+      5: "FREEFIRE_US_5_EGIFT",
+      10: "FREEFIRE_US_10_EGIFT",
+      20: "FREEFIRE_US_20_EGIFT",
+    },
+    requiredFields: ["recipient.firstName", "recipient.lastName"],
+  },
+  gatorade: {
+    fixedOffers: {
+      25: "GATORADE_US_25_WHS",
+      50: "GATORADE_US_50_WHS",
+      100: "GATORADE_US_100_WHS",
+    },
+  },
+  conoco: {
+    fixedOffers: {
+      5: "GT_CONOCO_US_5_EGIFT",
+      10: "GT_CONOCO_US_10_EGIFT",
+      25: "GT_CONOCO_US_25_EGIFT",
+      50: "GT_CONOCO_US_50_EGIFT",
+    },
+    requiredFields: ["recipient.firstName"],
+  },
+  integralcare: {
+    fixedOffers: {
+      30: "INTEGRALCARE_US_29.99_WHS",
+      80: "INTEGRALCARE_US_79.99_WHS",
+      139: "INTEGRALCARE_US_139_WHS",
+      230: "INTEGRALCARE_US_230_WHS",
+    },
+  },
+  minecraft: {
+    fixedOffers: {
+      10: "MINECRAFT_US_9.99_EGIFT",
+      20: "MINECRAFT_US_19.99_EGIFT",
+      27: "MINECRAFTJAVABEDROCK_US_WHS",
+    },
+  },
+  mobilelegends: {
+    fixedOffers: {
+      1: "MOBILELEGENDS_US_56D_WHS",
+      5: "MOBILELEGENDS_US_278D_WHS",
+      10: "MOBILELEGENDS_US_571D_WHS",
+      20: "MOBILELEGENDS_US_1167D_WHS",
+      30: "MOBILELEGENDS_US_1783D_WHS",
+      50: "MOBILELEGENDS_US_2975D_WHS",
+      100: "MOBILELEGENDS_US_6000D_WHS",
+    },
+    requiredFields: ["recipient.firstName"],
+  },
+  oldnavy: {
+    fixedOffers: {
+      25: "OLDNAVY_US_001",
+      50: "OLDNAVY_US_002",
+      75: "OLDNAVY_US_003",
+      100: "OLDNAVY_US_004",
+    },
+    requiredFields: ["recipient.firstName"],
+  },
+  pubg: {
+    fixedOffers: {
+      1: "PUBG_US_60UC_WHS",
+      5: "PUBG_US_325UC_WHS",
+      10: "PUBG_US_660 UC_WHS",
+      25: "PUBG_US_1800UC_WHS",
+      50: "PUBG_US_3850UC_WHS",
+      100: "PUBG_US_8100 UC_WHS",
+      200: "PUBG_US_16200UC_WHS",
+      300: "PUBG_US_24300UC_WHS",
+      400: "PUBG_US_32400UC_WHS",
+      500: "PUBG_US_40500 UC_WHS",
+    },
+    requiredFields: ["recipient.firstName"],
+  },
+  razergold: {
+    fixedOffers: {
+      10: "RAZERGOLD_US_10",
+      25: "RAZERGOLD_US_25",
+      50: "RAZERGOLD_US_50",
+      75: "RAZERGOLD_US_75",
+      100: "RAZERGOLD_US_100",
+      150: "RAZERGOLD_US_150",
+      200: "RAZERGOLD_US_200",
+    },
+  },
+  zwilling: {
+    fixedOffers: {
+      25: "ZWILLING_US_25",
+      50: "ZWILLING_US_50",
+      75: "ZWILLING_US_75",
+      100: "ZWILLING_US_100",
+      150: "ZWILLING_US_150",
+      200: "ZWILLING_US_200",
+    },
+  },
+};
+
+function buildZenditRequiredFields(requiredKeys?: string[]): { key: string; value: string }[] {
+  if (!requiredKeys || requiredKeys.length === 0) return [];
+  const defaultEmail = process.env.ZENDIT_USERNAME || "sri@techladder.io";
+  return requiredKeys.map((key) => {
+    switch (key) {
+      case "recipient.firstName":
+      case "sender.firstName":
+        return { key, value: "Valued" };
+      case "recipient.lastName":
+      case "sender.lastName":
+        return { key, value: "Customer" };
+      case "recipient.email":
+      case "sender.email":
+        return { key, value: defaultEmail };
+      case "recipient.msisdn":
+      case "recipient.phoneNumber":
+      case "sender.msisdn":
+      case "sender.phoneNumber":
+        return { key, value: "+15552345678" };
+      case "recipient.country":
+      case "sender.country":
+        return { key, value: "US" };
+      default:
+        return { key, value: "BuyGiftCards" };
+    }
+  });
 }
 
-export class GiftbitProvider implements GiftCardProvider {
+export class ZenditProvider implements GiftCardProvider {
   private apiKey: string;
-  private claimExpiryDays: number;
   private baseUrl: string;
 
   constructor() {
-    const key = process.env.GIFTBIT_API_KEY;
-    if (!key) throw new Error("GIFTBIT_API_KEY is not set — required for GiftbitProvider");
+    const key = process.env.ZENDIT_API_KEY;
+    if (!key) throw new Error("ZENDIT_API_KEY is not set — required for ZenditProvider");
     this.apiKey = key;
-    // Giftbit rejects `expiry` dates more than 1 year in the future (`exceeded1Year`).
-    // Support either GIFTBIT_CLAIM_EXPIRY_DAYS (default 360) or legacy GIFTBIT_CLAIM_EXPIRY_MONTHS.
-    if (process.env.GIFTBIT_CLAIM_EXPIRY_DAYS) {
-      this.claimExpiryDays = Math.min(364, Math.max(1, parseInt(process.env.GIFTBIT_CLAIM_EXPIRY_DAYS, 10) || 360));
-    } else if (process.env.GIFTBIT_CLAIM_EXPIRY_MONTHS) {
-      const months = parseInt(process.env.GIFTBIT_CLAIM_EXPIRY_MONTHS, 10) || 12;
-      this.claimExpiryDays = Math.min(364, Math.max(1, months * 30));
-    } else {
-      this.claimExpiryDays = 360;
-    }
-    this.baseUrl = resolveGiftbitBaseUrl(key);
-  }
-
-  /** Returns a YYYY-MM-DD date string N days from now (strictly under 1 year for Giftbit). */
-  private expiryDate(): string {
-    const d = new Date(Date.now() + this.claimExpiryDays * 86_400_000);
-    return d.toISOString().slice(0, 10);
+    this.baseUrl = (process.env.ZENDIT_API_BASE_URL || "https://api.zendit.io/v1").replace(/\/+$/, "");
   }
 
   async issue({
     brandSlug,
     amountCents,
-    deliveryType,
   }: {
     brandSlug: string;
     amountCents: number;
     deliveryType?: "egift" | "physical";
   }): Promise<IssuedCard> {
-    // House / Multi-Brand choice cards issue a 16-digit BuyGiftCards.online Card Number + 8-digit PIN
-    // that the recipient enters at `/redeem` to swap or split across 165+ merchant eGift cards!
     if (HOUSE_BRAND_SLUGS.includes(brandSlug)) {
       return {
         code: generateDemoCode(),
@@ -465,94 +578,120 @@ export class GiftbitProvider implements GiftCardProvider {
       };
     }
 
-    const mapping = BRAND_TO_GIFTBIT_CODE[brandSlug];
-    if (!mapping) {
+    const spec = BRAND_TO_ZENDIT_OFFER[brandSlug];
+    if (!spec) {
       throw new Error(
-        `No Giftbit brand_code mapped for brand "${brandSlug}". Add it to BRAND_TO_GIFTBIT_CODE or run \`npm run giftbit:catalog\`.`
+        `No Zendit offer mapped for brand "${brandSlug}". Add it to BRAND_TO_ZENDIT_OFFER or run \`npm run zendit:catalog\`.`
       );
     }
 
-    let brandCode: string;
-    if (brandSlug === "visa" && deliveryType === "physical") {
-      brandCode = "visaphysicalus";
-    } else if (typeof mapping === "string") {
-      brandCode = mapping;
-    } else {
-      const dollars = amountCents / 100;
-      const found = mapping[dollars];
-      if (!found) {
-        throw new Error(
-          `Brand "${brandSlug}" has no Giftbit brand_code for $${dollars} — available: ${Object.keys(mapping).join(", ")}`
-        );
-      }
-      brandCode = found;
+    const dollars = Math.round(amountCents / 100);
+    let offerId: string | undefined;
+    let isRange = false;
+
+    if (spec.fixedOffers && spec.fixedOffers[dollars]) {
+      offerId = spec.fixedOffers[dollars];
+    } else if (spec.rangeOfferId) {
+      offerId = spec.rangeOfferId;
+      isRange = true;
+    } else if (spec.fixedOffers) {
+      // Pick the closest available fixed denomination if exact dollar isn't in fixedOffers
+      const availableDollars = Object.keys(spec.fixedOffers).map(Number);
+      throw new Error(
+        `Brand "${brandSlug}" has no Zendit offerId for $${dollars} — available fixed denominations: $${availableDollars.join(", $")}`
+      );
     }
 
-    // POST /papi/v1/direct_links — creates a 1-link Direct Link order synchronously.
-    // Giftbit reserves funds and returns `direct_links: ["https://..."]` immediately.
-    const orderId = `bgc-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    if (!offerId) {
+      throw new Error(`Unable to resolve Zendit offerId for "${brandSlug}" ($${dollars})`);
+    }
+
+    const transactionId = `bgc-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const fields = buildZenditRequiredFields(spec.requiredFields);
 
     const payload: Record<string, unknown> = {
-      id: orderId,
-      price_in_cents: amountCents,
-      link_count: 1,
-      expiry: this.expiryDate(),
+      transactionId,
+      offerId,
+      fields,
     };
-    if (brandCode === "REGION_USA") {
-      // Multi-brand choice catalog link across top participating US brands
-      payload.brand_codes = [
-        "amazonus",
-        "visavirtualus",
-        "walmart",
-        "googleplayus",
-        "nikeus",
-        "ultabeauty",
-        "uber",
-        "petcous",
-        "michaelsus",
-      ];
-    } else {
-      payload.brand_codes = [brandCode];
+
+    if (isRange) {
+      payload.value = {
+        type: "ZEND",
+        value: amountCents,
+      };
     }
 
-    const res = await fetch(`${this.baseUrl}/direct_links`, {
+    const createRes = await fetch(`${this.baseUrl}/vouchers/purchases`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      throw new Error(`Giftbit direct_links create failed (${res.status}): ${body}`);
+    if (!createRes.ok) {
+      const errBody = await createRes.text().catch(() => "");
+      throw new Error(`Zendit POST /vouchers/purchases failed (${createRes.status}): ${errBody}`);
     }
 
-    const data = await res.json();
-    const claimUrl: string = data?.direct_links?.[0] ?? "";
-    if (!claimUrl) {
-      throw new Error(`Giftbit direct_links response missing link: ${JSON.stringify(data)}`);
+    // Poll GET /vouchers/purchases/{transactionId} until status is DONE or FAILED
+    for (let attempt = 1; attempt <= 15; attempt++) {
+      if (attempt > 1) {
+        await new Promise((r) => setTimeout(r, 750));
+      }
+      const pollRes = await fetch(`${this.baseUrl}/vouchers/purchases/${encodeURIComponent(transactionId)}`, {
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Accept: "application/json",
+        },
+      });
+
+      if (!pollRes.ok) {
+        const pollErr = await pollRes.text().catch(() => "");
+        throw new Error(`Zendit GET /vouchers/purchases/${transactionId} failed (${pollRes.status}): ${pollErr}`);
+      }
+
+      const tx = await pollRes.json();
+      if (tx.status === "FAILED") {
+        const errMsg = tx.error?.message || tx.error?.description || tx.error?.code || "Transaction FAILED";
+        throw new Error(`Zendit voucher purchase failed: ${errMsg}`);
+      }
+
+      if (tx.status === "DONE") {
+        const receipt = tx.receipt || {};
+        const code =
+          receipt.redemptionUrl ||
+          receipt.voucherId ||
+          receipt.epin ||
+          tx.confirmation?.externalReferenceId ||
+          tx.confirmation?.confirmationNumber;
+        const pin = receipt.redemptionUrl
+          ? receipt.epin || receipt.voucherId || ""
+          : receipt.epin || "";
+
+        if (!code) {
+          throw new Error(`Zendit transaction DONE but receipt is missing voucher credential: ${JSON.stringify(tx)}`);
+        }
+
+        return {
+          code: String(code),
+          pin: String(pin),
+          isDemo: false,
+        };
+      }
     }
 
-    // The direct link is a unique Giftbit-hosted URL the customer visits to claim
-    // and receive their gift card. We store it as `code` (with empty `pin`).
-    return { code: claimUrl, pin: "", isDemo: false };
+    throw new Error(`Zendit transaction ${transactionId} timed out waiting for DONE status`);
   }
 }
 
-/**
- * Per-brand hybrid: attempts GiftbitProvider when a brand_code is mapped.
- * In Testbed mode, only a subset of brands (Amazon, Visa, Walmart, Google Play,
- * Nike, Petco, Michael's, Ulta Beauty, Uber) exist in the USD sandbox catalog,
- * so if Giftbit rejects a brand as unavailable in the current environment or if
- * the brand is unmapped, it cleanly falls back to the secondary provider
- * (TangoCardProvider if configured, otherwise DemoGiftCardProvider).
- */
-class HybridGiftbitProvider implements GiftCardProvider {
+class HybridZenditProvider implements GiftCardProvider {
   constructor(
-    private giftbit: GiftCardProvider,
-    private demo: GiftCardProvider
+    private zendit: GiftCardProvider,
+    private fallback: GiftCardProvider
   ) {}
 
   async issue(params: {
@@ -560,56 +699,55 @@ class HybridGiftbitProvider implements GiftCardProvider {
     amountCents: number;
     deliveryType?: "egift" | "physical";
   }): Promise<IssuedCard> {
-    if (BRAND_TO_GIFTBIT_CODE[params.brandSlug]) {
+    if (HOUSE_BRAND_SLUGS.includes(params.brandSlug) || BRAND_TO_ZENDIT_OFFER[params.brandSlug]) {
       try {
-        return await this.giftbit.issue(params);
+        return await this.zendit.issue(params);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         console.warn(
-          `[giftcard-provider] Giftbit issue failed for "${params.brandSlug}" (${msg}) — issuing demo code fallback.`
+          `[giftcard-provider] Zendit issue failed for "${params.brandSlug}" (${msg}) — falling back to secondary provider.`
         );
-        return this.demo.issue(params);
+        return this.fallback.issue(params);
       }
     }
-    console.warn(
-      `[giftcard-provider] "${params.brandSlug}" has no Giftbit brand_code mapping — issuing demo code. Add it to BRAND_TO_GIFTBIT_CODE.`
-    );
-    return this.demo.issue(params);
+    return this.fallback.issue(params);
   }
 }
 
 // ---------------------------------------------------------------------------
-// Factory — priority: Giftbit > Tango > Demo
+// Factory — priority: Zendit > Tango > Demo
 // ---------------------------------------------------------------------------
 
 function buildProvider(): GiftCardProvider {
   const demo = new DemoGiftCardProvider();
 
-  // 1. Giftbit (recommended): set GIFTBIT_API_KEY to activate.
-  if (process.env.GIFTBIT_API_KEY) {
-    const mappedCount = Object.keys(BRAND_TO_GIFTBIT_CODE).length;
-    const baseUrl = resolveGiftbitBaseUrl(process.env.GIFTBIT_API_KEY);
-    const isSandbox = baseUrl.includes("testbed");
-    console.log(
-      `[giftcard-provider] Using GiftbitProvider [${isSandbox ? "TESTBED" : "PRODUCTION"}] ` +
-        `(${mappedCount} brands mapped, 75% breakage credit on unclaimed links)`
-    );
-    return new HybridGiftbitProvider(new GiftbitProvider(), demo);
-  }
-
-  // 2. Tango Card (legacy): set all four TANGO_* vars to activate.
   const hasTangoConfig = Boolean(
     process.env.TANGO_PLATFORM_NAME &&
       process.env.TANGO_PLATFORM_KEY &&
       process.env.TANGO_ACCOUNT_IDENTIFIER &&
       process.env.TANGO_CUSTOMER_IDENTIFIER
   );
+  const secondaryFallback: GiftCardProvider = hasTangoConfig
+    ? new HybridGiftCardProvider(new TangoCardProvider(), demo)
+    : demo;
 
+  // 1. Zendit (primary): set ZENDIT_API_KEY to activate.
+  if (process.env.ZENDIT_API_KEY) {
+    const mappedCount = Object.keys(BRAND_TO_ZENDIT_OFFER).length;
+    const isSandbox = process.env.ZENDIT_API_KEY.startsWith("sand_");
+    console.log(
+      `[giftcard-provider] Using ZenditProvider [${isSandbox ? "SANDBOX" : "PRODUCTION"}] ` +
+        `(${mappedCount} brands mapped, account: ${process.env.ZENDIT_USERNAME || "default"})`
+    );
+    return new HybridZenditProvider(new ZenditProvider(), secondaryFallback);
+  }
+
+  // 2. Tango Card (legacy): set all four TANGO_* vars to activate.
   if (hasTangoConfig) {
     console.log(
       `[giftcard-provider] Using TangoCardProvider for ${Object.keys(BRAND_TO_TANGO_UTID).length} mapped brands, DemoGiftCardProvider fallback for the rest`
     );
-    return new HybridGiftCardProvider(new TangoCardProvider(), demo);
+    return secondaryFallback;
   }
 
   // 3. Demo fallback — non-redeemable codes only.
