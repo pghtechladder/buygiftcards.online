@@ -1,7 +1,9 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
 
-const LOG_DIR = path.join(process.cwd(), "logs");
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.cwd().startsWith("/var/task"));
+const LOG_DIR = isServerless ? path.join(os.tmpdir(), "buygiftcards-logs") : path.join(process.cwd(), "logs");
 export const TRANSACTION_LOG_PATH = path.join(LOG_DIR, "transactions.log");
 export const TRANSACTION_JSONL_PATH = path.join(LOG_DIR, "transactions.jsonl");
 
@@ -104,8 +106,8 @@ export function writeTransactionLog(entry: LogEntry): void {
     ensureLogDir();
     fs.appendFileSync(TRANSACTION_LOG_PATH, formattedBlock, "utf8");
     fs.appendFileSync(TRANSACTION_JSONL_PATH, JSON.stringify(fullEntry) + "\n", "utf8");
-  } catch (err) {
-    console.warn("[logger] Could not write to log file:", err);
+  } catch {
+    // Ignore file write errors on restricted serverless filesystems; stdout above is captured by Vercel Runtime Logs
   }
 }
 
