@@ -355,3 +355,39 @@
   API URL        : POST http://localhost:3000/api/orders/lookup
   HTTP Status    : 200
   Details        : {"status":"PAID","itemCount":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:55:35.937Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-1A65E2","email":"sri@techladder.io"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:55:36.420Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-1A65E2]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"PAID","itemCount":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:02:15.292Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-401485","email":"sri@techladder.io"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:02:16.021Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-401485]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":3}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:02:34.051Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"6846 0956 3098 3375","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:02:34.057Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"6846 0956 3098 3375","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:02:34.354Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261031-401485]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvvvvdhp000vdeku35p3qvut","code":"6846 0956 3098 3375","maskedCode":"•••• •••• •••• 3375","brandSlug":"amazon","brandName":"Amazon (Remaining Balance)","balanceCents":500,"customerEmail":"sri@techladder.io","orderNumber":"BGC-20261031-401485","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:02:34.602Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261031-401485]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvvvvdhp000vdeku35p3qvut","code":"6846 0956 3098 3375","maskedCode":"•••• •••• •••• 3375","brandSlug":"amazon","brandName":"Amazon (Remaining Balance)","balanceCents":500,"customerEmail":"sri@techladder.io","orderNumber":"BGC-20261031-401485","alreadyRedeemed":false}}
