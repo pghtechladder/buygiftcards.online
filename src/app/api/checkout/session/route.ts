@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { fulfillOrder } from "@/app/api/webhooks/stripe/route";
+import { fulfillOrder } from "@/lib/fulfill-order";
+import { writeTransactionLog } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
+  const apiUrl = req.nextUrl.toString();
   const sessionId = req.nextUrl.searchParams.get("session_id");
   if (!sessionId) return NextResponse.json({ error: "Missing session_id" }, { status: 400 });
+
+  writeTransactionLog({
+    phase: "PROCESS_START",
+    process: "Checkout.SessionCheck",
+    transactionId: sessionId,
+    method: "GET",
+    apiUrl,
+  });
 
   let order = await prisma.order.findUnique({
     where: { stripeCheckoutSessionId: sessionId },
@@ -17,7 +27,31 @@ export async function GET(req: NextRequest) {
   // `stripeCheckoutSessionId`.
   if (!order) {
     try {
+      const stripeRetrieveUrl = `https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`;
+      writeTransactionLog({
+        phase: "BEFORE_API_HIT",
+        process: "Stripe.RetrieveCheckoutSession",
+        transactionId: sessionId,
+        method: "GET",
+        apiUrl: stripeRetrieveUrl,
+      });
+      const start = Date.now();
       const session = await stripe.checkout.sessions.retrieve(sessionId);
+      writeTransactionLog({
+        phase: "AFTER_API_HIT",
+        process: "Stripe.RetrieveCheckoutSession",
+        transactionId: sessionId,
+        method: "GET",
+        apiUrl: stripeRetrieveUrl,
+        statusCode: 200,
+        durationMs: Date.now() - start,
+        responseBody: {
+          id: session.id,
+          payment_status: session.payment_status,
+          status: session.status,
+          amount_total: session.amount_total,
+        },
+      });
       if (session.payment_status === "paid") {
         await fulfillOrder(session);
         order = await prisma.order.findUnique({
@@ -27,9 +61,39 @@ export async function GET(req: NextRequest) {
       }
     } catch (err) {
       console.error(`[checkout/session] On-demand fulfillment check failed for ${sessionId}:`, err);
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Checkout.SessionCheck",
+        transactionId: sessionId,
+        method: "GET",
+        apiUrl,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }
 
-  if (!order) return NextResponse.json({ pending: true });
+  if (!order) {
+    writeTransactionLog({
+      phase: "PROCESS_COMPLETE",
+      process: "Checkout.SessionCheck",
+      transactionId: sessionId,
+      method: "GET",
+      apiUrl,
+      statusCode: 200,
+      responseBody: { pending: true },
+    });
+    return NextResponse.json({ pending: true });
+  }
+
+  writeTransactionLog({
+    phase: "PROCESS_COMPLETE",
+    process: "Checkout.SessionCheck",
+    transactionId: sessionId,
+    orderNumber: order.orderNumber,
+    method: "GET",
+    apiUrl,
+    statusCode: 200,
+    responseBody: { pending: false, order },
+  });
   return NextResponse.json({ pending: false, order });
 }

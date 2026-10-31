@@ -3,6 +3,7 @@ import { z } from "zod";
 import { stripe } from "@/lib/stripe";
 import { getBrand, isValidDenomination, chargeAmountCents } from "@/lib/brands";
 import { auth } from "@/lib/auth";
+import { writeTransactionLog } from "@/lib/logger";
 
 const CartItemSchema = z.object({
   brandSlug: z.string(),
@@ -26,17 +27,35 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const apiUrl = req.nextUrl.toString();
   try {
     // If the customer is signed in, we link the resulting order to their
     // account (and pre-fill their email at Stripe Checkout) — but guest
     // checkout (no session) keeps working exactly as before.
     const authSession = await auth();
-    const parsed = BodySchema.safeParse(await req.json());
+    const rawBody = await req.json();
+    writeTransactionLog({
+      phase: "PROCESS_START",
+      process: "Checkout.CreateSession",
+      method: "POST",
+      apiUrl,
+      requestPayload: rawBody,
+    });
+
+    const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Checkout.CreateSession",
+        method: "POST",
+        apiUrl,
+        statusCode: 400,
+        error: "Invalid cart payload",
+      });
       return NextResponse.json({ error: "Invalid cart payload" }, { status: 400 });
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin || "https://buygiftcards.online";
     const line_items: Array<{
       price_data: {
         currency: string;
@@ -97,6 +116,20 @@ export async function POST(req: NextRequest) {
       photoByLine.push(customPhotoUrl);
     }
 
+    const stripeUrl = "https://api.stripe.com/v1/checkout/sessions";
+    writeTransactionLog({
+      phase: "BEFORE_API_HIT",
+      process: "Stripe.CreateCheckoutSession",
+      method: "POST",
+      apiUrl: stripeUrl,
+      requestPayload: {
+        mode: "payment",
+        line_items,
+        idempotencyKey: parsed.data.idempotencyKey,
+      },
+    });
+    const stripeStart = Date.now();
+
     const session = await stripe.checkout.sessions.create(
       {
         mode: "payment",
@@ -128,10 +161,43 @@ export async function POST(req: NextRequest) {
       parsed.data.idempotencyKey ? { idempotencyKey: parsed.data.idempotencyKey } : undefined
     );
 
+    writeTransactionLog({
+      phase: "AFTER_API_HIT",
+      process: "Stripe.CreateCheckoutSession",
+      transactionId: session.id,
+      method: "POST",
+      apiUrl: stripeUrl,
+      statusCode: 200,
+      durationMs: Date.now() - stripeStart,
+      responseBody: {
+        sessionId: session.id,
+        url: session.url,
+        amountTotal: session.amount_total,
+      },
+    });
+
+    writeTransactionLog({
+      phase: "PROCESS_COMPLETE",
+      process: "Checkout.CreateSession",
+      transactionId: session.id,
+      method: "POST",
+      apiUrl,
+      statusCode: 200,
+      responseBody: { url: session.url },
+    });
+
     return NextResponse.json({ url: session.url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Checkout failed";
     console.error("[/api/checkout]", err);
+    writeTransactionLog({
+      phase: "PROCESS_ERROR",
+      process: "Checkout.CreateSession",
+      method: "POST",
+      apiUrl,
+      statusCode: 500,
+      error: message,
+    });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

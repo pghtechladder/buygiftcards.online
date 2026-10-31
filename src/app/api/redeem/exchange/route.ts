@@ -5,6 +5,7 @@ import { getBrand, HOUSE_BRAND_SLUGS } from "@/lib/brands";
 import { giftCardProvider } from "@/lib/giftcard-provider";
 import { generateDemoCode, generateDemoPin } from "@/lib/order";
 import { sendRedemptionConfirmationEmail } from "@/lib/email";
+import { writeTransactionLog } from "@/lib/logger";
 
 const SelectionSchema = z.object({
   brandSlug: z.string().min(1),
@@ -21,10 +22,32 @@ const ExchangeSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const apiUrl = req.nextUrl.toString();
   try {
     const body = await req.json();
+    writeTransactionLog({
+      phase: "PROCESS_START",
+      process: "Redeem.Exchange",
+      method: "POST",
+      apiUrl,
+      requestPayload: {
+        cardId: body?.cardId,
+        code: body?.code,
+        email: body?.email,
+        selections: body?.selections,
+      },
+    });
+
     const parsed = ExchangeSchema.safeParse(body);
     if (!parsed.success) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Exchange",
+        method: "POST",
+        apiUrl,
+        statusCode: 400,
+        error: "Invalid exchange payload",
+      });
       return NextResponse.json(
         { error: "Please select at least one merchant brand and provide a valid delivery email." },
         { status: 400 }
@@ -43,10 +66,27 @@ export async function POST(req: NextRequest) {
     });
 
     if (!sourceCard) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Exchange",
+        method: "POST",
+        apiUrl,
+        statusCode: 404,
+        error: "Source gift card not found",
+      });
       return NextResponse.json({ error: "Source gift card not found." }, { status: 404 });
     }
 
     if (sourceCard.pin.startsWith("REDEEMED")) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Exchange",
+        orderNumber: sourceCard.orderItem.order.orderNumber,
+        method: "POST",
+        apiUrl,
+        statusCode: 400,
+        error: "Source gift card already redeemed",
+      });
       return NextResponse.json(
         { error: "This gift card has already been redeemed." },
         { status: 400 }
@@ -54,6 +94,15 @@ export async function POST(req: NextRequest) {
     }
 
     if (sourceCard.pin && pin && sourceCard.pin !== pin.trim()) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Exchange",
+        orderNumber: sourceCard.orderItem.order.orderNumber,
+        method: "POST",
+        apiUrl,
+        statusCode: 403,
+        error: "Invalid PIN for source gift card",
+      });
       return NextResponse.json(
         { error: "Invalid PIN for this gift card." },
         { status: 403 }
@@ -101,6 +150,15 @@ export async function POST(req: NextRequest) {
 
     const availableBalanceCents = sourceCard.orderItem.denomCents;
     if (totalRequestedCents > availableBalanceCents) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Exchange",
+        orderNumber: sourceCard.orderItem.order.orderNumber,
+        method: "POST",
+        apiUrl,
+        statusCode: 400,
+        error: `Requested ${totalRequestedCents} cents exceeds available balance ${availableBalanceCents} cents`,
+      });
       return NextResponse.json(
         {
           error: `Selected brands total $${(totalRequestedCents / 100).toFixed(2)}, which exceeds your available card balance of $${(availableBalanceCents / 100).toFixed(2)}.`,
@@ -120,9 +178,22 @@ export async function POST(req: NextRequest) {
       isDemo: boolean;
     }[] = [];
 
-    // Issue each selected merchant gift card via giftCardProvider (Giftbit live direct_links for mapped brands)
+    // Issue each selected merchant gift card via giftCardProvider (Zendit API for mapped brands)
     for (const sel of validatedSelections) {
       for (let i = 0; i < sel.quantity; i++) {
+        writeTransactionLog({
+          phase: "PROCESS_STEP",
+          process: "Redeem.Exchange.IssueMerchantCard",
+          orderNumber: order.orderNumber,
+          details: {
+            brandSlug: sel.brandSlug,
+            brandName: sel.brandName,
+            amountCents: sel.amountCents,
+            unitIndex: i + 1,
+            quantity: sel.quantity,
+          },
+        });
+
         const issued = await giftCardProvider.issue({
           brandSlug: sel.brandSlug,
           amountCents: sel.amountCents,
@@ -190,6 +261,15 @@ export async function POST(req: NextRequest) {
         code: remCode,
         pin: remPin,
       };
+      writeTransactionLog({
+        phase: "PROCESS_STEP",
+        process: "Redeem.Exchange.RemainingBalanceVoucher",
+        orderNumber: order.orderNumber,
+        details: {
+          remainingCents,
+          remainingCode: remCode,
+        },
+      });
     }
 
     // Mark original card as REDEEMED so it cannot be double-spent
@@ -214,7 +294,7 @@ export async function POST(req: NextRequest) {
       remainingCard,
     });
 
-    return NextResponse.json({
+    const responsePayload = {
       success: true,
       orderNumber: order.orderNumber,
       email: email.trim(),
@@ -224,9 +304,29 @@ export async function POST(req: NextRequest) {
       sourceCardMasked: maskedSource,
       redeemedItems,
       remainingCard,
+    };
+
+    writeTransactionLog({
+      phase: "PROCESS_COMPLETE",
+      process: "Redeem.Exchange",
+      orderNumber: order.orderNumber,
+      method: "POST",
+      apiUrl,
+      statusCode: 200,
+      responseBody: responsePayload,
     });
+
+    return NextResponse.json(responsePayload);
   } catch (err) {
     console.error("[redeem/exchange] error:", err);
+    writeTransactionLog({
+      phase: "PROCESS_ERROR",
+      process: "Redeem.Exchange",
+      method: "POST",
+      apiUrl,
+      statusCode: 500,
+      error: err instanceof Error ? err.message : "Failed to complete gift card redemption.",
+    });
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Failed to complete gift card redemption." },
       { status: 500 }

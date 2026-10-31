@@ -1,0 +1,357 @@
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:13.390Z] [BEFORE_API_HIT] [TestSuite.Zendit.GetBalance]
+  API URL        : GET https://api.zendit.io/v1/balance
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:13.913Z] [AFTER_API_HIT] [TestSuite.Zendit.GetBalance]
+  API URL        : GET https://api.zendit.io/v1/balance
+  HTTP Status    : 200 (519 ms)
+  Response Body  : {"currency":"USD","currencyDivisor":100,"availableBalance":82080}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:13.916Z] [BEFORE_API_HIT] [TestSuite.Zendit.GetVoucherOffers]
+  API URL        : GET https://api.zendit.io/v1/vouchers/offers?country=US&_limit=1000&_offset=0
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:14.299Z] [AFTER_API_HIT] [TestSuite.Zendit.GetVoucherOffers]
+  API URL        : GET https://api.zendit.io/v1/vouchers/offers?country=US&_limit=1000&_offset=0
+  HTTP Status    : 200 (351 ms)
+  Response Body  : {"total":120,"limit":1000,"offset":0,"returnedOffersCount":120,"sampleOfferIds":["ALBERTSONS_US_10_EGIFT","ALBERTSONS_US_25_EGIFT","ALBERTSONS_US_50_EGIFT","ALBERTSONS_US_5_EGIFT","AUTOZONE_US_20_EGIFT","AUTOZONE_US_50_EGIFT","BURLINGTON_US_001_EGIFT","BURLINGTON_US_002_EGIFT","BURLINGTON_US_003_EGIFT","BURLINGTON_US_004_EGIFT"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:14.301Z] [PROCESS_START] [TestSuite.ZenditPurchase] [txId=bgc-test-1793394194301-qqwk08]
+  Details        : {"offerId":"SEPHORA_US_002_EGIFT","fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:14.302Z] [BEFORE_API_HIT] [TestSuite.Zendit.CreatePurchase] [txId=bgc-test-1793394194301-qqwk08]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"transactionId":"bgc-test-1793394194301-qqwk08","offerId":"SEPHORA_US_002_EGIFT","fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:14.409Z] [AFTER_API_HIT] [TestSuite.Zendit.CreatePurchase] [txId=bgc-test-1793394194301-qqwk08]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  HTTP Status    : 200 (105 ms)
+  Response Body  : {"transactionId":"bgc-test-1793394194301-qqwk08","status":"ACCEPTED"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:15.119Z] [BEFORE_API_HIT] [TestSuite.Zendit.PollPurchase[attempt=1]] [txId=bgc-test-1793394194301-qqwk08]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-test-1793394194301-qqwk08
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:15.189Z] [AFTER_API_HIT] [TestSuite.Zendit.PollPurchase[attempt=1]] [txId=bgc-test-1793394194301-qqwk08]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-test-1793394194301-qqwk08
+  HTTP Status    : 200 (69 ms)
+  Response Body  : {"transactionId":"bgc-test-1793394194301-qqwk08","offerId":"SEPHORA_US_002_EGIFT","status":"DONE","productType":"VOUCHER","cost":2396,"costBase":2396,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"FIXED","brand":"Sephora","brandName":"Sephora","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-30T21:03:14.61Z","updatedAt":"2026-10-30T21:03:15.415Z","log":[{"dateTime":"2026-10-30T21:03:14.61Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-30T21:03:14.651Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-30T21:03:14.756Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"},{"dateTime":"2026-10-30T21:03:15.415Z","status":"DONE","statusMessage":"Transaction completed"}],"fields":[],"receipt":{"deliveryType":"redemptionURL","confirmationNumber":"4543082140","send":2500,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"","redemptionUrl":"https://simulatedgiftcardvalue/HIopaeaPf2KXqlm","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"},"confirmation":{"confirmationNumber":"4543082140","externalReferenceId":"kPtb9rDmYxXb9vg","transactionTime":"1793394195000"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:15.191Z] [PROCESS_COMPLETE] [TestSuite.ZenditPurchase] [txId=bgc-test-1793394194301-qqwk08]
+  Details        : {"offerId":"SEPHORA_US_002_EGIFT","status":"DONE","send":2500,"receipt":{"deliveryType":"redemptionURL","confirmationNumber":"4543082140","send":2500,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"","redemptionUrl":"https://simulatedgiftcardvalue/HIopaeaPf2KXqlm","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:15.192Z] [PROCESS_START] [TestSuite.ZenditPurchase] [txId=bgc-test-1793394195192-k1zvw1]
+  Details        : {"offerId":"BURLINGTON_US_001_EGIFT","fields":[{"key":"recipient.firstName","value":"Valued"},{"key":"recipient.lastName","value":"Customer"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:15.193Z] [BEFORE_API_HIT] [TestSuite.Zendit.CreatePurchase] [txId=bgc-test-1793394195192-k1zvw1]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"transactionId":"bgc-test-1793394195192-k1zvw1","offerId":"BURLINGTON_US_001_EGIFT","fields":[{"key":"recipient.firstName","value":"Valued"},{"key":"recipient.lastName","value":"Customer"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:15.293Z] [AFTER_API_HIT] [TestSuite.Zendit.CreatePurchase] [txId=bgc-test-1793394195192-k1zvw1]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  HTTP Status    : 200 (98 ms)
+  Response Body  : {"transactionId":"bgc-test-1793394195192-k1zvw1","status":"ACCEPTED"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.003Z] [BEFORE_API_HIT] [TestSuite.Zendit.PollPurchase[attempt=1]] [txId=bgc-test-1793394195192-k1zvw1]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-test-1793394195192-k1zvw1
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.084Z] [AFTER_API_HIT] [TestSuite.Zendit.PollPurchase[attempt=1]] [txId=bgc-test-1793394195192-k1zvw1]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-test-1793394195192-k1zvw1
+  HTTP Status    : 200 (80 ms)
+  Response Body  : {"transactionId":"bgc-test-1793394195192-k1zvw1","offerId":"BURLINGTON_US_001_EGIFT","status":"DONE","productType":"VOUCHER","cost":2376,"costBase":2376,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"FIXED","brand":"Burlington","brandName":"Burlington","subTypes":["Clothing & Accessories"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-30T21:03:15.492Z","updatedAt":"2026-10-30T21:03:15.999Z","log":[{"dateTime":"2026-10-30T21:03:15.492Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-30T21:03:15.536Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-30T21:03:15.814Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"},{"dateTime":"2026-10-30T21:03:15.999Z","status":"DONE","statusMessage":"Transaction completed"}],"fields":[{"key":"recipient.lastName","value":"Customer"},{"key":"recipient.firstName","value":"Valued"}],"receipt":{"deliveryType":"redemptionURL","confirmationNumber":"8208370299","send":2500,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"","redemptionUrl":"https://simulatedgiftcardvalue/jTIjTzmGfX93KX7","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"},"confirmation":{"confirmationNumber":"8208370299","externalReferenceId":"cWftSOF6kQH0v5t","transactionTime":"1793394195907"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.086Z] [PROCESS_COMPLETE] [TestSuite.ZenditPurchase] [txId=bgc-test-1793394195192-k1zvw1]
+  Details        : {"offerId":"BURLINGTON_US_001_EGIFT","status":"DONE","send":2500,"receipt":{"deliveryType":"redemptionURL","confirmationNumber":"8208370299","send":2500,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"","redemptionUrl":"https://simulatedgiftcardvalue/jTIjTzmGfX93KX7","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.087Z] [PROCESS_START] [TestSuite.ZenditPurchase] [txId=bgc-test-1793394196087-akjfqq]
+  Details        : {"offerId":"DISNEY_US_OPEN","fields":[],"value":{"type":"ZEND","value":3000}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.088Z] [BEFORE_API_HIT] [TestSuite.Zendit.CreatePurchase] [txId=bgc-test-1793394196087-akjfqq]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"transactionId":"bgc-test-1793394196087-akjfqq","offerId":"DISNEY_US_OPEN","fields":[],"value":{"type":"ZEND","value":3000}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.194Z] [AFTER_API_HIT] [TestSuite.Zendit.CreatePurchase] [txId=bgc-test-1793394196087-akjfqq]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  HTTP Status    : 200 (105 ms)
+  Response Body  : {"transactionId":"bgc-test-1793394196087-akjfqq","status":"ACCEPTED"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.901Z] [BEFORE_API_HIT] [TestSuite.Zendit.PollPurchase[attempt=1]] [txId=bgc-test-1793394196087-akjfqq]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-test-1793394196087-akjfqq
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.964Z] [AFTER_API_HIT] [TestSuite.Zendit.PollPurchase[attempt=1]] [txId=bgc-test-1793394196087-akjfqq]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-test-1793394196087-akjfqq
+  HTTP Status    : 200 (61 ms)
+  Response Body  : {"transactionId":"bgc-test-1793394196087-akjfqq","offerId":"DISNEY_US_OPEN","status":"DONE","productType":"VOUCHER","cost":2964,"costBase":2964,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":3000,"priceBase":3000,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":3000,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"RANGE","value":{"type":"ZEND","value":3000},"brand":"Disney","brandName":"Disney","subTypes":["Gaming & Entertainment"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-30T21:03:16.388Z","updatedAt":"2026-10-30T21:03:16.754Z","log":[{"dateTime":"2026-10-30T21:03:16.388Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-30T21:03:16.434Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-30T21:03:16.647Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"},{"dateTime":"2026-10-30T21:03:16.754Z","status":"DONE","statusMessage":"Transaction completed"}],"fields":[],"receipt":{"deliveryType":"redemptionURL","confirmationNumber":"5324691796","send":3000,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"","redemptionUrl":"https://simulatedgiftcardvalue/kJ3qotOvEfTmAu2","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"},"confirmation":{"confirmationNumber":"5324691796","externalReferenceId":"lRJCkibonuAsUcI","transactionTime":"1793394196710"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:16.965Z] [PROCESS_COMPLETE] [TestSuite.ZenditPurchase] [txId=bgc-test-1793394196087-akjfqq]
+  Details        : {"offerId":"DISNEY_US_OPEN","status":"DONE","send":3000,"receipt":{"deliveryType":"redemptionURL","confirmationNumber":"5324691796","send":3000,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"","redemptionUrl":"https://simulatedgiftcardvalue/kJ3qotOvEfTmAu2","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:19.898Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"8888 2026 1225 0100","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:21.091Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261030-B927B9]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvve05ss000bdekuics3mpv3","code":"8888 2026 1225 0100","maskedCode":"•••• •••• •••• 0100","brandSlug":"buygiftcards","brandName":"BuyGiftCards.online Gift Card","balanceCents":10000,"customerEmail":"sri@techladder.io","orderNumber":"BGC-20261030-B927B9","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:21.654Z] [PROCESS_START] [Redeem.Exchange]
+  API URL        : POST http://localhost:3000/api/redeem/exchange
+  Request Body   : {"cardId":"cmvve05ss000bdekuics3mpv3","code":"8888 2026 1225 0100","email":"sri@techladder.io","selections":[{"brandSlug":"sephora","amountDollars":25,"quantity":1},{"brandSlug":"ultabeauty","amountDollars":25,"quantity":1}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:21.747Z] [PROCESS_STEP] [Redeem.Exchange.IssueMerchantCard] [order=BGC-20261030-B927B9]
+  Details        : {"brandSlug":"sephora","brandName":"Sephora","amountCents":2500,"unitIndex":1,"quantity":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:21.749Z] [PROCESS_START] [ZenditProvider.issue(sephora, $25)] [txId=bgc-1793394201749-ibop9fa]
+  Details        : {"brandSlug":"sephora","amountCents":2500,"offerId":"SEPHORA_US_002_EGIFT","priceType":"FIXED","requiredFields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:21.751Z] [BEFORE_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793394201749-ibop9fa]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"transactionId":"bgc-1793394201749-ibop9fa","offerId":"SEPHORA_US_002_EGIFT","fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:21.949Z] [AFTER_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793394201749-ibop9fa]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  HTTP Status    : 200 (194 ms)
+  Response Body  : {"transactionId":"bgc-1793394201749-ibop9fa","status":"ACCEPTED"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:21.952Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793394201749-ibop9fa]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793394201749-ibop9fa
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:22.079Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793394201749-ibop9fa]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793394201749-ibop9fa
+  HTTP Status    : 200 (125 ms)
+  Response Body  : {"transactionId":"bgc-1793394201749-ibop9fa","offerId":"SEPHORA_US_002_EGIFT","status":"IN_PROGRESS","productType":"VOUCHER","cost":2396,"costBase":2396,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"FIXED","brand":"Sephora","brandName":"Sephora","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-30T21:03:22.149Z","updatedAt":"2026-10-30T21:03:22.268Z","log":[{"dateTime":"2026-10-30T21:03:22.149Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-30T21:03:22.187Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-30T21:03:22.268Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"}],"fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:22.840Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #2)] [txId=bgc-1793394201749-ibop9fa]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793394201749-ibop9fa
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:22.916Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #2)] [txId=bgc-1793394201749-ibop9fa]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793394201749-ibop9fa
+  HTTP Status    : 200 (74 ms)
+  Response Body  : {"transactionId":"bgc-1793394201749-ibop9fa","offerId":"SEPHORA_US_002_EGIFT","status":"DONE","productType":"VOUCHER","cost":2396,"costBase":2396,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"FIXED","brand":"Sephora","brandName":"Sephora","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-30T21:03:22.149Z","updatedAt":"2026-10-30T21:03:22.568Z","log":[{"dateTime":"2026-10-30T21:03:22.149Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-30T21:03:22.187Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-30T21:03:22.268Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"},{"dateTime":"2026-10-30T21:03:22.568Z","status":"DONE","statusMessage":"Transaction completed"}],"fields":[],"receipt":{"deliveryType":"redemptionURL","confirmationNumber":"1099720386","send":2500,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"","redemptionUrl":"https://simulatedgiftcardvalue/vjzWru9PP0lsTdd","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"},"confirmation":{"confirmationNumber":"1099720386","externalReferenceId":"sF1bpgSTvxfx8jP","transactionTime":"1793394202489"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:22.917Z] [PROCESS_COMPLETE] [ZenditProvider.issue(sephora, $25)] [txId=bgc-1793394201749-ibop9fa]
+  Details        : {"brandSlug":"sephora","offerId":"SEPHORA_US_002_EGIFT","status":"DONE","costCents":2396,"sendCents":2500,"deliveryType":"redemptionURL","confirmationNumber":"1099720386","issuedCode":"https://simulatedgiftcardvalue/vjzWru9PP0lsTdd"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:23.149Z] [PROCESS_STEP] [Redeem.Exchange.IssueMerchantCard] [order=BGC-20261030-B927B9]
+  Details        : {"brandSlug":"ultabeauty","brandName":"Ulta Beauty","amountCents":2500,"unitIndex":1,"quantity":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:23.150Z] [PROCESS_START] [ZenditProvider.issue(ultabeauty, $25)] [txId=bgc-1793394203150-yq8thxt]
+  Details        : {"brandSlug":"ultabeauty","amountCents":2500,"offerId":"ULTA_US_OPEN","priceType":"RANGE","requiredFields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:23.152Z] [BEFORE_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793394203150-yq8thxt]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"transactionId":"bgc-1793394203150-yq8thxt","offerId":"ULTA_US_OPEN","fields":[],"value":{"type":"ZEND","value":2500}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:23.260Z] [AFTER_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793394203150-yq8thxt]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  HTTP Status    : 200 (106 ms)
+  Response Body  : {"transactionId":"bgc-1793394203150-yq8thxt","status":"ACCEPTED"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:23.262Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793394203150-yq8thxt]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793394203150-yq8thxt
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:23.336Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793394203150-yq8thxt]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793394203150-yq8thxt
+  HTTP Status    : 200 (72 ms)
+  Response Body  : {"transactionId":"bgc-1793394203150-yq8thxt","offerId":"ULTA_US_OPEN","status":"AUTHORIZED","productType":"VOUCHER","cost":2443,"costBase":2443,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"RANGE","value":{"type":"ZEND","value":2500},"brand":"Ulta","brandName":"Ulta","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-30T21:03:23.463Z","updatedAt":"2026-10-30T21:03:23.502Z","log":[{"dateTime":"2026-10-30T21:03:23.463Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-30T21:03:23.502Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"}],"fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:24.097Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #2)] [txId=bgc-1793394203150-yq8thxt]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793394203150-yq8thxt
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:24.161Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #2)] [txId=bgc-1793394203150-yq8thxt]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793394203150-yq8thxt
+  HTTP Status    : 200 (61 ms)
+  Response Body  : {"transactionId":"bgc-1793394203150-yq8thxt","offerId":"ULTA_US_OPEN","status":"DONE","productType":"VOUCHER","cost":2443,"costBase":2443,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"RANGE","value":{"type":"ZEND","value":2500},"brand":"Ulta","brandName":"Ulta","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-30T21:03:23.463Z","updatedAt":"2026-10-30T21:03:23.648Z","log":[{"dateTime":"2026-10-30T21:03:23.463Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-30T21:03:23.502Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-30T21:03:23.576Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"},{"dateTime":"2026-10-30T21:03:23.648Z","status":"DONE","statusMessage":"Transaction completed"}],"fields":[],"receipt":{"deliveryType":"voucher","confirmationNumber":"0295185035","send":2500,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"VoMat1ifqzjx2P2","redemptionUrl":"","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"},"confirmation":{"confirmationNumber":"0295185035","externalReferenceId":"MHAXI1tDJaLOWuK","transactionTime":"1793394203620"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:24.163Z] [PROCESS_COMPLETE] [ZenditProvider.issue(ultabeauty, $25)] [txId=bgc-1793394203150-yq8thxt]
+  Details        : {"brandSlug":"ultabeauty","offerId":"ULTA_US_OPEN","status":"DONE","costCents":2443,"sendCents":2500,"deliveryType":"voucher","confirmationNumber":"0295185035","issuedCode":"VoMat1ifqzjx2P2"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:24.819Z] [PROCESS_STEP] [Redeem.Exchange.RemainingBalanceVoucher] [order=BGC-20261030-B927B9]
+  Details        : {"remainingCents":5000,"remainingCode":"1053 7607 0633 7269"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:24.871Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"sri@techladder.io","subject":"Your redeemed eGift cards from buygiftcards.online (BGC-20261030-B927B9)","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:26.924Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  HTTP Status    : 250 (2052 ms)
+  Response Body  : {"messageId":"<e23e855b-9aa3-15c0-1b8a-5a9c5f7cd205@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["sri@techladder.io"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:26.926Z] [PROCESS_COMPLETE] [Redeem.Exchange] [order=BGC-20261030-B927B9]
+  API URL        : POST http://localhost:3000/api/redeem/exchange
+  HTTP Status    : 200
+  Response Body  : {"success":true,"orderNumber":"BGC-20261030-B927B9","email":"sri@techladder.io","emailSent":true,"sourceBrandName":"BuyGiftCards.online Gift Card","sourceCardMasked":"•••• •••• •••• 0100","redeemedItems":[{"id":"cmvvglr8p000gdekuv7mwpjzg","brandSlug":"sephora","brandName":"Sephora","amountCents":2500,"code":"https://simulatedgiftcardvalue/vjzWru9PP0lsTdd","pin":"","isDemo":false},{"id":"cmvvgls79000jdeku8u2q5iv1","brandSlug":"ultabeauty","brandName":"Ulta Beauty","amountCents":2500,"code":"VoMat1ifqzjx2P2","pin":"","isDemo":false}],"remainingCard":{"amountCents":5000,"code":"1053 7607 0633 7269","pin":"87537199"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:27.025Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"8888 2026 1225 0100","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-30T21:03:27.401Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261030-DDCB30]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvvgluh0000pdeku7ih9vjd5","code":"8888 2026 1225 0100","maskedCode":"•••• •••• •••• 0100","brandSlug":"buygiftcards","brandName":"BuyGiftCards.online Gift Card","balanceCents":10000,"customerEmail":"sri@techladder.io","orderNumber":"BGC-20261030-DDCB30","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T02:53:45.432Z] [PROCESS_START] [Checkout.CreateSession]
+  API URL        : POST http://localhost:3000/api/checkout
+  Request Body   : {"idempotencyKey":"8858db44-2152-45f0-8eb4-8e61cf7c854c","items":[{"brandSlug":"buygiftcards","amount":25,"qty":1,"deliveryType":"egift"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T02:53:45.435Z] [BEFORE_API_HIT] [Stripe.CreateCheckoutSession]
+  API URL        : POST https://api.stripe.com/v1/checkout/sessions
+  Request Body   : {"mode":"payment","line_items":[{"price_data":{"currency":"usd","product_data":{"name":"BuyGiftCards.online Gift Card eGift Card — $25 (5% off)","metadata":{"brandSlug":"buygiftcards","amount":"25","deliveryType":"egift"}},"unit_amount":2375},"quantity":1}],"idempotencyKey":"8858db44-2152-45f0-8eb4-8e61cf7c854c"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T02:53:46.038Z] [AFTER_API_HIT] [Stripe.CreateCheckoutSession] [txId=cs_test_a1TYr4JGXN9XWVTnzNqqi9t8ka26tl8rcfLmDzcavTSQyKkwEC8VKaLxML]
+  API URL        : POST https://api.stripe.com/v1/checkout/sessions
+  HTTP Status    : 200 (602 ms)
+  Response Body  : {"sessionId":"cs_test_a1TYr4JGXN9XWVTnzNqqi9t8ka26tl8rcfLmDzcavTSQyKkwEC8VKaLxML","url":"https://checkout.stripe.com/c/pay/cs_test_a1TYr4JGXN9XWVTnzNqqi9t8ka26tl8rcfLmDzcavTSQyKkwEC8VKaLxML#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicyc%2FNSknZHVsTmB8Jz8ndW5acWB2cVowNFA8cE08QFBuM25qQWAzSEhASDdsNFV%2FMFNWZE1kYXBVS21wXUZscmIxQ0o3d0x3cnBVZnNqR1NiNGN1UGF9VHRcNXc2XTdIX0dXX2JwPUdNUkpCUTxicjU1Xz12VmFETz0nKSdjd2poVmB3c2B3Jz9xd3BgKSdnZGZuYndqcGthRmppancnPycmY2NjY2NjJyknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl","amountTotal":2375}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T02:53:46.039Z] [PROCESS_COMPLETE] [Checkout.CreateSession] [txId=cs_test_a1TYr4JGXN9XWVTnzNqqi9t8ka26tl8rcfLmDzcavTSQyKkwEC8VKaLxML]
+  API URL        : POST http://localhost:3000/api/checkout
+  HTTP Status    : 200
+  Response Body  : {"url":"https://checkout.stripe.com/c/pay/cs_test_a1TYr4JGXN9XWVTnzNqqi9t8ka26tl8rcfLmDzcavTSQyKkwEC8VKaLxML#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicyc%2FNSknZHVsTmB8Jz8ndW5acWB2cVowNFA8cE08QFBuM25qQWAzSEhASDdsNFV%2FMFNWZE1kYXBVS21wXUZscmIxQ0o3d0x3cnBVZnNqR1NiNGN1UGF9VHRcNXc2XTdIX0dXX2JwPUdNUkpCUTxicjU1Xz12VmFETz0nKSdjd2poVmB3c2B3Jz9xd3BgKSdnZGZuYndqcGthRmppancnPycmY2NjY2NjJyknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:05:47.245Z] [PROCESS_START] [Checkout.CreateSession]
+  API URL        : POST http://localhost:3000/api/checkout
+  Request Body   : {"idempotencyKey":"6e240945-ea85-45ba-ad5d-3dde162df332","items":[{"brandSlug":"amazon","amount":25,"qty":1,"deliveryType":"egift","deliveryDate":"2026-10-31"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:05:47.252Z] [BEFORE_API_HIT] [Stripe.CreateCheckoutSession]
+  API URL        : POST https://api.stripe.com/v1/checkout/sessions
+  Request Body   : {"mode":"payment","line_items":[{"price_data":{"currency":"usd","product_data":{"name":"Amazon eGift Card — $25","metadata":{"brandSlug":"amazon","amount":"25","deliveryType":"egift"}},"unit_amount":2500},"quantity":1}],"idempotencyKey":"6e240945-ea85-45ba-ad5d-3dde162df332"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:05:47.821Z] [AFTER_API_HIT] [Stripe.CreateCheckoutSession] [txId=cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A]
+  API URL        : POST https://api.stripe.com/v1/checkout/sessions
+  HTTP Status    : 200 (567 ms)
+  Response Body  : {"sessionId":"cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A","url":"https://checkout.stripe.com/c/pay/cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicyc%2FNSknZHVsTmB8Jz8ndW5acWB2cVowNFA8cE08QFBuM25qQWAzSEhASDdsNFV%2FMFNWZE1kYXBVS21wXUZscmIxQ0o3d0x3cnBVZnNqR1NiNGN1UGF9VHRcNXc2XTdIX0dXX2JwPUdNUkpCUTxicjU1Xz12VmFETz0nKSdjd2poVmB3c2B3Jz9xd3BgKSdnZGZuYndqcGthRmppancnPycmY2NjY2NjJyknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl","amountTotal":2500}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:05:47.823Z] [PROCESS_COMPLETE] [Checkout.CreateSession] [txId=cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A]
+  API URL        : POST http://localhost:3000/api/checkout
+  HTTP Status    : 200
+  Response Body  : {"url":"https://checkout.stripe.com/c/pay/cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicyc%2FNSknZHVsTmB8Jz8ndW5acWB2cVowNFA8cE08QFBuM25qQWAzSEhASDdsNFV%2FMFNWZE1kYXBVS21wXUZscmIxQ0o3d0x3cnBVZnNqR1NiNGN1UGF9VHRcNXc2XTdIX0dXX2JwPUdNUkpCUTxicjU1Xz12VmFETz0nKSdjd2poVmB3c2B3Jz9xd3BgKSdnZGZuYndqcGthRmppancnPycmY2NjY2NjJyknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:09:56.293Z] [PROCESS_START] [Checkout.SessionCheck] [txId=cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A]
+  API URL        : GET http://localhost:3000/api/checkout/session?session_id=cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:09:56.627Z] [PROCESS_COMPLETE] [Checkout.SessionCheck] [txId=cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A] [order=BGC-20261031-401485]
+  API URL        : GET http://localhost:3000/api/checkout/session?session_id=cs_test_a1rPyOcp5Gb4BgpNb3VC2kZrgjM2XgfYW3dvM0KrmB8MQmh6nuHWcfHS3A
+  HTTP Status    : 200
+  Response Body  : {"pending":false,"order":{"orderNumber":"BGC-20261031-401485","customerEmail":"sri@techladder.io","status":"FULFILLED"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:00.620Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-401485","email":"sri@techladder.io"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:00.623Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-401485","email":"sri@techladder.io"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:00.750Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-401485]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:00.969Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-401485]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:16.515Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"1996 6741 2638 9035","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:16.519Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"1996 6741 2638 9035","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:16.776Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261031-401485]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvvvu7fi00042ulti3aqx9fy","code":"1996 6741 2638 9035","maskedCode":"•••• •••• •••• 9035","brandSlug":"amazon","brandName":"Amazon","balanceCents":2500,"customerEmail":"sri@techladder.io","orderNumber":"BGC-20261031-401485","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:16.781Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261031-401485]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvvvu7fi00042ulti3aqx9fy","code":"1996 6741 2638 9035","maskedCode":"•••• •••• •••• 9035","brandSlug":"amazon","brandName":"Amazon","balanceCents":2500,"customerEmail":"sri@techladder.io","orderNumber":"BGC-20261031-401485","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:45.367Z] [PROCESS_START] [Redeem.Exchange]
+  API URL        : POST http://localhost:3000/api/redeem/exchange
+  Request Body   : {"cardId":"cmvvvu7fi00042ulti3aqx9fy","code":"1996 6741 2638 9035","email":"sri@techladder.io","selections":[{"brandSlug":"amazon","amountDollars":20,"quantity":1}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:45.728Z] [PROCESS_STEP] [Redeem.Exchange.IssueMerchantCard] [order=BGC-20261031-401485]
+  Details        : {"brandSlug":"amazon","brandName":"Amazon","amountCents":2000,"unitIndex":1,"quantity":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:45.730Z] [PROCESS_COMPLETE] [DemoGiftCardProvider.issue]
+  Details        : {"brandSlug":"amazon","amountCents":2000,"isDemo":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:46.000Z] [PROCESS_STEP] [Redeem.Exchange.RemainingBalanceVoucher] [order=BGC-20261031-401485]
+  Details        : {"remainingCents":500,"remainingCode":"6846 0956 3098 3375"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:46.046Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"sri@techladder.io","subject":"Your redeemed eGift cards from buygiftcards.online (BGC-20261031-401485)","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:48.632Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  HTTP Status    : 250 (2585 ms)
+  Response Body  : {"messageId":"<6668e5cf-63a4-f43a-9f49-1752988ced8c@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["sri@techladder.io"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:10:48.634Z] [PROCESS_COMPLETE] [Redeem.Exchange] [order=BGC-20261031-401485]
+  API URL        : POST http://localhost:3000/api/redeem/exchange
+  HTTP Status    : 200
+  Response Body  : {"success":true,"orderNumber":"BGC-20261031-401485","email":"sri@techladder.io","emailSent":true,"sourceBrandName":"Amazon","sourceCardMasked":"•••• •••• •••• 9035","redeemedItems":[{"id":"cmvvvvdd1000sdekujly1kxf8","brandSlug":"amazon","brandName":"Amazon","amountCents":2000,"code":"2197 9587 4066 6205","pin":"93093939","isDemo":true}],"remainingCard":{"amountCents":500,"code":"6846 0956 3098 3375","pin":"55266143"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:26:02.908Z] [PROCESS_START] [Checkout.CreateSession]
+  API URL        : POST http://localhost:3000/api/checkout
+  Request Body   : {"idempotencyKey":"a36572dd-3a9c-411c-b84d-499f6e644bd4","items":[{"brandSlug":"starbucks","amount":10,"qty":1,"deliveryType":"egift","deliveryDate":"2026-10-31"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:26:02.911Z] [BEFORE_API_HIT] [Stripe.CreateCheckoutSession]
+  API URL        : POST https://api.stripe.com/v1/checkout/sessions
+  Request Body   : {"mode":"payment","line_items":[{"price_data":{"currency":"usd","product_data":{"name":"Starbucks eGift Card — $10 (5% off)","metadata":{"brandSlug":"starbucks","amount":"10","deliveryType":"egift"}},"unit_amount":950},"quantity":1}],"idempotencyKey":"a36572dd-3a9c-411c-b84d-499f6e644bd4"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:26:03.457Z] [AFTER_API_HIT] [Stripe.CreateCheckoutSession] [txId=cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D]
+  API URL        : POST https://api.stripe.com/v1/checkout/sessions
+  HTTP Status    : 200 (545 ms)
+  Response Body  : {"sessionId":"cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D","url":"https://checkout.stripe.com/c/pay/cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicyc%2FNSknZHVsTmB8Jz8ndW5acWB2cVowNFA8cE08QFBuM25qQWAzSEhASDdsNFV%2FMFNWZE1kYXBVS21wXUZscmIxQ0o3d0x3cnBVZnNqR1NiNGN1UGF9VHRcNXc2XTdIX0dXX2JwPUdNUkpCUTxicjU1Xz12VmFETz0nKSdjd2poVmB3c2B3Jz9xd3BgKSdnZGZuYndqcGthRmppancnPycmY2NjY2NjJyknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl","amountTotal":950}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:26:03.459Z] [PROCESS_COMPLETE] [Checkout.CreateSession] [txId=cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D]
+  API URL        : POST http://localhost:3000/api/checkout
+  HTTP Status    : 200
+  Response Body  : {"url":"https://checkout.stripe.com/c/pay/cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicyc%2FNSknZHVsTmB8Jz8ndW5acWB2cVowNFA8cE08QFBuM25qQWAzSEhASDdsNFV%2FMFNWZE1kYXBVS21wXUZscmIxQ0o3d0x3cnBVZnNqR1NiNGN1UGF9VHRcNXc2XTdIX0dXX2JwPUdNUkpCUTxicjU1Xz12VmFETz0nKSdjd2poVmB3c2B3Jz9xd3BgKSdnZGZuYndqcGthRmppancnPycmY2NjY2NjJyknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:37:40.347Z] [PROCESS_START] [Checkout.SessionCheck] [txId=cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D]
+  API URL        : GET http://localhost:3000/api/checkout/session?session_id=cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:37:40.684Z] [PROCESS_COMPLETE] [Checkout.SessionCheck] [txId=cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D] [order=BGC-20261031-1A65E2]
+  API URL        : GET http://localhost:3000/api/checkout/session?session_id=cs_test_a1uyjbc2SSdpLp0b712EIRX8OtTOyRMCSMN0j1EkXGYoYX9bpwJU1fs88D
+  HTTP Status    : 200
+  Response Body  : {"pending":false,"order":{"orderNumber":"BGC-20261031-1A65E2","customerEmail":"sri@techladder.io","status":"PAID"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:37:43.083Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-1A65E2","email":"sri@techladder.io"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:37:43.086Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-1A65E2","email":"sri@techladder.io"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:37:43.245Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-1A65E2]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"PAID","itemCount":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T04:37:43.460Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-1A65E2]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"PAID","itemCount":1}

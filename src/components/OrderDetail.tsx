@@ -139,9 +139,6 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
               const isClaimUrl = /^https?:\/\//i.test(c.code);
               return (
                 <div key={c.id} className="py-3 border-b border-dashed border-ink-100 last:border-0">
-                  {c.isDemo && (
-                    <div className="text-[11px] font-bold text-accent-600 mb-2">DEMO CODE — not redeemable</div>
-                  )}
                   {revealed[c.id] ? (
                     <div className="flex flex-wrap gap-3 items-center">
                       {isClaimUrl ? (

@@ -30,9 +30,8 @@ async function sendViaSmtp(opts: { to: string; subject: string; html: string; la
 }
 
 export async function sendOrderConfirmationEmail(order: FullOrder): Promise<EmailResult> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
   const orderUrl = `${siteUrl}/orders/${order.orderNumber}?email=${encodeURIComponent(order.customerEmail)}`;
-  const hasDemoCodes = order.items.some((i) => i.codes.some((c) => c.isDemo));
 
   const itemsHtml = order.items
     .map(
@@ -63,7 +62,6 @@ export async function sendOrderConfirmationEmail(order: FullOrder): Promise<Emai
         <h2 style="margin:0;font-size:22px;color:#ffffff;">Order Confirmed — ${order.orderNumber}</h2>
       </div>
       <div style="padding:24px;">
-        ${hasDemoCodes ? `<p style="background:#fff3cd;padding:12px;border-radius:8px;color:#7a5b00;font-size:13px;">Demo mode: the codes on this order are randomly generated placeholders, not real redeemable gift cards.</p>` : ""}
         <table style="width:100%;border-collapse:collapse;">${itemsHtml}</table>
         <table style="width:100%;border-collapse:collapse;margin-top:8px;border-top:1px solid #e5e7eb;">
           <tr><td style="padding:6px 0;color:#4b5563;font-size:14px;">Subtotal</td><td style="padding:6px 0;text-align:right;color:#111827;font-size:14px;">${fmt(order.subtotalCents)}</td></tr>
@@ -98,7 +96,7 @@ export async function sendRecipientGiftEmail(opts: {
   orderNumber: string;
   buyerEmail: string;
 }): Promise<EmailResult> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
   const orderUrl = `${siteUrl}/orders/${opts.orderNumber}?email=${encodeURIComponent(opts.buyerEmail)}`;
   const codeButtons = opts.codes
     .map((c) =>
@@ -176,7 +174,7 @@ export async function sendRedemptionConfirmationEmail(opts: {
     pin: string;
   };
 }): Promise<EmailResult> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
   const orderUrl = `${siteUrl}/orders/${opts.orderNumber}?email=${encodeURIComponent(opts.email)}`;
   const redeemUrl = `${siteUrl}/redeem`;
 

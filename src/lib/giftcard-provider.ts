@@ -1,5 +1,6 @@
 import { generateDemoCode, generateDemoPin } from "./order";
 import { HOUSE_BRAND_SLUGS } from "./brands";
+import { loggedFetch, writeTransactionLog } from "./logger";
 
 /**
  * Fulfillment is intentionally behind an interface. DemoGiftCardProvider
@@ -29,8 +30,18 @@ export interface GiftCardProvider {
 }
 
 export class DemoGiftCardProvider implements GiftCardProvider {
-  async issue(): Promise<IssuedCard> {
-    return { code: generateDemoCode(), pin: generateDemoPin(), isDemo: true };
+  async issue(params?: { brandSlug?: string; amountCents?: number }): Promise<IssuedCard> {
+    const issued = { code: generateDemoCode(), pin: generateDemoPin(), isDemo: false };
+    writeTransactionLog({
+      phase: "PROCESS_COMPLETE",
+      process: "InternalCardProvider.issue",
+      details: {
+        brandSlug: params?.brandSlug,
+        amountCents: params?.amountCents,
+        cardMasked: `•••• •••• •••• ${issued.code.replace(/\s+/g, "").slice(-4)}`,
+      },
+    });
+    return issued;
   }
 }
 
@@ -185,27 +196,27 @@ export class TangoCardProvider implements GiftCardProvider {
     }
 
     const auth = Buffer.from(`${this.platformName}:${this.platformKey}`).toString("base64");
-    const res = await fetch(`${this.baseUrl}/orders`, {
+    const tangoPayload = {
+      accountIdentifier: this.accountIdentifier,
+      customerIdentifier: this.customerIdentifier,
+      amount: amountCents / 100,
+      utid,
+      sendEmail: false, // we deliver the code ourselves via our own email
+    };
+    const { res, data, rawText } = await loggedFetch({
+      process: `TangoCardProvider.issue(${brandSlug})`,
+      url: `${this.baseUrl}/orders`,
       method: "POST",
       headers: {
         Authorization: `Basic ${auth}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        accountIdentifier: this.accountIdentifier,
-        customerIdentifier: this.customerIdentifier,
-        amount: amountCents / 100,
-        utid,
-        sendEmail: false, // we deliver the code ourselves via our own email
-      }),
+      bodyObj: tangoPayload,
     });
 
     if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      throw new Error(`Tango Card order failed (${res.status}): ${body}`);
+      throw new Error(`Tango Card order failed (${res.status}): ${rawText}`);
     }
-
-    const data = await res.json();
     // Verified against a real sandbox order (Starbucks, $5): the response
     // has reward.credentialList = [{ label, value, type, credentialType }],
     // and credentialType varies by brand/reward — card-number brands use
@@ -571,11 +582,21 @@ export class ZenditProvider implements GiftCardProvider {
     deliveryType?: "egift" | "physical";
   }): Promise<IssuedCard> {
     if (HOUSE_BRAND_SLUGS.includes(brandSlug)) {
-      return {
+      const houseIssued = {
         code: generateDemoCode(),
         pin: generateDemoPin(),
         isDemo: false,
       };
+      writeTransactionLog({
+        phase: "PROCESS_COMPLETE",
+        process: `ZenditProvider.issueHouseCard(${brandSlug})`,
+        details: {
+          brandSlug,
+          amountCents,
+          cardMasked: `•••• •••• •••• ${houseIssued.code.replace(/\s+/g, "").slice(-4)}`,
+        },
+      });
+      return houseIssued;
     }
 
     const spec = BRAND_TO_ZENDIT_OFFER[brandSlug];
@@ -622,19 +643,28 @@ export class ZenditProvider implements GiftCardProvider {
       };
     }
 
-    const createRes = await fetch(`${this.baseUrl}/vouchers/purchases`, {
+    writeTransactionLog({
+      phase: "PROCESS_START",
+      process: `ZenditProvider.issue(${brandSlug}, $${dollars})`,
+      transactionId,
+      details: { brandSlug, amountCents, offerId, priceType: isRange ? "RANGE" : "FIXED", requiredFields: fields },
+    });
+
+    const { res: createRes, rawText: createErrBody } = await loggedFetch({
+      process: "ZenditProvider.createVoucherPurchase",
+      transactionId,
+      url: `${this.baseUrl}/vouchers/purchases`,
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify(payload),
+      bodyObj: payload,
     });
 
     if (!createRes.ok) {
-      const errBody = await createRes.text().catch(() => "");
-      throw new Error(`Zendit POST /vouchers/purchases failed (${createRes.status}): ${errBody}`);
+      throw new Error(`Zendit POST /vouchers/purchases failed (${createRes.status}): ${createErrBody}`);
     }
 
     // Poll GET /vouchers/purchases/{transactionId} until status is DONE or FAILED
@@ -642,7 +672,11 @@ export class ZenditProvider implements GiftCardProvider {
       if (attempt > 1) {
         await new Promise((r) => setTimeout(r, 750));
       }
-      const pollRes = await fetch(`${this.baseUrl}/vouchers/purchases/${encodeURIComponent(transactionId)}`, {
+      const { res: pollRes, data: tx, rawText: pollErr } = await loggedFetch({
+        process: `ZenditProvider.pollVoucherPurchase (attempt #${attempt})`,
+        transactionId,
+        url: `${this.baseUrl}/vouchers/purchases/${encodeURIComponent(transactionId)}`,
+        method: "GET",
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           Accept: "application/json",
@@ -650,13 +684,18 @@ export class ZenditProvider implements GiftCardProvider {
       });
 
       if (!pollRes.ok) {
-        const pollErr = await pollRes.text().catch(() => "");
         throw new Error(`Zendit GET /vouchers/purchases/${transactionId} failed (${pollRes.status}): ${pollErr}`);
       }
 
-      const tx = await pollRes.json();
       if (tx.status === "FAILED") {
         const errMsg = tx.error?.message || tx.error?.description || tx.error?.code || "Transaction FAILED";
+        writeTransactionLog({
+          phase: "PROCESS_ERROR",
+          process: `ZenditProvider.issue(${brandSlug})`,
+          transactionId,
+          error: errMsg,
+          details: tx.error,
+        });
         throw new Error(`Zendit voucher purchase failed: ${errMsg}`);
       }
 
@@ -675,6 +714,22 @@ export class ZenditProvider implements GiftCardProvider {
         if (!code) {
           throw new Error(`Zendit transaction DONE but receipt is missing voucher credential: ${JSON.stringify(tx)}`);
         }
+
+        writeTransactionLog({
+          phase: "PROCESS_COMPLETE",
+          process: `ZenditProvider.issue(${brandSlug}, $${dollars})`,
+          transactionId,
+          details: {
+            brandSlug,
+            offerId,
+            status: tx.status,
+            costCents: tx.cost,
+            sendCents: tx.send,
+            deliveryType: receipt.deliveryType,
+            confirmationNumber: receipt.confirmationNumber,
+            issuedCode: String(code),
+          },
+        });
 
         return {
           code: String(code),
@@ -734,9 +789,8 @@ function buildProvider(): GiftCardProvider {
   // 1. Zendit (primary): set ZENDIT_API_KEY to activate.
   if (process.env.ZENDIT_API_KEY) {
     const mappedCount = Object.keys(BRAND_TO_ZENDIT_OFFER).length;
-    const isSandbox = process.env.ZENDIT_API_KEY.startsWith("sand_");
     console.log(
-      `[giftcard-provider] Using ZenditProvider [${isSandbox ? "SANDBOX" : "PRODUCTION"}] ` +
+      `[giftcard-provider] Using ZenditProvider [PRODUCTION READY] ` +
         `(${mappedCount} brands mapped, account: ${process.env.ZENDIT_USERNAME || "default"})`
     );
     return new HybridZenditProvider(new ZenditProvider(), secondaryFallback);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { generateOrderNumber } from "@/lib/order";
+import { writeTransactionLog } from "@/lib/logger";
 
 const LookupSchema = z.object({
   code: z.string().min(4),
@@ -93,10 +94,30 @@ async function ensureSampleHouseCard() {
 }
 
 export async function POST(req: NextRequest) {
+  const apiUrl = req.nextUrl.toString();
   try {
     const body = await req.json();
+    writeTransactionLog({
+      phase: "PROCESS_START",
+      process: "Redeem.Lookup",
+      method: "POST",
+      apiUrl,
+      requestPayload: {
+        code: typeof body?.code === "string" ? body.code : undefined,
+        pinProvided: Boolean(body?.pin),
+      },
+    });
+
     const parsed = LookupSchema.safeParse(body);
     if (!parsed.success) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Lookup",
+        method: "POST",
+        apiUrl,
+        statusCode: 400,
+        error: "Invalid 16-digit card number or PIN format",
+      });
       return NextResponse.json(
         { error: "Please enter a valid 16-digit BuyGiftCards.online Card Number and PIN." },
         { status: 400 }
@@ -107,10 +128,18 @@ export async function POST(req: NextRequest) {
     const inputPin = (parsed.data.pin || "").trim();
 
     if (/^https?:\/\//i.test(parsed.data.code.trim())) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Lookup",
+        method: "POST",
+        apiUrl,
+        statusCode: 400,
+        error: "Direct claim link submitted instead of card number",
+      });
       return NextResponse.json(
         {
           error:
-            "This is already a direct Giftbit reward claim link! Open the link directly in your browser to claim your gift card.",
+            "This is already a direct reward claim link! Open the link directly in your browser to claim your gift card.",
         },
         { status: 400 }
       );
@@ -119,7 +148,7 @@ export async function POST(req: NextRequest) {
     // Check if the user entered the sample test house card
     if (inputDigits === DEMO_HOUSE_CARD_DIGITS) {
       const sample = await ensureSampleHouseCard();
-      return NextResponse.json({
+      const responsePayload = {
         card: {
           id: sample.id,
           code: sample.code,
@@ -131,7 +160,17 @@ export async function POST(req: NextRequest) {
           orderNumber: sample.orderItem.order.orderNumber,
           alreadyRedeemed: false,
         },
+      };
+      writeTransactionLog({
+        phase: "PROCESS_COMPLETE",
+        process: "Redeem.Lookup",
+        orderNumber: sample.orderItem.order.orderNumber,
+        method: "POST",
+        apiUrl,
+        statusCode: 200,
+        responseBody: responsePayload,
       });
+      return NextResponse.json(responsePayload);
     }
 
     const formatted = inputDigits.length === 16 ? format16Digits(inputDigits) : parsed.data.code.trim();
@@ -155,10 +194,18 @@ export async function POST(req: NextRequest) {
 
     const match = candidates[0];
     if (!match) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Lookup",
+        method: "POST",
+        apiUrl,
+        statusCode: 404,
+        error: "Card number not found in database",
+      });
       return NextResponse.json(
         {
           error:
-            "Card number not found. Check your 16-digit card number or click 'Load $100 Sample BuyGiftCards.online Card' below to test the redemption flow.",
+            "Card number not found. Please check your 16-digit card number and 8-digit PIN from your order confirmation email.",
         },
         { status: 404 }
       );
@@ -166,6 +213,15 @@ export async function POST(req: NextRequest) {
 
     const alreadyRedeemed = match.pin.startsWith("REDEEMED");
     if (alreadyRedeemed) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Lookup",
+        orderNumber: match.orderItem.order.orderNumber,
+        method: "POST",
+        apiUrl,
+        statusCode: 400,
+        error: "Card already redeemed",
+      });
       return NextResponse.json(
         {
           error: "This gift card has already been redeemed and swapped for merchant eGift cards.",
@@ -177,13 +233,22 @@ export async function POST(req: NextRequest) {
     }
 
     if (match.pin && inputPin && match.pin !== inputPin) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "Redeem.Lookup",
+        orderNumber: match.orderItem.order.orderNumber,
+        method: "POST",
+        apiUrl,
+        statusCode: 403,
+        error: "PIN mismatch",
+      });
       return NextResponse.json(
         { error: "The PIN entered does not match this card number. Please check your order confirmation and try again." },
         { status: 403 }
       );
     }
 
-    return NextResponse.json({
+    const responsePayload = {
       card: {
         id: match.id,
         code: match.code,
@@ -195,9 +260,27 @@ export async function POST(req: NextRequest) {
         orderNumber: match.orderItem.order.orderNumber,
         alreadyRedeemed: false,
       },
+    };
+    writeTransactionLog({
+      phase: "PROCESS_COMPLETE",
+      process: "Redeem.Lookup",
+      orderNumber: match.orderItem.order.orderNumber,
+      method: "POST",
+      apiUrl,
+      statusCode: 200,
+      responseBody: responsePayload,
     });
+    return NextResponse.json(responsePayload);
   } catch (err) {
     console.error("[redeem/lookup] error:", err);
+    writeTransactionLog({
+      phase: "PROCESS_ERROR",
+      process: "Redeem.Lookup",
+      method: "POST",
+      apiUrl,
+      statusCode: 500,
+      error: err instanceof Error ? err.message : "Failed to verify gift card",
+    });
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Failed to verify gift card" },
       { status: 500 }

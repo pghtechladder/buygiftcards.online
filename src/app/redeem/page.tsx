@@ -513,21 +513,20 @@ function RedeemPortalContent() {
                 </button>
               </form>
 
-              {/* Quick Sample Card Loader for instant testing */}
+              {/* Need a Card / Track Order helper */}
               <div className="mt-6 pt-6 border-t border-ink-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-brand-50/60 p-4 rounded-2xl border border-brand-100">
                 <div>
-                  <div className="text-xs font-extrabold text-brand-900">Want to test the redemption flow right now?</div>
+                  <div className="text-xs font-extrabold text-brand-900">Where do I find my Card Number &amp; PIN?</div>
                   <div className="text-[11px] text-brand-700 mt-0.5">
-                    Load a live <strong>$100.00 BuyGiftCards.online Gift Card</strong> and swap it for real Zendit eGift cards &amp; claim links!
+                    Check your <strong>buygiftcards.online</strong> confirmation email or view your codes on your order status page.
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={loadSampleCard}
-                  className="px-4 py-2.5 rounded-xl bg-white border border-brand-300 text-brand-700 font-extrabold text-xs hover:bg-brand-600 hover:text-white transition flex-shrink-0 shadow-sm"
+                <Link
+                  href="/orders"
+                  className="px-4 py-2.5 rounded-xl bg-white border border-brand-300 text-brand-700 font-extrabold text-xs hover:bg-brand-600 hover:text-white transition flex-shrink-0 shadow-sm text-center"
                 >
-                  Load $100 Sample Card
-                </button>
+                  Lookup My Order &rarr;
+                </Link>
               </div>
             </div>
 

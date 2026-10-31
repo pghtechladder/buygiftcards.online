@@ -6,12 +6,15 @@ export function generateOrderNumber(): string {
   return `BGC-${date}-${suffix}`;
 }
 
-export function generateDemoCode(): string {
+export function generateGiftCardCode(): string {
   let digits = "";
   for (let i = 0; i < 16; i++) digits += randomInt(0, 10);
   return digits.replace(/(.{4})/g, "$1 ").trim();
 }
 
-export function generateDemoPin(): string {
+export function generateGiftCardPin(): string {
   return String(randomInt(10000000, 99999999));
 }
+
+export const generateDemoCode = generateGiftCardCode;
+export const generateDemoPin = generateGiftCardPin;

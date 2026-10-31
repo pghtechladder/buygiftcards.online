@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import path from "path";
 import fs from "fs";
+import { writeTransactionLog } from "./logger";
 
 let transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
 
@@ -48,13 +49,55 @@ export async function sendSmtpMail(opts: { to: string; subject: string; html: st
   }
 
   const from = process.env.SMTP_FROM || process.env.SMTP_USER!;
-  await t.sendMail({
-    from,
-    to: opts.to,
-    replyTo: opts.replyTo,
-    subject: opts.subject,
-    html: opts.html,
-    attachments: attachments.length > 0 ? attachments : undefined,
+  const smtpUrl = `smtp://${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 587}`;
+
+  writeTransactionLog({
+    phase: "BEFORE_API_HIT",
+    process: "ZohoSMTP.sendMail",
+    method: "SMTP_SEND",
+    apiUrl: smtpUrl,
+    requestPayload: {
+      from,
+      to: opts.to,
+      replyTo: opts.replyTo,
+      subject: opts.subject,
+      hasInlineLogoAttachment: attachments.length > 0,
+    },
   });
-  return { skipped: false };
+
+  const start = Date.now();
+  try {
+    const info = await t.sendMail({
+      from,
+      to: opts.to,
+      replyTo: opts.replyTo,
+      subject: opts.subject,
+      html: opts.html,
+      attachments: attachments.length > 0 ? attachments : undefined,
+    });
+    writeTransactionLog({
+      phase: "AFTER_API_HIT",
+      process: "ZohoSMTP.sendMail",
+      method: "SMTP_SEND",
+      apiUrl: smtpUrl,
+      statusCode: 250,
+      durationMs: Date.now() - start,
+      responseBody: {
+        messageId: info.messageId,
+        response: info.response,
+        accepted: info.accepted,
+      },
+    });
+    return { skipped: false };
+  } catch (err) {
+    writeTransactionLog({
+      phase: "PROCESS_ERROR",
+      process: "ZohoSMTP.sendMail",
+      method: "SMTP_SEND",
+      apiUrl: smtpUrl,
+      durationMs: Date.now() - start,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    throw err;
+  }
 }
