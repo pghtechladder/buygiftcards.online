@@ -323,6 +323,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
     const item = order.items[idx];
     if (item.codes.length >= item.quantity) continue;
 
+    const meta = cartMeta[idx];
     const issuedCodes: string[] = [];
     const needed = item.quantity - item.codes.length;
 
@@ -338,6 +339,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
           amountCents: item.denomCents,
           unitIndex: i + 1,
           quantity: needed,
+          zenditApiBaseUrl: "https://api.zendit.io/v1",
         },
       });
 
@@ -345,6 +347,23 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
         brandSlug: item.brandSlug,
         amountCents: item.denomCents,
         deliveryType: item.deliveryType === "EGIFT" ? "egift" : "physical",
+        recipientEmail: meta?.re || finalEmail,
+        recipientName: meta?.rn || captured.payerName,
+        senderName: meta?.sn || captured.payerName || finalEmail,
+      });
+
+      writeTransactionLog({
+        phase: "PROCESS_COMPLETE",
+        process: "PayPal.Fulfill.ZenditVoucherIssued",
+        transactionId: paypalOrderId,
+        orderNumber: order.orderNumber,
+        details: {
+          brandSlug: item.brandSlug,
+          amountCents: item.denomCents,
+          zenditTransactionId: issued.zenditTransactionId,
+          zenditOfferId: issued.zenditOfferId,
+          issuedCode: issued.code,
+        },
       });
 
       await prisma.giftCardCode.create({
@@ -358,7 +377,6 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
       issuedCodes.push(issued.code);
     }
 
-    const meta = cartMeta[idx];
     if (meta?.re && meta.re.toLowerCase() !== finalEmail.toLowerCase()) {
       await sendRecipientGiftEmail({
         recipientEmail: meta.re,

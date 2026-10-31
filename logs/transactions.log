@@ -483,3 +483,383 @@
   API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
   HTTP Status    : 200 (767 ms)
   Response Body  : {"id":"82359054XC807145F","status":"PAYER_ACTION_REQUIRED","payment_source":{"paypal":{}},"links":[{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/82359054XC807145F","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/checkoutnow?token=82359054XC807145F","rel":"payer-action","method":"GET"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:41.236Z] [PROCESS_START] [PayPal.CreateCheckoutOrder]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  Request Body   : {"action":"create","idempotencyKey":"e1733f24-76e3-4cf8-97b4-a062c315e89e","items":[{"brandSlug":"visa","amount":10,"qty":1,"deliveryType":"egift","recipientName":"Sridharan Udayakumar","recipientEmail":"sri@techladder.io","senderName":"Bhavani","deliveryDate":"2026-10-31"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:41.244Z] [BEFORE_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  Headers        : {"Authorization":"Basic QkFBdmdXS...MA==","Content-Type":"application/x-www-form-urlencoded"}
+  Request Body   : {"grant_type":"client_credentials"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:41.689Z] [AFTER_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  HTTP Status    : 200 (440 ms)
+  Response Body  : {"token_type":"Bearer","app_id":"APP-139610059R9525339","expires_in":31375}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:41.691Z] [BEFORE_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  Headers        : {"Authorization":"Bearer A21AAJKPj...8lzA","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"intent":"CAPTURE","purchase_units":[{"custom_id":"BGC-20261031-B50E36","description":"buygiftcards.online Digital Gift Cards","amount":{"currency_code":"USD","value":"10.00","breakdown":{"item_total":{"currency_code":"USD","value":"10.00"}}},"items":[{"name":"Visa Virtual Account eGift Card ($10)","description":"Gift for Sridharan Udayakumar","sku":"visa-10","unit_amount":{"currency_code":"USD","value":"10.00"},"quantity":"1","category":"DIGITAL_GOODS"}]}],"payment_source":{"paypal":{"experience_context":{"brand_name":"BuyGiftCards.online","shipping_preference":"NO_SHIPPING","user_action":"PAY_NOW","landing_page":"LOGIN","return_url":"http://localhost:3000/checkout/success?provider=paypal","cancel_url":"http://localhost:3000/catalog"}}}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:42.462Z] [AFTER_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  HTTP Status    : 200 (769 ms)
+  Response Body  : {"id":"82W50064V7487815A","status":"PAYER_ACTION_REQUIRED","payment_source":{"paypal":{}},"links":[{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/82W50064V7487815A","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/checkoutnow?token=82W50064V7487815A","rel":"payer-action","method":"GET"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:42.902Z] [PROCESS_COMPLETE] [PayPal.CreateCheckoutOrder] [txId=82W50064V7487815A] [order=BGC-20261031-B50E36]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  HTTP Status    : 200
+  Response Body  : {"paypalOrderId":"82W50064V7487815A","orderNumber":"BGC-20261031-B50E36","approveUrl":"https://www.sandbox.paypal.com/checkoutnow?token=82W50064V7487815A"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:56.580Z] [PROCESS_START] [PayPal.CreateCheckoutOrder]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  Request Body   : {"action":"create","idempotencyKey":"8f3d3cac-6313-4bde-9cb2-fe92e939051f","items":[{"brandSlug":"visa","amount":10,"qty":1,"deliveryType":"egift","recipientName":"Sridharan Udayakumar","recipientEmail":"sri@techladder.io","senderName":"Bhavani","deliveryDate":"2026-10-31"},{"brandSlug":"visa","amount":50,"qty":1,"deliveryType":"egift","deliveryDate":"2026-10-31"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:56.582Z] [BEFORE_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  Headers        : {"Authorization":"Basic QkFBdmdXS...MA==","Content-Type":"application/x-www-form-urlencoded"}
+  Request Body   : {"grant_type":"client_credentials"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:56.918Z] [AFTER_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  HTTP Status    : 200 (334 ms)
+  Response Body  : {"token_type":"Bearer","app_id":"APP-139610059R9525339","expires_in":31359}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:56.919Z] [BEFORE_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  Headers        : {"Authorization":"Bearer A21AAJKPj...8lzA","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"intent":"CAPTURE","purchase_units":[{"custom_id":"BGC-20261031-53B48D","description":"buygiftcards.online Digital Gift Cards","amount":{"currency_code":"USD","value":"60.00","breakdown":{"item_total":{"currency_code":"USD","value":"60.00"}}},"items":[{"name":"Visa Virtual Account eGift Card ($10)","description":"Gift for Sridharan Udayakumar","sku":"visa-10","unit_amount":{"currency_code":"USD","value":"10.00"},"quantity":"1","category":"DIGITAL_GOODS"},{"name":"Visa Virtual Account eGift Card ($50)","description":"Digital Gift Card","sku":"visa-50","unit_amount":{"currency_code":"USD","value":"50.00"},"quantity":"1","category":"DIGITAL_GOODS"}]}],"payment_source":{"paypal":{"experience_context":{"brand_name":"BuyGiftCards.online","shipping_preference":"NO_SHIPPING","user_action":"PAY_NOW","landing_page":"LOGIN","return_url":"http://localhost:3000/checkout/success?provider=paypal","cancel_url":"http://localhost:3000/catalog"}}}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:57.723Z] [AFTER_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  HTTP Status    : 200 (800 ms)
+  Response Body  : {"id":"4LE85703U85210104","status":"PAYER_ACTION_REQUIRED","payment_source":{"paypal":{}},"links":[{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/4LE85703U85210104","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/checkoutnow?token=4LE85703U85210104","rel":"payer-action","method":"GET"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:21:57.964Z] [PROCESS_COMPLETE] [PayPal.CreateCheckoutOrder] [txId=4LE85703U85210104] [order=BGC-20261031-53B48D]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  HTTP Status    : 200
+  Response Body  : {"paypalOrderId":"4LE85703U85210104","orderNumber":"BGC-20261031-53B48D","approveUrl":"https://www.sandbox.paypal.com/checkoutnow?token=4LE85703U85210104"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:18.758Z] [PROCESS_START] [PayPal.CreateCheckoutOrder]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  Request Body   : {"action":"create","idempotencyKey":"0c1379a4-ee29-4d39-abd2-567de813a489","items":[{"brandSlug":"visa","amount":10,"qty":1,"deliveryType":"egift","recipientName":"Sridharan Udayakumar","recipientEmail":"sri@techladder.io","senderName":"Bhavani","deliveryDate":"2026-10-31"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:18.761Z] [BEFORE_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  Headers        : {"Authorization":"Basic QkFBdmdXS...MA==","Content-Type":"application/x-www-form-urlencoded"}
+  Request Body   : {"grant_type":"client_credentials"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:19.122Z] [AFTER_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  HTTP Status    : 200 (357 ms)
+  Response Body  : {"token_type":"Bearer","app_id":"APP-139610059R9525339","expires_in":31337}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:19.124Z] [BEFORE_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  Headers        : {"Authorization":"Bearer A21AAJKPj...8lzA","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"intent":"CAPTURE","purchase_units":[{"custom_id":"BGC-20261031-AD76BC","description":"buygiftcards.online Digital Gift Cards","amount":{"currency_code":"USD","value":"10.00","breakdown":{"item_total":{"currency_code":"USD","value":"10.00"}}},"items":[{"name":"Visa Virtual Account eGift Card ($10)","description":"Gift for Sridharan Udayakumar","sku":"visa-10","unit_amount":{"currency_code":"USD","value":"10.00"},"quantity":"1","category":"DIGITAL_GOODS"}]}],"payment_source":{"paypal":{"experience_context":{"brand_name":"BuyGiftCards.online","shipping_preference":"NO_SHIPPING","user_action":"PAY_NOW","landing_page":"LOGIN","return_url":"http://localhost:3000/checkout/success?provider=paypal","cancel_url":"http://localhost:3000/catalog"}}}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:19.915Z] [AFTER_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  HTTP Status    : 200 (787 ms)
+  Response Body  : {"id":"803536112A711551U","status":"PAYER_ACTION_REQUIRED","payment_source":{"paypal":{}},"links":[{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/803536112A711551U","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/checkoutnow?token=803536112A711551U","rel":"payer-action","method":"GET"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:20.216Z] [PROCESS_COMPLETE] [PayPal.CreateCheckoutOrder] [txId=803536112A711551U] [order=BGC-20261031-AD76BC]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  HTTP Status    : 200
+  Response Body  : {"paypalOrderId":"803536112A711551U","orderNumber":"BGC-20261031-AD76BC","approveUrl":"https://www.sandbox.paypal.com/checkoutnow?token=803536112A711551U"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:52.129Z] [PROCESS_START] [PayPal.CreateCheckoutOrder]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  Request Body   : {"action":"create","idempotencyKey":"0c1379a4-ee29-4d39-abd2-567de813a489","items":[{"brandSlug":"visa","amount":10,"qty":1,"deliveryType":"egift","recipientName":"Sridharan Udayakumar","recipientEmail":"sri@techladder.io","senderName":"Bhavani","deliveryDate":"2026-10-31"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:52.131Z] [BEFORE_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  Headers        : {"Authorization":"Basic QkFBdmdXS...MA==","Content-Type":"application/x-www-form-urlencoded"}
+  Request Body   : {"grant_type":"client_credentials"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:52.582Z] [AFTER_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  HTTP Status    : 200 (448 ms)
+  Response Body  : {"token_type":"Bearer","app_id":"APP-139610059R9525339","expires_in":31304}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:52.584Z] [BEFORE_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  Headers        : {"Authorization":"Bearer A21AAJKPj...8lzA","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"intent":"CAPTURE","purchase_units":[{"custom_id":"BGC-20261031-0DD6BC","description":"buygiftcards.online Digital Gift Cards","amount":{"currency_code":"USD","value":"10.00","breakdown":{"item_total":{"currency_code":"USD","value":"10.00"}}},"items":[{"name":"Visa Virtual Account eGift Card ($10)","description":"Gift for Sridharan Udayakumar","sku":"visa-10","unit_amount":{"currency_code":"USD","value":"10.00"},"quantity":"1","category":"DIGITAL_GOODS"}]}],"payment_source":{"paypal":{"experience_context":{"brand_name":"BuyGiftCards.online","shipping_preference":"NO_SHIPPING","user_action":"PAY_NOW","landing_page":"LOGIN","return_url":"http://localhost:3000/checkout/success?provider=paypal","cancel_url":"http://localhost:3000/catalog"}}}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:53.376Z] [AFTER_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  HTTP Status    : 200 (790 ms)
+  Response Body  : {"id":"6RH46744A2549753U","status":"PAYER_ACTION_REQUIRED","payment_source":{"paypal":{}},"links":[{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/6RH46744A2549753U","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/checkoutnow?token=6RH46744A2549753U","rel":"payer-action","method":"GET"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:22:53.612Z] [PROCESS_COMPLETE] [PayPal.CreateCheckoutOrder] [txId=6RH46744A2549753U] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  HTTP Status    : 200
+  Response Body  : {"paypalOrderId":"6RH46744A2549753U","orderNumber":"BGC-20261031-0DD6BC","approveUrl":"https://www.sandbox.paypal.com/checkoutnow?token=6RH46744A2549753U"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:05.649Z] [PROCESS_START] [PayPal.CaptureAndFulfill] [txId=6RH46744A2549753U]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  Request Body   : {"action":"capture","paypalOrderId":"6RH46744A2549753U"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:05.996Z] [BEFORE_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  Headers        : {"Authorization":"Basic QkFBdmdXS...MA==","Content-Type":"application/x-www-form-urlencoded"}
+  Request Body   : {"grant_type":"client_credentials"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:06.491Z] [AFTER_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  HTTP Status    : 200 (491 ms)
+  Response Body  : {"token_type":"Bearer","app_id":"APP-139610059R9525339","expires_in":31230}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:06.492Z] [BEFORE_API_HIT] [PayPal.CaptureOrder] [txId=6RH46744A2549753U]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders/6RH46744A2549753U/capture
+  Headers        : {"Authorization":"Bearer A21AAJKPj...8lzA","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:07.743Z] [AFTER_API_HIT] [PayPal.CaptureOrder] [txId=6RH46744A2549753U]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders/6RH46744A2549753U/capture
+  HTTP Status    : 201 (1249 ms)
+  Response Body  : {"id":"6RH46744A2549753U","status":"COMPLETED","payment_source":{"paypal":{"email_address":"meetsridhar@gmail.com","account_id":"Z5DVEUU2G2MAJ","account_status":"UNVERIFIED","name":{"given_name":"Sridharan","surname":"Udayakumar"},"address":{"country_code":"US"}}},"purchase_units":[{"reference_id":"default","payments":{"captures":[{"id":"7D850093NF858651K","status":"PENDING","status_details":{"reason":"PENDING_REVIEW"},"amount":{"currency_code":"USD","value":"10.00"},"final_capture":true,"seller_protection":{"status":"NOT_ELIGIBLE"},"custom_id":"BGC-20261031-0DD6BC","links":[{"href":"https://api.sandbox.paypal.com/v2/payments/captures/7D850093NF858651K","rel":"self","method":"GET"},{"href":"https://api.sandbox.paypal.com/v2/payments/captures/7D850093NF858651K/refund","rel":"refund","method":"POST"},{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/6RH46744A2549753U","rel":"up","method":"GET"}],"create_time":"2026-10-31T20:24:07Z","update_time":"2026-10-31T20:24:07Z"}]}}],"payer":{"name":{"given_name":"Sridharan","surname":"Udayakumar"},"email_address":"meetsridhar@gmail.com","payer_id":"Z5DVEUU2G2MAJ","address":{"country_code":"US"}},"links":[{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/6RH46744A2549753U","rel":"self","method":"GET"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:07.895Z] [PROCESS_STEP] [PayPal.Fulfill.IssueGiftCard] [txId=6RH46744A2549753U] [order=BGC-20261031-0DD6BC]
+  Details        : {"brandSlug":"visa","brandName":"Visa Virtual Account","amountCents":1000,"unitIndex":1,"quantity":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:07.898Z] [PROCESS_COMPLETE] [InternalCardProvider.issue]
+  Details        : {"brandSlug":"visa","amountCents":1000,"cardMasked":"•••• •••• •••• 5028"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:07.944Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:465
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"sri@techladder.io","subject":"Bhavani sent you a $10 Visa Virtual Account Gift Card!","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:09.747Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:465
+  HTTP Status    : 250 (1801 ms)
+  Response Body  : {"messageId":"<6e5507a0-3078-9cbe-7443-011780168a93@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["sri@techladder.io"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:09.945Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:465
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"meetsridhar@gmail.com","subject":"Your buygiftcards.online order BGC-20261031-0DD6BC","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:11.959Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:465
+  HTTP Status    : 250 (2012 ms)
+  Response Body  : {"messageId":"<338a2bd7-9b6a-dca7-aff5-3d7250e806bb@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["meetsridhar@gmail.com"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:12.034Z] [PROCESS_COMPLETE] [PayPal.CaptureAndFulfill] [txId=6RH46744A2549753U] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/checkout/paypal
+  HTTP Status    : 200
+  Response Body  : {"order":{"orderNumber":"BGC-20261031-0DD6BC","customerEmail":"meetsridhar@gmail.com","status":"FULFILLED"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:14.830Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-0DD6BC","email":"meetsridhar@gmail.com"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:14.832Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-0DD6BC","email":"meetsridhar@gmail.com"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:15.327Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":1,"emailSentAt":"2026-10-31T20:24:11.962Z"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:15.333Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":1,"emailSentAt":"2026-10-31T20:24:11.962Z"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:20.975Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"5405 0006 9111 5028","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:20.977Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"5405 0006 9111 5028","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:21.130Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvwun4rh001bdekufb1948iu","code":"5405 0006 9111 5028","maskedCode":"•••• •••• •••• 5028","brandSlug":"visa","brandName":"Visa Virtual Account","balanceCents":1000,"customerEmail":"meetsridhar@gmail.com","orderNumber":"BGC-20261031-0DD6BC","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:21.143Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvwun4rh001bdekufb1948iu","code":"5405 0006 9111 5028","maskedCode":"•••• •••• •••• 5028","brandSlug":"visa","brandName":"Visa Virtual Account","balanceCents":1000,"customerEmail":"meetsridhar@gmail.com","orderNumber":"BGC-20261031-0DD6BC","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:48.542Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-0DD6BC","email":"meetsridhar@gmail.com"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:48.559Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-0DD6BC","email":"meetsridhar@gmail.com"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:48.610Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":1,"emailSentAt":"2026-10-31T20:24:11.962Z"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:48.645Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":1,"emailSentAt":"2026-10-31T20:24:11.962Z"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:57.198Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"5405 0006 9111 5028","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:57.199Z] [PROCESS_START] [Redeem.Lookup]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  Request Body   : {"code":"5405 0006 9111 5028","pinProvided":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:57.336Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvwun4rh001bdekufb1948iu","code":"5405 0006 9111 5028","maskedCode":"•••• •••• •••• 5028","brandSlug":"visa","brandName":"Visa Virtual Account","balanceCents":1000,"customerEmail":"meetsridhar@gmail.com","orderNumber":"BGC-20261031-0DD6BC","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:24:57.342Z] [PROCESS_COMPLETE] [Redeem.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/redeem/lookup
+  HTTP Status    : 200
+  Response Body  : {"card":{"id":"cmvwun4rh001bdekufb1948iu","code":"5405 0006 9111 5028","maskedCode":"•••• •••• •••• 5028","brandSlug":"visa","brandName":"Visa Virtual Account","balanceCents":1000,"customerEmail":"meetsridhar@gmail.com","orderNumber":"BGC-20261031-0DD6BC","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:14.711Z] [PROCESS_START] [Redeem.Exchange]
+  API URL        : POST http://localhost:3000/api/redeem/exchange
+  Request Body   : {"cardId":"cmvwun4rh001bdekufb1948iu","code":"5405 0006 9111 5028","email":"meetsridhar@gmail.com","selections":[{"brandSlug":"visa","amountDollars":10,"quantity":1}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:14.903Z] [PROCESS_STEP] [Redeem.Exchange.IssueMerchantCard] [order=BGC-20261031-0DD6BC]
+  Details        : {"brandSlug":"visa","brandName":"Visa Virtual Account","amountCents":1000,"unitIndex":1,"quantity":1}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:14.905Z] [PROCESS_COMPLETE] [InternalCardProvider.issue]
+  Details        : {"brandSlug":"visa","amountCents":1000,"cardMasked":"•••• •••• •••• 9931"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:15.670Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:465
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"meetsridhar@gmail.com","subject":"Your redeemed eGift cards from buygiftcards.online (BGC-20261031-0DD6BC)","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:17.002Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:465
+  HTTP Status    : 250 (1330 ms)
+  Response Body  : {"messageId":"<3fe55f3b-347e-3925-20de-830dba106bb3@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["meetsridhar@gmail.com"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:17.004Z] [PROCESS_COMPLETE] [Redeem.Exchange] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/redeem/exchange
+  HTTP Status    : 200
+  Response Body  : {"success":true,"orderNumber":"BGC-20261031-0DD6BC","email":"meetsridhar@gmail.com","emailSent":true,"sourceBrandName":"Visa Virtual Account","sourceCardMasked":"•••• •••• •••• 5028","redeemedItems":[{"id":"cmvwuokgr001edekuc6upwoda","brandSlug":"visa","brandName":"Visa Virtual Account","amountCents":1000,"code":"6828 6977 5883 9931","pin":"27413081","isDemo":false}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:23.601Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-0DD6BC","email":"meetsridhar@gmail.com"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:23.603Z] [PROCESS_START] [Orders.Lookup]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  Request Body   : {"orderNumber":"BGC-20261031-0DD6BC","email":"meetsridhar@gmail.com"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:23.712Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":2,"emailSentAt":"2026-10-31T20:24:11.962Z"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:25:23.722Z] [PROCESS_COMPLETE] [Orders.Lookup] [order=BGC-20261031-0DD6BC]
+  API URL        : POST http://localhost:3000/api/orders/lookup
+  HTTP Status    : 200
+  Details        : {"status":"FULFILLED","itemCount":2,"emailSentAt":"2026-10-31T20:24:11.962Z"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:38:49.966Z] [BEFORE_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  Headers        : {"Authorization":"Basic QkFBdmdXS...MA==","Content-Type":"application/x-www-form-urlencoded"}
+  Request Body   : {"grant_type":"client_credentials"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:22.198Z] [BEFORE_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  Headers        : {"Authorization":"Basic QkFBdmdXS...MA==","Content-Type":"application/x-www-form-urlencoded"}
+  Request Body   : {"grant_type":"client_credentials"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:22.632Z] [AFTER_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  HTTP Status    : 200 (428 ms)
+  Response Body  : {"token_type":"Bearer","app_id":"APP-139610059R9525339","expires_in":30194}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:22.633Z] [BEFORE_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  Headers        : {"Authorization":"Bearer A21AAJKPj...8lzA","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"intent":"CAPTURE","purchase_units":[{"custom_id":"BGC-TEST-ZENDIT","description":"buygiftcards.online Digital Gift Cards","amount":{"currency_code":"USD","value":"25.00","breakdown":{"item_total":{"currency_code":"USD","value":"25.00"}}},"items":[{"name":"Sephora $25 eGift Card","description":"Digital Gift Card","sku":"sephora-25","unit_amount":{"currency_code":"USD","value":"25.00"},"quantity":"1","category":"DIGITAL_GOODS"}]}],"payment_source":{"paypal":{"experience_context":{"brand_name":"BuyGiftCards.online","shipping_preference":"NO_SHIPPING","user_action":"PAY_NOW","landing_page":"LOGIN","return_url":"https://buygiftcards.online/checkout/success","cancel_url":"https://buygiftcards.online/"}}}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:23.403Z] [AFTER_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  HTTP Status    : 200 (768 ms)
+  Response Body  : {"id":"9VV99990G0213235M","status":"PAYER_ACTION_REQUIRED","payment_source":{"paypal":{}},"links":[{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/9VV99990G0213235M","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/checkoutnow?token=9VV99990G0213235M","rel":"payer-action","method":"GET"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:23.405Z] [PROCESS_START] [ZenditProvider.issue(sephora, $25)] [txId=bgc-1793479283405-owjfk9a]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases
+  Details        : {"brandSlug":"sephora","amountCents":2500,"offerId":"SEPHORA_US_002_EGIFT","priceType":"FIXED","requiredFields":[],"recipientEmail":"yal.demo.user@gmail.com","recipientName":"Yal User"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:23.406Z] [BEFORE_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793479283405-owjfk9a]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"transactionId":"bgc-1793479283405-owjfk9a","offerId":"SEPHORA_US_002_EGIFT","fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:23.904Z] [AFTER_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793479283405-owjfk9a]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  HTTP Status    : 200 (497 ms)
+  Response Body  : {"transactionId":"bgc-1793479283405-owjfk9a","status":"ACCEPTED"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:23.905Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793479283405-owjfk9a]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479283405-owjfk9a
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:24.034Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793479283405-owjfk9a]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479283405-owjfk9a
+  HTTP Status    : 200 (127 ms)
+  Response Body  : {"transactionId":"bgc-1793479283405-owjfk9a","offerId":"SEPHORA_US_002_EGIFT","status":"IN_PROGRESS","productType":"VOUCHER","cost":2396,"costBase":2396,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"FIXED","brand":"Sephora","brandName":"Sephora","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-31T20:41:24.149Z","updatedAt":"2026-10-31T20:41:24.256Z","log":[{"dateTime":"2026-10-31T20:41:24.149Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-31T20:41:24.192Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-31T20:41:24.256Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"}],"fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:24.789Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #2)] [txId=bgc-1793479283405-owjfk9a]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479283405-owjfk9a
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:24.867Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #2)] [txId=bgc-1793479283405-owjfk9a]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479283405-owjfk9a
+  HTTP Status    : 200 (76 ms)
+  Response Body  : {"transactionId":"bgc-1793479283405-owjfk9a","offerId":"SEPHORA_US_002_EGIFT","status":"DONE","productType":"VOUCHER","cost":2396,"costBase":2396,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"FIXED","brand":"Sephora","brandName":"Sephora","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-31T20:41:24.149Z","updatedAt":"2026-10-31T20:41:24.754Z","log":[{"dateTime":"2026-10-31T20:41:24.149Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-31T20:41:24.192Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-31T20:41:24.256Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"},{"dateTime":"2026-10-31T20:41:24.754Z","status":"DONE","statusMessage":"Transaction completed"}],"fields":[],"receipt":{"deliveryType":"redemptionURL","confirmationNumber":"4081575460","send":2500,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"","redemptionUrl":"https://simulatedgiftcardvalue/kL3ouwEO3UqQM5e","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"},"confirmation":{"confirmationNumber":"4081575460","externalReferenceId":"I2DU90WtKbpRhRo","transactionTime":"1793479284493"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:24.868Z] [PROCESS_COMPLETE] [ZenditProvider.issue(sephora, $25)] [txId=bgc-1793479283405-owjfk9a]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479283405-owjfk9a
+  Details        : {"brandSlug":"sephora","offerId":"SEPHORA_US_002_EGIFT","status":"DONE","costCents":2396,"sendCents":2500,"deliveryType":"redemptionURL","confirmationNumber":"4081575460","zenditVoucherUrl":"https://simulatedgiftcardvalue/kL3ouwEO3UqQM5e","issuedCode":"https://simulatedgiftcardvalue/kL3ouwEO3UqQM5e"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:24.869Z] [PROCESS_START] [ZenditProvider.issue(amazon, $15)] [txId=bgc-1793479284869-utqlzu6]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases
+  Details        : {"brandSlug":"amazon","amountCents":1500,"offerId":"ULTA_US_OPEN","priceType":"RANGE","requiredFields":[],"recipientEmail":"yal.demo.user@gmail.com","recipientName":"Yal User"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:24.870Z] [BEFORE_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793479284869-utqlzu6]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"transactionId":"bgc-1793479284869-utqlzu6","offerId":"ULTA_US_OPEN","fields":[],"value":{"type":"ZEND","value":1500}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:24.982Z] [AFTER_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793479284869-utqlzu6]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  HTTP Status    : 200 (112 ms)
+  Response Body  : {"transactionId":"bgc-1793479284869-utqlzu6","status":"ACCEPTED"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:24.984Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793479284869-utqlzu6]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479284869-utqlzu6
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:25.045Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793479284869-utqlzu6]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479284869-utqlzu6
+  HTTP Status    : 200 (59 ms)
+  Response Body  : {"transactionId":"bgc-1793479284869-utqlzu6","offerId":"ULTA_US_OPEN","status":"AUTHORIZED","productType":"VOUCHER","cost":1466,"costBase":1466,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":1500,"priceBase":1500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":1500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"RANGE","value":{"type":"ZEND","value":1500},"brand":"Ulta","brandName":"Ulta","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-31T20:41:25.225Z","updatedAt":"2026-10-31T20:41:25.268Z","log":[{"dateTime":"2026-10-31T20:41:25.225Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-31T20:41:25.268Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"}],"fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:25.811Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #2)] [txId=bgc-1793479284869-utqlzu6]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479284869-utqlzu6
+  Headers        : {"Authorization":"Bearer sand_8cfd...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:25.885Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #2)] [txId=bgc-1793479284869-utqlzu6]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479284869-utqlzu6
+  HTTP Status    : 200 (73 ms)
+  Response Body  : {"transactionId":"bgc-1793479284869-utqlzu6","offerId":"ULTA_US_OPEN","status":"DONE","productType":"VOUCHER","cost":1466,"costBase":1466,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":1500,"priceBase":1500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":1500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"RANGE","value":{"type":"ZEND","value":1500},"brand":"Ulta","brandName":"Ulta","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-10-31T20:41:25.225Z","updatedAt":"2026-10-31T20:41:25.556Z","log":[{"dateTime":"2026-10-31T20:41:25.225Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-10-31T20:41:25.268Z","status":"AUTHORIZED","statusMessage":"Transaction authorized"},{"dateTime":"2026-10-31T20:41:25.339Z","status":"IN_PROGRESS","statusMessage":"Transaction fulfilling"},{"dateTime":"2026-10-31T20:41:25.556Z","status":"DONE","statusMessage":"Transaction completed"}],"fields":[],"receipt":{"deliveryType":"voucher","confirmationNumber":"8460384625","send":1500,"currency":"USD","currencyDivisor":100,"epin":"","voucherId":"Gjd20fbhu8hzHin","redemptionUrl":"","accountId":"","expiresAt":"","instructions":"","recipientCustomerServiceNumber":"+17162152677","senderCustomerServiceNumber":"+17162152677","terms":"","notes":"Thank you for your purchase"},"confirmation":{"confirmationNumber":"8460384625","externalReferenceId":"yAStQJRGILrwCUM","transactionTime":"1793479285381"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T20:41:25.886Z] [PROCESS_COMPLETE] [ZenditProvider.issue(amazon, $15)] [txId=bgc-1793479284869-utqlzu6]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479284869-utqlzu6
+  Details        : {"brandSlug":"amazon","offerId":"ULTA_US_OPEN","status":"DONE","costCents":1466,"sendCents":1500,"deliveryType":"voucher","confirmationNumber":"8460384625","zenditVoucherUrl":"Gjd20fbhu8hzHin","issuedCode":"Gjd20fbhu8hzHin"}

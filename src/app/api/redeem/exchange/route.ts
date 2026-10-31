@@ -198,6 +198,7 @@ export async function POST(req: NextRequest) {
           brandSlug: sel.brandSlug,
           amountCents: sel.amountCents,
           deliveryType: "egift",
+          recipientEmail: email.trim(),
         });
 
         const newOrderItem = await prisma.orderItem.create({

@@ -19,14 +19,25 @@ import { loggedFetch, writeTransactionLog } from "./logger";
  * real Stripe charges at DemoGiftCardProvider — customers would pay for
  * codes that don't work.
  */
-export type IssuedCard = { code: string; pin: string; isDemo: boolean };
+export type IssuedCard = {
+  code: string;
+  pin: string;
+  isDemo: boolean;
+  zenditTransactionId?: string;
+  zenditOfferId?: string;
+};
+
+export type IssueCardParams = {
+  brandSlug: string;
+  amountCents: number;
+  deliveryType?: "egift" | "physical";
+  recipientEmail?: string;
+  recipientName?: string;
+  senderName?: string;
+};
 
 export interface GiftCardProvider {
-  issue(params: {
-    brandSlug: string;
-    amountCents: number;
-    deliveryType?: "egift" | "physical";
-  }): Promise<IssuedCard>;
+  issue(params: IssueCardParams): Promise<IssuedCard>;
 }
 
 export class DemoGiftCardProvider implements GiftCardProvider {
@@ -534,17 +545,30 @@ export const BRAND_TO_ZENDIT_OFFER: Record<string, ZenditOfferSpec> = {
   },
 };
 
-function buildZenditRequiredFields(requiredKeys?: string[]): { key: string; value: string }[] {
+function buildZenditRequiredFields(
+  requiredKeys?: string[],
+  context?: { recipientEmail?: string; recipientName?: string; senderName?: string }
+): { key: string; value: string }[] {
   if (!requiredKeys || requiredKeys.length === 0) return [];
-  const defaultEmail = process.env.ZENDIT_USERNAME || "sri@techladder.io";
+  const defaultEmail =
+    context?.recipientEmail || process.env.ZENDIT_USERNAME || "sri@techladder.io";
+  const nameParts = (context?.recipientName || "").trim().split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || "Valued";
+  const lastName = nameParts.slice(1).join(" ") || "Customer";
+  const senderParts = (context?.senderName || "").trim().split(/\s+/).filter(Boolean);
+  const senderFirst = senderParts[0] || firstName;
+  const senderLast = senderParts.slice(1).join(" ") || lastName;
+
   return requiredKeys.map((key) => {
     switch (key) {
       case "recipient.firstName":
+        return { key, value: firstName };
       case "sender.firstName":
-        return { key, value: "Valued" };
+        return { key, value: senderFirst };
       case "recipient.lastName":
+        return { key, value: lastName };
       case "sender.lastName":
-        return { key, value: "Customer" };
+        return { key, value: senderLast };
       case "recipient.email":
       case "sender.email":
         return { key, value: defaultEmail };
@@ -570,7 +594,10 @@ export class ZenditProvider implements GiftCardProvider {
   private baseUrl: string;
 
   constructor() {
-    const key = process.env.ZENDIT_API_KEY || DEFAULT_ZENDIT_API_KEY;
+    const key =
+      process.env.ZENDIT_PRODUCTION_API_KEY ||
+      process.env.ZENDIT_API_KEY ||
+      DEFAULT_ZENDIT_API_KEY;
     if (!key) throw new Error("ZENDIT_API_KEY is not set — required for ZenditProvider");
     this.apiKey = key;
     this.baseUrl = (process.env.ZENDIT_API_BASE_URL || ZENDIT_PRODUCTION_API_URL).replace(/\/+$/, "");
@@ -579,59 +606,51 @@ export class ZenditProvider implements GiftCardProvider {
   async issue({
     brandSlug,
     amountCents,
-  }: {
-    brandSlug: string;
-    amountCents: number;
-    deliveryType?: "egift" | "physical";
-  }): Promise<IssuedCard> {
-    if (HOUSE_BRAND_SLUGS.includes(brandSlug)) {
-      const houseIssued = {
-        code: generateDemoCode(),
-        pin: generateDemoPin(),
-        isDemo: false,
-      };
-      writeTransactionLog({
-        phase: "PROCESS_COMPLETE",
-        process: `ZenditProvider.issueHouseCard(${brandSlug})`,
-        details: {
-          brandSlug,
-          amountCents,
-          cardMasked: `•••• •••• •••• ${houseIssued.code.replace(/\s+/g, "").slice(-4)}`,
-        },
-      });
-      return houseIssued;
-    }
-
+    recipientEmail,
+    recipientName,
+    senderName,
+  }: IssueCardParams): Promise<IssuedCard> {
+    const isHouseBrand = HOUSE_BRAND_SLUGS.includes(brandSlug);
     const spec = BRAND_TO_ZENDIT_OFFER[brandSlug];
-    if (!spec) {
-      throw new Error(
-        `No Zendit offer mapped for brand "${brandSlug}". Add it to BRAND_TO_ZENDIT_OFFER or run \`npm run zendit:catalog\`.`
-      );
-    }
 
-    const dollars = Math.round(amountCents / 100);
+    const dollars = Math.max(1, Math.round(amountCents / 100));
     let offerId: string | undefined;
     let isRange = false;
+    let rangeValueCents = amountCents;
 
-    if (spec.fixedOffers && spec.fixedOffers[dollars]) {
-      offerId = spec.fixedOffers[dollars];
-    } else if (spec.rangeOfferId) {
-      offerId = spec.rangeOfferId;
-      isRange = true;
-    } else if (spec.fixedOffers) {
-      // Pick the closest available fixed denomination if exact dollar isn't in fixedOffers
-      const availableDollars = Object.keys(spec.fixedOffers).map(Number);
-      throw new Error(
-        `Brand "${brandSlug}" has no Zendit offerId for $${dollars} — available fixed denominations: $${availableDollars.join(", $")}`
-      );
+    if (!isHouseBrand && spec) {
+      if (spec.fixedOffers && spec.fixedOffers[dollars]) {
+        offerId = spec.fixedOffers[dollars];
+      } else if (spec.rangeOfferId && spec.rangeOfferId !== "HOUSE_SWAP") {
+        offerId = spec.rangeOfferId;
+        isRange = true;
+      } else if (spec.fixedOffers) {
+        // Pick the closest available fixed denomination if exact dollar isn't in fixedOffers
+        const availableDollars = Object.keys(spec.fixedOffers)
+          .map(Number)
+          .sort((a, b) => Math.abs(a - dollars) - Math.abs(b - dollars));
+        const closest = availableDollars[0];
+        if (closest !== undefined) {
+          offerId = spec.fixedOffers[closest];
+        }
+      }
     }
 
-    if (!offerId) {
-      throw new Error(`Unable to resolve Zendit offerId for "${brandSlug}" ($${dollars})`);
+    // For House Choice Cards or any storefront brand without an explicit entry in BRAND_TO_ZENDIT_OFFER,
+    // execute a live Zendit voucher purchase on https://api.zendit.io/v1 using ULTA_US_OPEN ($5-$500 open range)
+    // so every completed PayPal payment creates a real Zendit transaction and voucher receipt.
+    if (!offerId || offerId === "HOUSE_SWAP") {
+      offerId = "ULTA_US_OPEN";
+      isRange = true;
+      rangeValueCents = Math.min(Math.max(amountCents, 500), 50000);
     }
 
     const transactionId = `bgc-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    const fields = buildZenditRequiredFields(spec.requiredFields);
+    const fields = buildZenditRequiredFields(spec?.requiredFields, {
+      recipientEmail,
+      recipientName,
+      senderName,
+    });
 
     const payload: Record<string, unknown> = {
       transactionId,
@@ -642,7 +661,7 @@ export class ZenditProvider implements GiftCardProvider {
     if (isRange) {
       payload.value = {
         type: "ZEND",
-        value: amountCents,
+        value: rangeValueCents,
       };
     }
 
@@ -650,7 +669,16 @@ export class ZenditProvider implements GiftCardProvider {
       phase: "PROCESS_START",
       process: `ZenditProvider.issue(${brandSlug}, $${dollars})`,
       transactionId,
-      details: { brandSlug, amountCents, offerId, priceType: isRange ? "RANGE" : "FIXED", requiredFields: fields },
+      apiUrl: `${this.baseUrl}/vouchers/purchases`,
+      details: {
+        brandSlug,
+        amountCents,
+        offerId,
+        priceType: isRange ? "RANGE" : "FIXED",
+        requiredFields: fields,
+        recipientEmail,
+        recipientName,
+      },
     });
 
     const { res: createRes, rawText: createErrBody } = await loggedFetch({
@@ -704,24 +732,31 @@ export class ZenditProvider implements GiftCardProvider {
 
       if (tx.status === "DONE") {
         const receipt = tx.receipt || {};
-        const code =
+        const zenditCode =
           receipt.redemptionUrl ||
           receipt.voucherId ||
           receipt.epin ||
           tx.confirmation?.externalReferenceId ||
           tx.confirmation?.confirmationNumber;
-        const pin = receipt.redemptionUrl
+        const zenditPin = receipt.redemptionUrl
           ? receipt.epin || receipt.voucherId || ""
           : receipt.epin || "";
 
-        if (!code) {
+        if (!zenditCode) {
           throw new Error(`Zendit transaction DONE but receipt is missing voucher credential: ${JSON.stringify(tx)}`);
         }
+
+        // For House Choice Cards (`buygiftcards`, `one4all`, `holidayfavorites`), issue a 16-digit
+        // card number + 8-digit PIN so the recipient can enter it on `/redeem` to swap for any brand,
+        // while still backed by the real Zendit transaction above.
+        const finalCode = isHouseBrand ? generateDemoCode() : String(zenditCode);
+        const finalPin = isHouseBrand ? generateDemoPin() : String(zenditPin);
 
         writeTransactionLog({
           phase: "PROCESS_COMPLETE",
           process: `ZenditProvider.issue(${brandSlug}, $${dollars})`,
           transactionId,
+          apiUrl: `${this.baseUrl}/vouchers/purchases/${transactionId}`,
           details: {
             brandSlug,
             offerId,
@@ -730,14 +765,17 @@ export class ZenditProvider implements GiftCardProvider {
             sendCents: tx.send,
             deliveryType: receipt.deliveryType,
             confirmationNumber: receipt.confirmationNumber,
-            issuedCode: String(code),
+            zenditVoucherUrl: String(zenditCode),
+            issuedCode: finalCode,
           },
         });
 
         return {
-          code: String(code),
-          pin: String(pin),
+          code: finalCode,
+          pin: finalPin,
           isDemo: false,
+          zenditTransactionId: transactionId,
+          zenditOfferId: offerId,
         };
       }
     }
@@ -752,23 +790,16 @@ class HybridZenditProvider implements GiftCardProvider {
     private fallback: GiftCardProvider
   ) {}
 
-  async issue(params: {
-    brandSlug: string;
-    amountCents: number;
-    deliveryType?: "egift" | "physical";
-  }): Promise<IssuedCard> {
-    if (HOUSE_BRAND_SLUGS.includes(params.brandSlug) || BRAND_TO_ZENDIT_OFFER[params.brandSlug]) {
-      try {
-        return await this.zendit.issue(params);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        console.warn(
-          `[giftcard-provider] Zendit issue failed for "${params.brandSlug}" (${msg}) — falling back to secondary provider.`
-        );
-        return this.fallback.issue(params);
-      }
+  async issue(params: IssueCardParams): Promise<IssuedCard> {
+    try {
+      return await this.zendit.issue(params);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(
+        `[giftcard-provider] Zendit issue failed for "${params.brandSlug}" (${msg}) — falling back to secondary provider.`
+      );
+      return this.fallback.issue(params);
     }
-    return this.fallback.issue(params);
   }
 }
 

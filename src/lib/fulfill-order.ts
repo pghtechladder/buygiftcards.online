@@ -100,6 +100,9 @@ export async function fulfillOrder(session: Stripe.Checkout.Session) {
         brandSlug: brand.slug,
         amountCents: Math.round(line.a * 100),
         deliveryType: line.d,
+        recipientEmail: line.re || session.customer_details.email,
+        recipientName: line.rn || session.customer_details.name || undefined,
+        senderName: line.sn || session.customer_details.name || session.customer_details.email,
       });
       await prisma.giftCardCode.create({
         data: { orderItemId: orderItem.id, code: issued.code, pin: issued.pin, isDemo: issued.isDemo },
