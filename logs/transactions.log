@@ -391,3 +391,57 @@
   API URL        : POST http://localhost:3000/api/redeem/lookup
   HTTP Status    : 200
   Response Body  : {"card":{"id":"cmvvvvdhp000vdeku35p3qvut","code":"6846 0956 3098 3375","maskedCode":"•••• •••• •••• 3375","brandSlug":"amazon","brandName":"Amazon (Remaining Balance)","balanceCents":500,"customerEmail":"sri@techladder.io","orderNumber":"BGC-20261031-401485","alreadyRedeemed":false}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:34.519Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"yal.demo.user@gmail.com","subject":"Your buygiftcards.online order BGC-20261031-325C3C","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:36.997Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  HTTP Status    : 250 (2476 ms)
+  Response Body  : {"messageId":"<403a4961-fc21-772c-c4d4-53e5ebaa0e74@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["yal.demo.user@gmail.com"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:53.689Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"sri@techladder.io","subject":"Your buygiftcards.online order BGC-20261031-E3148A","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:55.178Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  HTTP Status    : 250 (1487 ms)
+  Response Body  : {"messageId":"<776f5c9c-84ed-5e9c-092a-991f7feb3a80@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["sri@techladder.io"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:55.231Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"sri@techladder.io","subject":"Your buygiftcards.online order BGC-20261031-1A65E2","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:56.775Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  HTTP Status    : 250 (1543 ms)
+  Response Body  : {"messageId":"<292276db-b65a-5e5a-be4b-d2a8fd73162f@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["sri@techladder.io"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:56.800Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"sri@techladder.io","subject":"Your buygiftcards.online order BGC-20261031-401485","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:58.035Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  HTTP Status    : 250 (1234 ms)
+  Response Body  : {"messageId":"<abe8aac3-ffda-95f4-c939-080e8b70d2fd@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["sri@techladder.io"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:37:58.779Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"talhajaved020993@gmail.com","subject":"Your buygiftcards.online order BGC-20261016-EDA888","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:38:00.386Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  HTTP Status    : 250 (1606 ms)
+  Response Body  : {"messageId":"<28b26093-6b3f-f88a-4fc0-7f4f7c7ced1b@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["talhajaved020993@gmail.com"]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:38:00.411Z] [BEFORE_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  Request Body   : {"from":"BuyGiftCards.online Support <support@buygiftcards.online>","to":"sri@tech.com","subject":"Your buygiftcards.online order BGC-20260906-1BBD89","hasInlineLogoAttachment":true}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-10-31T13:38:01.890Z] [AFTER_API_HIT] [ZohoSMTP.sendMail]
+  API URL        : SMTP_SEND smtp://smtp.zoho.com:587
+  HTTP Status    : 250 (1478 ms)
+  Response Body  : {"messageId":"<455c0726-c1c5-4503-b067-5d3f9781dd43@buygiftcards.online>","response":"250 2.0.0 Message received","accepted":["sri@tech.com"]}

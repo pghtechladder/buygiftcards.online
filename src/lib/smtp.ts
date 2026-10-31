@@ -5,13 +5,19 @@ import { writeTransactionLog } from "./logger";
 
 let transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
 
+function getSmtpConfig() {
+  const host = process.env.SMTP_HOST || "smtp.zoho.com";
+  const port = Number(process.env.SMTP_PORT || 465);
+  const user = process.env.SMTP_USER || "support@buygiftcards.online";
+  const pass = process.env.SMTP_PASS || "Techl@der@2023";
+  const from = process.env.SMTP_FROM || `BuyGiftCards.online Support <${user}>`;
+  return { host, port, user, pass, from };
+}
+
 function getTransporter() {
   if (transporter) return transporter;
 
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || 587);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const { host, port, user, pass } = getSmtpConfig();
 
   if (!host || !user || !pass) {
     return null; // caller should handle: log + no-op, same pattern as email.ts
@@ -48,8 +54,8 @@ export async function sendSmtpMail(opts: { to: string; subject: string; html: st
     }
   }
 
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER!;
-  const smtpUrl = `smtp://${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 587}`;
+  const { host, port, from } = getSmtpConfig();
+  const smtpUrl = `smtp://${host}:${port}`;
 
   writeTransactionLog({
     phase: "BEFORE_API_HIT",

@@ -563,13 +563,14 @@ function buildZenditRequiredFields(requiredKeys?: string[]): { key: string; valu
 }
 
 export const ZENDIT_PRODUCTION_API_URL = "https://api.zendit.io/v1";
+const DEFAULT_ZENDIT_API_KEY = "sand_8cfdd5e5-ed55-4402-bce3-3fb10230f9026ae4af6f0273f38d602cb8f9";
 
 export class ZenditProvider implements GiftCardProvider {
   private apiKey: string;
   private baseUrl: string;
 
   constructor() {
-    const key = process.env.ZENDIT_API_KEY;
+    const key = process.env.ZENDIT_API_KEY || DEFAULT_ZENDIT_API_KEY;
     if (!key) throw new Error("ZENDIT_API_KEY is not set — required for ZenditProvider");
     this.apiKey = key;
     this.baseUrl = (process.env.ZENDIT_API_BASE_URL || ZENDIT_PRODUCTION_API_URL).replace(/\/+$/, "");
@@ -788,12 +789,12 @@ function buildProvider(): GiftCardProvider {
     ? new HybridGiftCardProvider(new TangoCardProvider(), demo)
     : demo;
 
-  // 1. Zendit (primary): set ZENDIT_API_KEY to activate.
-  if (process.env.ZENDIT_API_KEY) {
+  // 1. Zendit (primary): uses ZENDIT_API_KEY or configured default key.
+  if (process.env.ZENDIT_API_KEY || DEFAULT_ZENDIT_API_KEY) {
     const mappedCount = Object.keys(BRAND_TO_ZENDIT_OFFER).length;
     console.log(
       `[giftcard-provider] Using ZenditProvider [PRODUCTION READY] ` +
-        `(${mappedCount} brands mapped, account: ${process.env.ZENDIT_USERNAME || "default"})`
+        `(${mappedCount} brands mapped, account: ${process.env.ZENDIT_USERNAME || "sri@techladder.io"})`
     );
     return new HybridZenditProvider(new ZenditProvider(), secondaryFallback);
   }
