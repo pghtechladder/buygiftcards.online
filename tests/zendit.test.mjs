@@ -14,7 +14,7 @@ if (fs.existsSync(envPath)) {
 
 const API_KEY = process.env.ZENDIT_API_KEY;
 const BASE_URL = (process.env.ZENDIT_API_BASE_URL || "https://api.zendit.io/v1").replace(/\/+$/, "");
-const APP_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const APP_URL = process.env.TEST_APP_URL || "http://localhost:3000";
 
 const LOG_DIR = path.join(process.cwd(), "logs");
 const TRANSACTION_LOG_PATH = path.join(LOG_DIR, "transactions.log");

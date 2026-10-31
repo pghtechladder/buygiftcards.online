@@ -55,7 +55,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid cart payload" }, { status: 400 });
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin || "https://buygiftcards.online";
+    // Use the incoming request origin when running on localhost so local testing redirects back to localhost,
+    // while production requests always redirect to https://buygiftcards.online.
+    const reqOrigin = req.nextUrl.origin;
+    const siteUrl =
+      reqOrigin && reqOrigin.includes("localhost")
+        ? reqOrigin
+        : process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
     const line_items: Array<{
       price_data: {
         currency: string;

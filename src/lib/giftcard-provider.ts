@@ -166,7 +166,7 @@ export class TangoCardProvider implements GiftCardProvider {
     // Sandbox vs production is just a different base URL in Tango's API —
     // defaults to sandbox so you can't accidentally hit production by
     // forgetting to set this.
-    this.baseUrl = process.env.TANGO_API_BASE_URL || "https://integration-api.tangocard.com/raas/v2";
+    this.baseUrl = process.env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2";
     this.platformName = requireEnv("TANGO_PLATFORM_NAME");
     this.platformKey = requireEnv("TANGO_PLATFORM_KEY");
     this.accountIdentifier = requireEnv("TANGO_ACCOUNT_IDENTIFIER");
@@ -562,6 +562,8 @@ function buildZenditRequiredFields(requiredKeys?: string[]): { key: string; valu
   });
 }
 
+export const ZENDIT_PRODUCTION_API_URL = "https://api.zendit.io/v1";
+
 export class ZenditProvider implements GiftCardProvider {
   private apiKey: string;
   private baseUrl: string;
@@ -570,7 +572,7 @@ export class ZenditProvider implements GiftCardProvider {
     const key = process.env.ZENDIT_API_KEY;
     if (!key) throw new Error("ZENDIT_API_KEY is not set — required for ZenditProvider");
     this.apiKey = key;
-    this.baseUrl = (process.env.ZENDIT_API_BASE_URL || "https://api.zendit.io/v1").replace(/\/+$/, "");
+    this.baseUrl = (process.env.ZENDIT_API_BASE_URL || ZENDIT_PRODUCTION_API_URL).replace(/\/+$/, "");
   }
 
   async issue({
