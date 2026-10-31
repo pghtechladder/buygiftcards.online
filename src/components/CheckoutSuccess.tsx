@@ -9,7 +9,8 @@ import { Icon } from "./Icon";
 export function CheckoutSuccess() {
   const params = useSearchParams();
   const { clear } = useCart();
-  const sessionId = params.get("session_id");
+  const paypalToken = params.get("token");
+  const sessionId = params.get("session_id") || (paypalToken ? `paypal_${paypalToken}` : null);
   const [status, setStatus] = useState<"loading" | "pending" | "ready" | "error">("loading");
   const [order, setOrder] = useState<{ orderNumber: string; customerEmail: string } | null>(null);
 
