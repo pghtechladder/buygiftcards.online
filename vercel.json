@@ -3,6 +3,12 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
+  "env": {
+    "ZENDIT_API_KEY": "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9",
+    "ZENDIT_PRODUCTION_API_KEY": "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9",
+    "ZENDIT_API_BASE_URL": "https://api.zendit.io/v1",
+    "ZENDIT_USERNAME": "sri@techladder.io"
+  },
   "headers": [
     {
       "source": "/(.*)",

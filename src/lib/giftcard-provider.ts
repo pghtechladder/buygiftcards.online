@@ -587,16 +587,18 @@ function buildZenditRequiredFields(
 }
 
 export const ZENDIT_PRODUCTION_API_URL = "https://api.zendit.io/v1";
-const DEFAULT_ZENDIT_API_KEY = "sand_8cfdd5e5-ed55-4402-bce3-3fb10230f9026ae4af6f0273f38d602cb8f9";
+const DEFAULT_ZENDIT_API_KEY = "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9";
 
 export class ZenditProvider implements GiftCardProvider {
   private apiKey: string;
   private baseUrl: string;
 
   constructor() {
+    const prodCandidate = process.env.ZENDIT_PRODUCTION_API_KEY;
+    const apiCandidate = process.env.ZENDIT_API_KEY;
     const key =
-      process.env.ZENDIT_PRODUCTION_API_KEY ||
-      process.env.ZENDIT_API_KEY ||
+      (prodCandidate && prodCandidate.startsWith("prod_") ? prodCandidate : undefined) ||
+      (apiCandidate && apiCandidate.startsWith("prod_") ? apiCandidate : undefined) ||
       DEFAULT_ZENDIT_API_KEY;
     if (!key) throw new Error("ZENDIT_API_KEY is not set — required for ZenditProvider");
     this.apiKey = key;

@@ -863,3 +863,50 @@
 [2026-10-31T20:41:25.886Z] [PROCESS_COMPLETE] [ZenditProvider.issue(amazon, $15)] [txId=bgc-1793479284869-utqlzu6]
   API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793479284869-utqlzu6
   Details        : {"brandSlug":"amazon","offerId":"ULTA_US_OPEN","status":"DONE","costCents":1466,"sendCents":1500,"deliveryType":"voucher","confirmationNumber":"8460384625","zenditVoucherUrl":"Gjd20fbhu8hzHin","issuedCode":"Gjd20fbhu8hzHin"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:55.694Z] [BEFORE_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  Headers        : {"Authorization":"Basic QkFBdmdXS...MA==","Content-Type":"application/x-www-form-urlencoded"}
+  Request Body   : {"grant_type":"client_credentials"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:56.359Z] [AFTER_API_HIT] [PayPal.OAuthToken]
+  API URL        : POST https://api-m.sandbox.paypal.com/v1/oauth2/token
+  HTTP Status    : 200 (658 ms)
+  Response Body  : {"token_type":"Bearer","app_id":"APP-139610059R9525339","expires_in":32400}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:56.361Z] [BEFORE_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  Headers        : {"Authorization":"Bearer A21AAJQWy...9n9A","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"intent":"CAPTURE","purchase_units":[{"custom_id":"BGC-TEST-ZENDIT","description":"buygiftcards.online Digital Gift Cards","amount":{"currency_code":"USD","value":"25.00","breakdown":{"item_total":{"currency_code":"USD","value":"25.00"}}},"items":[{"name":"Sephora $25 eGift Card","description":"Digital Gift Card","sku":"sephora-25","unit_amount":{"currency_code":"USD","value":"25.00"},"quantity":"1","category":"DIGITAL_GOODS"}]}],"payment_source":{"paypal":{"experience_context":{"brand_name":"BuyGiftCards.online","shipping_preference":"NO_SHIPPING","user_action":"PAY_NOW","landing_page":"LOGIN","return_url":"https://buygiftcards.online/checkout/success","cancel_url":"https://buygiftcards.online/"}}}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:57.178Z] [AFTER_API_HIT] [PayPal.CreateOrder]
+  API URL        : POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+  HTTP Status    : 200 (815 ms)
+  Response Body  : {"id":"4YG05026L7557151C","status":"PAYER_ACTION_REQUIRED","payment_source":{"paypal":{}},"links":[{"href":"https://api.sandbox.paypal.com/v2/checkout/orders/4YG05026L7557151C","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/checkoutnow?token=4YG05026L7557151C","rel":"payer-action","method":"GET"}]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:57.180Z] [PROCESS_START] [ZenditProvider.issue(sephora, $25)] [txId=bgc-1793502117179-63r8orl]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases
+  Details        : {"brandSlug":"sephora","amountCents":2500,"offerId":"SEPHORA_US_002_EGIFT","priceType":"FIXED","requiredFields":[],"recipientEmail":"yal.demo.user@gmail.com","recipientName":"Yal User"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:57.180Z] [BEFORE_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793502117179-63r8orl]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  Headers        : {"Authorization":"Bearer prod_21c9...b8f9","Content-Type":"application/json","Accept":"application/json"}
+  Request Body   : {"transactionId":"bgc-1793502117179-63r8orl","offerId":"SEPHORA_US_002_EGIFT","fields":[]}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:57.457Z] [AFTER_API_HIT] [ZenditProvider.createVoucherPurchase] [txId=bgc-1793502117179-63r8orl]
+  API URL        : POST https://api.zendit.io/v1/vouchers/purchases
+  HTTP Status    : 200 (276 ms)
+  Response Body  : {"transactionId":"bgc-1793502117179-63r8orl","status":"ACCEPTED"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:57.458Z] [BEFORE_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793502117179-63r8orl]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793502117179-63r8orl
+  Headers        : {"Authorization":"Bearer prod_21c9...b8f9","Accept":"application/json"}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:57.589Z] [AFTER_API_HIT] [ZenditProvider.pollVoucherPurchase (attempt #1)] [txId=bgc-1793502117179-63r8orl]
+  API URL        : GET https://api.zendit.io/v1/vouchers/purchases/bgc-1793502117179-63r8orl
+  HTTP Status    : 200 (129 ms)
+  Response Body  : {"transactionId":"bgc-1793502117179-63r8orl","offerId":"SEPHORA_US_002_EGIFT","status":"FAILED","productType":"VOUCHER","cost":2396,"costBase":2396,"costFee":0,"costCurrency":"USD","costCurrencyDivisor":100,"price":2500,"priceBase":2500,"priceFee":0,"priceCurrency":"USD","priceCurrencyDivisor":100,"send":2500,"sendCurrency":"USD","sendCurrencyDivisor":100,"priceType":"FIXED","brand":"Sephora","brandName":"Sephora","subTypes":["Health & Beauty"],"notes":"","shortNotes":"","country":"US","regions":["North America"],"createdAt":"2026-11-01T03:01:57.698Z","updatedAt":"2026-11-01T03:01:57.756Z","log":[{"dateTime":"2026-11-01T03:01:57.698Z","status":"PENDING","statusMessage":"Transaction created"},{"dateTime":"2026-11-01T03:01:57.756Z","status":"FAILED","statusMessage":"Transaction failed"}],"fields":[],"error":{"code":"INSUFFICIENT_FUNDS","description":"Insufficient funds to process transaction","message":"Your wallet has insufficient funds to process this transaction"}}
+────────────────────────────────────────────────────────────────────────────────────────────
+[2026-11-01T03:01:57.590Z] [PROCESS_ERROR] [ZenditProvider.issue(sephora)] [txId=bgc-1793502117179-63r8orl]
+  Details        : {"code":"INSUFFICIENT_FUNDS","description":"Insufficient funds to process transaction","message":"Your wallet has insufficient funds to process this transaction"}
+  ERROR          : Your wallet has insufficient funds to process this transaction
