@@ -40,7 +40,7 @@ const FAQ_KNOWLEDGE_BASE = [
   {
     topic: "refunds",
     keywords: ["refund", "cancel", "return", "money back"],
-    answer: "Because digital gift cards are delivered and revealed immediately with live redemption credentials, digital codes are generally non-refundable once delivered. If you encounter any technical issue with a code, our live support team will resolve it or replace it immediately.",
+    answer: "Because digital gift cards are delivered and revealed immediately with live redemption credentials, digital codes are generally non-refundable once delivered. If you encounter any technical issue with a code, our support team will resolve it or replace it immediately.",
   },
 ];
 
@@ -61,12 +61,12 @@ export async function POST(req: NextRequest) {
     // 1. Check for greeting
     if (/^(hi|hello|hey|good morning|good evening|howdy|sup)\b/.test(userMsg) && userMsg.length < 25) {
       return NextResponse.json({
-        reply: "Hello! Welcome to Customer Support. How can I assist you today? You can ask me about delivery times, order tracking, card balances, or connect directly with our live support team on WhatsApp!",
+        reply: "Hello! Welcome to Customer Support. How can I assist you today? You can ask me about delivery times, order tracking, card balances, or submit a support ticket to our team!",
         suggestedActions: [
           { label: "📦 Track an order", query: "How do I track my order?" },
           { label: "⚡ Delivery speed", query: "How quickly are eGift cards delivered?" },
           { label: "💳 Check card balance", query: "How do I check my card balance?" },
-          { label: "💬 Connect with Live Agent on WhatsApp", whatsapp: true },
+          { label: "🎫 Open a Support Ticket", openTicket: true },
         ],
       });
     }
@@ -93,16 +93,16 @@ export async function POST(req: NextRequest) {
         reply: bestMatch.answer,
         matchedTopic: bestMatch.topic,
         suggestedActions: [
-          { label: "💬 Connect with Live Agent on WhatsApp", whatsapp: true },
+          { label: "🎫 Still need help? Open a Ticket", openTicket: true },
         ],
       });
     }
 
-    // 3. Fallback answer directing to WhatsApp support without exposing raw phone number
+    // 3. Fallback answer directing to ticket creation
     return NextResponse.json({
-      reply: "Thank you for reaching out! For this inquiry or specific order assistance, our dedicated support team is available on WhatsApp to reply to you immediately.",
+      reply: "Thank you for reaching out! For this inquiry or specific order assistance, you can open a support ticket right here. Our team reviews tickets continuously at support@buygiftcards.online and will sort it out promptly.",
       suggestedActions: [
-        { label: "💬 Connect with Live Agent on WhatsApp", whatsapp: true },
+        { label: "🎫 Open a Support Ticket", openTicket: true },
       ],
     });
   } catch (err) {
