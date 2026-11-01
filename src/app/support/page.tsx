@@ -26,8 +26,8 @@ const FAQS = [
 ];
 
 export default function SupportPage() {
-  const whatsappUrl = `https://wa.me/917305022840?text=${encodeURIComponent(
-    "Hello buygiftcards.online support team! I need assistance with my gift card."
+  const whatsappUrl = `/api/chat/whatsapp?text=${encodeURIComponent(
+    "Hello support team! I need assistance with my gift card order."
   )}`;
 
   return (
@@ -38,7 +38,7 @@ export default function SupportPage() {
         </div>
         <h1 className="text-3xl font-extrabold mb-2">Help Center &amp; Customer Support</h1>
         <p className="text-sm text-ink-600">
-          Browse answers to common questions below, use our self-service tools, chat with our instant AI assistant, or message our team directly on WhatsApp.
+          Browse answers to common questions below, use our self-service tools, chat with our instant AI assistant, or message our live support team on WhatsApp.
         </p>
       </div>
 
@@ -52,13 +52,13 @@ export default function SupportPage() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-lg sm:text-xl">Instant WhatsApp Support</span>
+              <span className="font-extrabold text-lg sm:text-xl">Instant WhatsApp Live Support</span>
               <span className="bg-white/20 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 Online Now
               </span>
             </div>
             <p className="text-xs sm:text-sm text-emerald-50 mt-1">
-              Have questions about your order or payment? Get an immediate reply at <span className="font-bold underline">+91 73050 22840</span>.
+              Have questions about your order, delivery, or payment? Connect with our support team for an immediate reply.
             </p>
           </div>
         </div>

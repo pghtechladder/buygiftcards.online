@@ -11,22 +11,19 @@ interface Message {
   actions?: Array<{ label: string; query?: string; whatsapp?: boolean }>;
 }
 
-const WHATSAPP_NUMBER = "917305022840";
-const WHATSAPP_DISPLAY = "+91 73050 22840";
-
 export function LiveChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "initial-1",
       sender: "bot",
-      text: "👋 Hi! Welcome to buygiftcards.online. How can we help you today? Ask our AI assistant or chat with us directly on WhatsApp!",
+      text: "👋 Hi! Welcome to customer support. You can get instant automated answers to your questions here, or connect directly with our live support team on WhatsApp for immediate help!",
       time: "Just now",
       actions: [
         { label: "💬 Chat on WhatsApp", whatsapp: true },
-        { label: "📦 How to track order?", query: "How do I track my order?" },
-        { label: "⚡ Delivery speed?", query: "How fast is delivery?" },
-        { label: "💳 Check balance", query: "How to check my balance?" },
+        { label: "📦 Track an order", query: "How do I track my order?" },
+        { label: "⚡ Delivery speed", query: "How quickly are eGift cards delivered?" },
+        { label: "💳 Check balance", query: "How do I check my card balance?" },
       ],
     },
   ]);
@@ -44,10 +41,11 @@ export function LiveChatWidget() {
     }
   }, [messages, isOpen]);
 
+  // Securely redirects to WhatsApp in background via server endpoint without exposing phone number in client code
   const openWhatsApp = (customText?: string) => {
-    const defaultText = "Hello buygiftcards.online team! I have a question regarding my gift card order.";
+    const defaultText = "Hello support team! I need assistance with my order.";
     const textToSend = encodeURIComponent(customText || defaultText);
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${textToSend}`;
+    const url = `/api/chat/whatsapp?text=${textToSend}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -84,8 +82,7 @@ export function LiveChatWidget() {
         text: data.reply || "Thanks for your question! Connect with our team on WhatsApp for instant assistance.",
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         actions: [
-          { label: `📲 Chat on WhatsApp (${WHATSAPP_DISPLAY})`, whatsapp: true },
-          ...(data.suggestedActions || []),
+          ...(data.suggestedActions || [{ label: "💬 Connect with Live Agent on WhatsApp", whatsapp: true }]),
         ],
       };
       setMessages((prev) => [...prev, botResponse]);
@@ -96,9 +93,9 @@ export function LiveChatWidget() {
         {
           id: (Date.now() + 1).toString(),
           sender: "bot",
-          text: "Thanks for your message! Our team responds instantly on WhatsApp. Click below to continue our chat there.",
+          text: "Thanks for your message! Our team responds immediately on WhatsApp. Click below to continue our chat with an agent.",
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          actions: [{ label: `💬 Open WhatsApp (${WHATSAPP_DISPLAY})`, whatsapp: true }],
+          actions: [{ label: "💬 Connect with Live Agent on WhatsApp", whatsapp: true }],
         },
       ]);
     }
@@ -119,8 +116,8 @@ export function LiveChatWidget() {
           {/* Quick WhatsApp Button */}
           <button
             onClick={() => openWhatsApp()}
-            aria-label="Direct WhatsApp Chat"
-            title="Chat directly on WhatsApp"
+            aria-label="Direct WhatsApp Live Chat"
+            title="Chat directly with our support team on WhatsApp"
             className="w-12 h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:bg-[#20ba59] hover:scale-105 active:scale-95 transition"
           >
             <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
@@ -169,10 +166,10 @@ export function LiveChatWidget() {
               </div>
               <div>
                 <div className="font-extrabold text-sm flex items-center gap-1.5">
-                  AI Support &amp; Help Desk
+                  Live Customer Support
                   <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
                 </div>
-                <div className="text-[11px] text-white/80">Instant answers + WhatsApp live support</div>
+                <div className="text-[11px] text-white/80">Instant answers + live WhatsApp team</div>
               </div>
             </div>
             <button
@@ -189,13 +186,14 @@ export function LiveChatWidget() {
           {/* Quick WhatsApp Bar */}
           <div className="bg-emerald-50 px-4 py-2 border-b border-emerald-100 flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs text-emerald-800 font-medium">
-              <span className="font-bold">WhatsApp:</span> {WHATSAPP_DISPLAY}
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-bold">Live WhatsApp Support:</span> Online
             </div>
             <button
-              onClick={() => openWhatsApp()}
+              onClick={() => openWhatsApp(userTextContext(messages))}
               className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-white border border-emerald-200 px-2.5 py-1 rounded-full shadow-sm hover:bg-emerald-100 transition"
             >
-              <span>Chat Now</span>
+              <span>Connect Now</span>
               <span className="text-xs">↗</span>
             </button>
           </div>
@@ -283,7 +281,7 @@ export function LiveChatWidget() {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask an FAQ or type a message..."
+              placeholder="Ask a question or type a message..."
               className="flex-1 bg-ink-50 border border-ink-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-brand-500 focus:bg-white transition"
             />
             <button
@@ -306,8 +304,7 @@ export function LiveChatWidget() {
 function userTextContext(messages: Message[]): string {
   const lastUserMsg = [...messages].reverse().find((m) => m.sender === "user");
   if (lastUserMsg) {
-    return `Hello buygiftcards.online team! I need help with: "${lastUserMsg.text}"`;
+    return `Hello support team! I need assistance with: "${lastUserMsg.text}"`;
   }
-  return "Hello buygiftcards.online team! I have a question regarding digital gift cards.";
+  return "Hello support team! I have an inquiry regarding my order.";
 }
-

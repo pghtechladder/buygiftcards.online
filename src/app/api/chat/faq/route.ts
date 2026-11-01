@@ -61,12 +61,12 @@ export async function POST(req: NextRequest) {
     // 1. Check for greeting
     if (/^(hi|hello|hey|good morning|good evening|howdy|sup)\b/.test(userMsg) && userMsg.length < 25) {
       return NextResponse.json({
-        reply: "Hello! Welcome to buygiftcards.online support. How can I help you today? You can ask me about delivery times, order tracking, balance checks, or tap below to chat with our live agent on WhatsApp!",
+        reply: "Hello! Welcome to Customer Support. How can I assist you today? You can ask me about delivery times, order tracking, card balances, or connect directly with our live support team on WhatsApp!",
         suggestedActions: [
-          { label: "Track my order", query: "How do I track my order?" },
-          { label: "Delivery time", query: "How quickly are eGift cards delivered?" },
-          { label: "Check card balance", query: "How do I check my card balance?" },
-          { label: "Chat on WhatsApp", whatsapp: true },
+          { label: "📦 Track an order", query: "How do I track my order?" },
+          { label: "⚡ Delivery speed", query: "How quickly are eGift cards delivered?" },
+          { label: "💳 Check card balance", query: "How do I check my card balance?" },
+          { label: "💬 Connect with Live Agent on WhatsApp", whatsapp: true },
         ],
       });
     }
@@ -92,18 +92,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         reply: bestMatch.answer,
         matchedTopic: bestMatch.topic,
-        whatsappPrompt: "Need further help or want a live human agent? Connect on WhatsApp (+91 73050 22840).",
+        suggestedActions: [
+          { label: "💬 Connect with Live Agent on WhatsApp", whatsapp: true },
+        ],
       });
     }
 
-    // 3. Fallback answer directing to WhatsApp support
+    // 3. Fallback answer directing to WhatsApp support without exposing raw phone number
     return NextResponse.json({
-      reply: "Thank you for reaching out! For specific questions about orders, brand availability, or custom requests, our live support team is active right now on WhatsApp (+91 73050 22840) and happy to assist you immediately.",
-      whatsappPrompt: "Chat directly with our support team on WhatsApp for immediate response.",
+      reply: "Thank you for reaching out! For this inquiry or specific order assistance, our dedicated support team is available on WhatsApp to reply to you immediately.",
+      suggestedActions: [
+        { label: "💬 Connect with Live Agent on WhatsApp", whatsapp: true },
+      ],
     });
   } catch (err) {
     console.error("[/api/chat/faq]", err);
     return NextResponse.json({ error: "Internal error processing support query" }, { status: 500 });
   }
 }
-
