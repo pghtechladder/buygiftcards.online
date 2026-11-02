@@ -159,6 +159,8 @@ export function CartDrawer() {
     });
   }, [isOpen, sdkReady, serializedItems, idempotencyKey, clear, setOpen, router]);
 
+  if (!isOpen) return null;
+
   const checkoutWithPayPalRedirect = async () => {
     setLoading(true);
     setError(null);
