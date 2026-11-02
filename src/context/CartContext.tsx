@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { getBrand, chargeAmountCents } from "@/lib/brands";
 
 export type CartItem = {
   key: string;
@@ -8,7 +9,7 @@ export type CartItem = {
   brandName: string;
   domain: string;
   color: string;
-  amount: number; // dollars
+  amount: number; // face value in dollars
   qty: number;
   deliveryType: "egift" | "physical";
   customPhotoUrl?: string;
@@ -29,7 +30,9 @@ type CartContextValue = {
   remove: (key: string) => void;
   clear: () => void;
   count: number;
-  total: number;
+  total: number; // Actual discounted checkout charge
+  faceTotal: number; // Face value total of cards
+  savingsTotal: number; // Total customer savings
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -76,10 +79,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clear = () => setItems([]);
 
   const count = items.reduce((s, i) => s + i.qty, 0);
-  const total = items.reduce((s, i) => s + i.amount * i.qty, 0);
+
+  // Calculate actual charged price with discounts applied
+  const faceTotal = items.reduce((s, i) => s + i.amount * i.qty, 0);
+  const totalCents = items.reduce((s, i) => {
+    const brand = getBrand(i.brandSlug);
+    const chargeCents = brand ? chargeAmountCents(brand, i.amount) : Math.round(i.amount * 100);
+    return s + chargeCents * i.qty;
+  }, 0);
+  const total = Math.round(totalCents) / 100;
+  const savingsTotal = Math.max(0, Math.round((faceTotal - total) * 100) / 100);
 
   return (
-    <CartContext.Provider value={{ items, isOpen, setOpen, add, updateQty, remove, clear, count, total }}>
+    <CartContext.Provider
+      value={{
+        items,
+        isOpen,
+        setOpen,
+        add,
+        updateQty,
+        remove,
+        clear,
+        count,
+        total,
+        faceTotal,
+        savingsTotal,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { getBrand, chargeAmountCents } from "@/lib/brands";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
 
@@ -29,7 +30,7 @@ declare global {
 
 export function CartDrawer() {
   const router = useRouter();
-  const { items, isOpen, setOpen, updateQty, remove, total, clear } = useCart();
+  const { items, isOpen, setOpen, updateQty, remove, total, faceTotal, savingsTotal, clear } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sdkReady, setSdkReady] = useState(false);
@@ -140,12 +141,7 @@ export function CartDrawer() {
           }
           clear();
           setOpen(false);
-          setLoading(false);
-          router.push(
-            `/orders/${encodeURIComponent(captured.order.orderNumber)}?email=${encodeURIComponent(
-              captured.order.customerEmail
-            )}`
-          );
+          router.push(`/orders/${captured.order.orderNumber}`);
         } catch (err) {
           setError(err instanceof Error ? err.message : "Payment capture failed");
           setLoading(false);
@@ -153,13 +149,15 @@ export function CartDrawer() {
       },
       onError: (err) => {
         console.error("[PayPal Buttons error]", err);
+        setError("PayPal checkout encountered an error. Please try again.");
+        setLoading(false);
       },
     });
 
-    buttons.render(container).catch(() => {});
-  }, [isOpen, sdkReady, serializedItems, idempotencyKey, clear, setOpen, router, items.length]);
-
-  if (!isOpen) return null;
+    buttons.render(container).catch((err) => {
+      console.warn("[PayPal Buttons render error]", err);
+    });
+  }, [isOpen, sdkReady, serializedItems, idempotencyKey, clear, setOpen, router]);
 
   const checkoutWithPayPalRedirect = async () => {
     setLoading(true);
@@ -174,18 +172,23 @@ export function CartDrawer() {
           items: serializedItems,
         }),
       });
-      const raw = await res.text();
-      let data: { url?: string; paypalOrderId?: string; error?: string } = {};
-      try {
-        data = raw ? JSON.parse(raw) : {};
-      } catch {
-        throw new Error(`PayPal checkout failed (status ${res.status})`);
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to create PayPal checkout order");
       }
-      if (!res.ok) throw new Error(data.error || "PayPal checkout failed");
-      if (!data.url) throw new Error("PayPal approval URL missing");
-      window.location.href = data.url;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
+
+      const approveUrl =
+        data.approveUrl ||
+        (data.links && data.links.find((l: { rel: string; href: string }) => l.rel === "approve")?.href);
+
+      if (!approveUrl) {
+        throw new Error("PayPal approval redirect link is missing from response");
+      }
+
+      window.location.href = approveUrl;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Checkout error");
       setLoading(false);
     }
   };
@@ -208,47 +211,80 @@ export function CartDrawer() {
               <div className="font-medium">Your cart is empty</div>
             </div>
           ) : (
-            items.map((item) => (
-              <div key={item.key} className="flex gap-4 py-4 border-b border-ink-50 items-center">
-                {item.customPhotoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.customPhotoUrl} alt="" className="w-12 h-12 rounded-[10px] object-cover flex-shrink-0" />
-                ) : (
-                  <BrandLogo domain={item.domain} name={item.brandName} size={48} radius={10} />
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-sm">{item.brandName}</div>
-                  <div className="text-xs text-ink-400">
-                    {fmt(item.amount)} · {item.deliveryType === "egift" ? "eGift" : "Physical"}
-                    {item.customPhotoUrl && " · Custom photo"}
-                  </div>
-                  {item.recipientEmail && (
-                    <div className="text-[11px] text-brand-700 font-medium truncate mt-0.5">
-                      To: {item.recipientName ? `${item.recipientName} (${item.recipientEmail})` : item.recipientEmail}
-                    </div>
+            items.map((item) => {
+              const brand = getBrand(item.brandSlug);
+              const chargePerCard = brand ? chargeAmountCents(brand, item.amount) / 100 : item.amount;
+              const hasDiscount = chargePerCard < item.amount;
+              const lineTotal = chargePerCard * item.qty;
+
+              return (
+                <div key={item.key} className="flex gap-4 py-4 border-b border-ink-50 items-center">
+                  {item.customPhotoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.customPhotoUrl} alt="" className="w-12 h-12 rounded-[10px] object-cover flex-shrink-0" />
+                  ) : (
+                    <BrandLogo domain={item.domain} name={item.brandName} size={48} radius={10} />
                   )}
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <div className="flex border border-ink-100 rounded-lg overflow-hidden">
-                    <button onClick={() => updateQty(item.key, item.qty - 1)} className="w-7 h-7 bg-ink-50">−</button>
-                    <span className="w-7 flex items-center justify-center text-xs font-bold">{item.qty}</span>
-                    <button onClick={() => updateQty(item.key, item.qty + 1)} className="w-7 h-7 bg-ink-50">+</button>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm truncate">{item.brandName}</span>
+                      {hasDiscount && (
+                        <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-accent-500 text-ink-950">
+                          {brand?.discountPercent}% OFF
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-ink-400 mt-0.5">
+                      {fmt(item.amount)} face value · {item.deliveryType === "egift" ? "eGift" : "Physical"}
+                      {item.customPhotoUrl && " · Custom photo"}
+                    </div>
+                    {item.recipientEmail && (
+                      <div className="text-[11px] text-brand-700 font-medium truncate mt-0.5">
+                        To: {item.recipientName ? `${item.recipientName} (${item.recipientEmail})` : item.recipientEmail}
+                      </div>
+                    )}
                   </div>
-                  <div className="font-extrabold text-sm w-14 text-right">{fmt(item.amount * item.qty)}</div>
-                  <button onClick={() => remove(item.key)} aria-label={`Remove ${item.brandName}`} className="text-ink-400 hover:text-red-500 transition">
-                    <Icon name="x" size={16} />
-                  </button>
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex border border-ink-100 rounded-lg overflow-hidden">
+                      <button onClick={() => updateQty(item.key, item.qty - 1)} className="w-7 h-7 bg-ink-50">−</button>
+                      <span className="w-7 flex items-center justify-center text-xs font-bold">{item.qty}</span>
+                      <button onClick={() => updateQty(item.key, item.qty + 1)} className="w-7 h-7 bg-ink-50">+</button>
+                    </div>
+                    <div className="text-right w-16">
+                      <div className="font-extrabold text-sm">{fmt(lineTotal)}</div>
+                      {hasDiscount && (
+                        <div className="text-[11px] text-ink-400 line-through">
+                          {fmt(item.amount * item.qty)}
+                        </div>
+                      )}
+                    </div>
+                    <button onClick={() => remove(item.key)} aria-label={`Remove ${item.brandName}`} className="text-ink-400 hover:text-red-500 transition">
+                      <Icon name="x" size={16} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
         {items.length > 0 && (
           <div className="px-7 py-6 border-t border-ink-100 bg-ink-50 space-y-3">
-            <div className="flex justify-between text-lg font-extrabold">
-              <span>Total</span>
-              <span>{fmt(total)}</span>
+            <div className="space-y-1.5 text-sm">
+              <div className="flex justify-between text-ink-500">
+                <span>Gift Card Value</span>
+                <span>{fmt(faceTotal)}</span>
+              </div>
+              {savingsTotal > 0 && (
+                <div className="flex justify-between text-emerald-600 font-bold">
+                  <span>Customer Savings (Discounts)</span>
+                  <span>−{fmt(savingsTotal)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-lg font-extrabold pt-2 border-t border-ink-200/60">
+                <span>Total to Pay</span>
+                <span>{fmt(total)}</span>
+              </div>
             </div>
 
             {error && (
