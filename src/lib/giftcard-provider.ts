@@ -1,6 +1,7 @@
 import { generateDemoCode, generateDemoPin } from "./order";
 import { HOUSE_BRAND_SLUGS } from "./brands";
 import { loggedFetch, writeTransactionLog } from "./logger";
+import { GENERATED_ZENDIT_OFFERS } from "./zendit-offers.generated";
 
 /**
  * Fulfillment is intentionally behind an interface. DemoGiftCardProvider
@@ -586,6 +587,21 @@ function buildZenditRequiredFields(
   });
 }
 
+// Hand-maintained entries above take precedence over the generated live-catalog map.
+const ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
+  ...GENERATED_ZENDIT_OFFERS,
+  ...BRAND_TO_ZENDIT_OFFER,
+};
+
+/** True if the brand can actually be fulfilled (house card or has a Zendit offer). */
+export function isFulfillableBrand(slug: string): boolean {
+  if (HOUSE_BRAND_SLUGS.includes(slug)) return true;
+  const spec = ZENDIT_OFFERS[slug];
+  return Boolean(spec && (spec.fixedOffers || (spec.rangeOfferId && spec.rangeOfferId !== "HOUSE_SWAP")));
+}
+
+export class ZenditUnfulfillableError extends Error {}
+
 export const ZENDIT_PRODUCTION_API_URL = "https://api.zendit.io/v1";
 const DEFAULT_ZENDIT_API_KEY = "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9";
 
@@ -613,38 +629,41 @@ export class ZenditProvider implements GiftCardProvider {
     senderName,
   }: IssueCardParams): Promise<IssuedCard> {
     const isHouseBrand = HOUSE_BRAND_SLUGS.includes(brandSlug);
-    const spec = BRAND_TO_ZENDIT_OFFER[brandSlug];
+    const spec = ZENDIT_OFFERS[brandSlug];
 
     const dollars = Math.max(1, Math.round(amountCents / 100));
+
+    // House / multi-brand cards are redeemed later on /redeem for a real brand, so no
+    // supplier voucher is purchased up front — just issue a card number + PIN.
+    if (isHouseBrand) {
+      const code = generateDemoCode();
+      const pin = generateDemoPin();
+      writeTransactionLog({
+        phase: "PROCESS_COMPLETE",
+        process: `ZenditProvider.issue(${brandSlug}, $${dollars})`,
+        details: { brandSlug, amountCents, note: "House card issued; supplier voucher is purchased at redemption." },
+      });
+      return { code, pin, isDemo: false };
+    }
+
     let offerId: string | undefined;
     let isRange = false;
-    let rangeValueCents = amountCents;
+    const rangeValueCents = amountCents;
 
-    if (!isHouseBrand && spec) {
+    if (spec) {
       if (spec.fixedOffers && spec.fixedOffers[dollars]) {
         offerId = spec.fixedOffers[dollars];
       } else if (spec.rangeOfferId && spec.rangeOfferId !== "HOUSE_SWAP") {
         offerId = spec.rangeOfferId;
         isRange = true;
-      } else if (spec.fixedOffers) {
-        // Pick the closest available fixed denomination if exact dollar isn't in fixedOffers
-        const availableDollars = Object.keys(spec.fixedOffers)
-          .map(Number)
-          .sort((a, b) => Math.abs(a - dollars) - Math.abs(b - dollars));
-        const closest = availableDollars[0];
-        if (closest !== undefined) {
-          offerId = spec.fixedOffers[closest];
-        }
       }
     }
 
-    // For House Choice Cards or any storefront brand without an explicit entry in BRAND_TO_ZENDIT_OFFER,
-    // execute a live Zendit voucher purchase on https://api.zendit.io/v1 using ULTA_US_OPEN ($5-$500 open range)
-    // so every completed PayPal payment creates a real Zendit transaction and voucher receipt.
-    if (!offerId || offerId === "HOUSE_SWAP") {
-      offerId = "ULTA_US_OPEN";
-      isRange = true;
-      rangeValueCents = Math.min(Math.max(amountCents, 500), 50000);
+    // Never substitute a different brand/denomination: a customer who paid for X must get X.
+    if (!offerId) {
+      const msg = `No Zendit offer for brand "${brandSlug}" at $${dollars} — refusing to issue a different card.`;
+      writeTransactionLog({ phase: "PROCESS_ERROR", process: `ZenditProvider.issue(${brandSlug})`, error: msg });
+      throw new ZenditUnfulfillableError(msg);
     }
 
     const transactionId = `bgc-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -796,6 +815,8 @@ class HybridZenditProvider implements GiftCardProvider {
     try {
       return await this.zendit.issue(params);
     } catch (err) {
+      // Never swap in placeholder codes for a brand we can't supply.
+      if (err instanceof ZenditUnfulfillableError) throw err;
       const msg = err instanceof Error ? err.message : String(err);
       console.warn(
         `[giftcard-provider] Zendit issue failed for "${params.brandSlug}" (${msg}) — falling back to secondary provider.`

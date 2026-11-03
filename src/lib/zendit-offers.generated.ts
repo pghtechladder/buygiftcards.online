@@ -1,0 +1,915 @@
+// AUTO-GENERATED from the live Zendit US voucher catalog (GET /v1/vouchers/offers?country=US).
+// Brands not listed here have no Zendit offer and cannot be fulfilled.
+import type { ZenditOfferSpec } from "./giftcard-provider";
+
+export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
+  "amazon": {
+    "rangeOfferId": "AMAZON_US_OPEN",
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "starbucks": {
+    "fixedOffers": {
+      "5": "STARBUCKS_US_001",
+      "10": "STARBUCKS_US_002",
+      "25": "STARBUCKS_US_003",
+      "50": "STARBUCKS_US_004"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "doordash": {
+    "fixedOffers": {
+      "25": "GT_DOORDASH_US_25_EGIFT",
+      "50": "GT_DOORDASH_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "uber": {
+    "fixedOffers": {
+      "15": "UBER_US_001",
+      "25": "UBER_US_002",
+      "50": "UBER_US_003",
+      "75": "UBER_US_004",
+      "100": "UBER_US_005"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "chipotle": {
+    "fixedOffers": {
+      "5": "CHIPOTLE_US_001_EGIFT",
+      "25": "CHIPOTLE_US_002_EGIFT",
+      "50": "CHIPOTLE_US_003_EGIFT",
+      "75": "CHIPOTLE_US_004_EGIFT",
+      "100": "CHIPOTLE_US_005_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "airbnb": {
+    "fixedOffers": {
+      "50": "AIRBNB_US_002_EGIFT",
+      "100": "AIRBNB_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "sephora": {
+    "fixedOffers": {
+      "10": "SEPHORA_US_001_EGIFT",
+      "25": "SEPHORA_US_002_EGIFT",
+      "50": "SEPHORA_US_003_EGIFT",
+      "75": "SEPHORA_US_004_EGIFT",
+      "100": "SEPHORA_US_005_EGIFT"
+    }
+  },
+  "panera": {
+    "fixedOffers": {
+      "25": "PANERA_US_001",
+      "50": "PANERA_US_002",
+      "100": "PANERA_US_003"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "xbox": {
+    "fixedOffers": {
+      "15": "XBOX_US_15_EGIFT_WHS",
+      "25": "XBOX_US_25_EGIFT_WHS",
+      "50": "XBOX_US_50_EGIFT_WHS",
+      "100": "XBOX_US_100_EGIFT_WHS"
+    }
+  },
+  "ubereats": {
+    "fixedOffers": {
+      "15": "UBEREATS_US_15_WHS",
+      "25": "UBEREATS_US_25_WHS",
+      "50": "UBEREATS_US_50_WHS",
+      "75": "UBEREATS_US_75_WHS",
+      "100": "UBEREATS_US_100_WHS"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "googleplay": {
+    "fixedOffers": {
+      "10": "GOOGLEPLAY_US_001",
+      "25": "GOOGLEPLAY_US_002",
+      "50": "GOOGLEPLAY_US_003",
+      "75": "GOOGLEPLAY_US_004",
+      "100": "GOOGLEPLAY_US_005"
+    }
+  },
+  "adidas": {
+    "fixedOffers": {
+      "50": "ADIDAS_US_003_EGIFT",
+      "100": "ADIDAS_US_005_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "shell": {
+    "fixedOffers": {
+      "10": "SHELL_US_10_WHS",
+      "15": "SHELL_US_15_WHS",
+      "25": "SHELL_US_25_WHS",
+      "50": "SHELL_US_50_WHS",
+      "100": "SHELL_US_100_WHS"
+    }
+  },
+  "autozone": {
+    "fixedOffers": {
+      "20": "AUTOZONE_US_20_EGIFT",
+      "50": "AUTOZONE_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName"
+    ]
+  },
+  "jiffylube": {
+    "fixedOffers": {
+      "25": "JIFFYLUBE_US_001",
+      "50": "JIFFYLUBE_US_002",
+      "75": "JIFFYLUBE_US_003",
+      "100": "JIFFYLUBE_US_004"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "cvspharmacy": {
+    "fixedOffers": {
+      "25": "CVS_US_001_EGIFT",
+      "50": "CVS_US_002_EGIFT",
+      "75": "CVS_US_003_EGIFT",
+      "100": "CVS_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "saks": {
+    "fixedOffers": {
+      "10": "SAKS_US_10_EGIFT",
+      "25": "SAKS_US_25_EGIFT",
+      "50": "SAKS_US_50_EGIFT",
+      "75": "SAKS_US_75_EGIFT",
+      "100": "SAKS_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "staples": {
+    "fixedOffers": {
+      "25": "STAPLES_US_001",
+      "50": "STAPLES_US_002",
+      "75": "STAPLES_US_003",
+      "100": "STAPLES_US_004"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "containerstore": {
+    "fixedOffers": {
+      "5": "CONTAINERSTORE_US_5_EGIFT",
+      "10": "CONTAINERSTORE_US_10_EGIFT",
+      "25": "CONTAINERSTORE_US_25_EGIFT",
+      "50": "CONTAINERSTORE_US_50_EGIFT",
+      "75": "CONTAINERSTORE_US_75_EGIFT",
+      "100": "CONTAINERSTORE_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "shutterfly": {
+    "fixedOffers": {
+      "25": "SHUTTERFLY_US_001",
+      "50": "SHUTTERFLY_US_002"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "yankeecandle": {
+    "fixedOffers": {
+      "25": "YANKEECANDLE_US_001",
+      "50": "YANKEECANDLE_US_002",
+      "75": "YANKEECANDLE_US_003",
+      "100": "YANKEECANDLE_US_004"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "underarmour": {
+    "rangeOfferId": "UNDERARMOUR_US_OPEN",
+    "fixedOffers": {
+      "25": "UNDERARMOUR_US_25_EGIFT",
+      "50": "UNDERARMOUR_US_50_EGIFT",
+      "75": "UNDERARMOUR_US_75_EGIFT",
+      "100": "UNDERARMOUR_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "gamestop": {
+    "fixedOffers": {
+      "5": "GAMESTOP_US_001_EGIFT",
+      "10": "GAMESTOP_US_002_EGIFT",
+      "25": "GAMESTOP_US_25_WHS",
+      "50": "GAMESTOP_US_50_WHS",
+      "75": "GAMESTOP_US_003_EGIFT",
+      "100": "GAMESTOP_US_004_EGIFT"
+    }
+  },
+  "llbean": {
+    "fixedOffers": {
+      "25": "LLBEAN_US_25_EGIFT",
+      "50": "LLBEAN_US_50_EGIFT",
+      "100": "LLBEAN_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "dsw": {
+    "fixedOffers": {
+      "5": "GT_DSW_US_5_EGIFT",
+      "10": "GT_DSW_US_10_EGIFT",
+      "25": "GT_DSW_US_25_EGIFT",
+      "50": "GT_DSW_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "finishline": {
+    "fixedOffers": {
+      "5": "GT_FINISHLINE_US_5_EGIFT",
+      "10": "GT_FINISHLINE_US_10_EGIFT",
+      "25": "GT_FINISHLINE_US_25_EGIFT",
+      "50": "GT_FINISHLINE_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "chicos": {
+    "fixedOffers": {
+      "10": "GT_CHICOS_US_10_EGIFT",
+      "25": "GT_CHICOS_US_25_EGIFT",
+      "50": "GT_CHICOS_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "guess": {
+    "fixedOffers": {
+      "15": "GT_GUESS_US_15_EGIFT",
+      "25": "GT_GUESS_US_25_EGIFT",
+      "50": "GT_GUESS_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "aerie": {
+    "fixedOffers": {
+      "5": "GT_AERIE_US_5_EGIFT",
+      "10": "GT_AERIE_US_10_EGIFT",
+      "25": "GT_AERIE_US_25_EGIFT",
+      "50": "GT_AERIE_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "carters": {
+    "fixedOffers": {
+      "10": "CARTERS_US_002_EGIFT",
+      "25": "CARTERS_US_003_EGIFT",
+      "50": "CARTERS_US_004_EGIFT",
+      "75": "CARTERS_US_005_EGIFT",
+      "100": "CARTERS_US_006_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "guitarcenter": {
+    "fixedOffers": {
+      "25": "GT_GUITARCENTER_US_25_EGIFT",
+      "50": "GT_GUITARCENTER_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "stitchfix": {
+    "fixedOffers": {
+      "5": "STITCHFIX_US_5_EGIFT",
+      "10": "STITCHFIX_US_10_EGIFT",
+      "25": "STITCHFIX_US_25_EGIFT",
+      "50": "STITCHFIX_US_50_EGIFT",
+      "75": "STITCHFIX_US_75_EGIFT",
+      "100": "STITCHFIX_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "subway": {
+    "fixedOffers": {
+      "5": "SUBWAY_US_5_EGIFT",
+      "10": "SUBWAY_US_10_EGIFT",
+      "25": "SUBWAY_US_25_EGIFT",
+      "50": "SUBWAY_US_50_EGIFT",
+      "75": "SUBWAY_US_75_EGIFT",
+      "100": "SUBWAY_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "darden": {
+    "fixedOffers": {
+      "25": "DARDEN_US_001_EGIFT",
+      "50": "DARDEN_US_002_EGIFT",
+      "75": "DARDEN_US_003_EGIFT",
+      "100": "DARDEN_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "dominos": {
+    "fixedOffers": {
+      "5": "DOMINOS_US_001_EGIFT",
+      "25": "DOMINOS_US_002_EGIFT",
+      "50": "DOMINOS_US_003_EGIFT",
+      "75": "DOMINOS_US_004_EGIFT",
+      "100": "DOMINOS_US_005_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "cheesecakefactory": {
+    "fixedOffers": {
+      "25": "CHEESECAKEFACTORY_US_001",
+      "50": "CHEESECAKEFACTORY_US_002",
+      "75": "CHEESECAKEFACTORY_US_003",
+      "100": "CHEESECAKEFACTORY_US_004"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "redrobin": {
+    "fixedOffers": {
+      "25": "REDROBIN_US_25_WHS",
+      "50": "REDROBIN_US_50_WHS",
+      "100": "REDROBIN_US_100_WHS"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "peets": {
+    "fixedOffers": {
+      "10": "PEETS_US_10_EGIFT",
+      "25": "PEETS_US_25_EGIFT",
+      "50": "PEETS_US_50_EGIFT",
+      "75": "PEETS_US_75_EGIFT",
+      "100": "PEETS_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "chilis": {
+    "fixedOffers": {
+      "25": "CHILIS_US_001_EGIFT",
+      "50": "CHILIS_US_002_EGIFT",
+      "100": "CHILIS_US_003_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "steaknshake": {
+    "fixedOffers": {
+      "15": "STEAKNSHAKE_US_15_EGIFT",
+      "25": "STEAKNSHAKE_US_25_EGIFT",
+      "50": "STEAKNSHAKE_US_50_EGIFT",
+      "75": "STEAKNSHAKE_US_75_EGIFT",
+      "100": "STEAKNSHAKE_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "krispykreme": {
+    "fixedOffers": {
+      "25": "KRISPYKREME_US_001",
+      "50": "KRISPYKREME_US_002",
+      "75": "KRISPYKREME_US_003",
+      "100": "KRISPYKREME_US_004"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "ihop": {
+    "fixedOffers": {
+      "100": "IHOP_US_100_EGIFT_USD"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "bobevans": {
+    "fixedOffers": {
+      "15": "BOBEVANS_US_15_EGIFT",
+      "25": "BOBEVANS_US_25_EGIFT",
+      "50": "BOBEVANS_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "jerseymikes": {
+    "fixedOffers": {
+      "20": "GT_JERSEYMIKE_US_20_EGIFT",
+      "50": "GT_JERSEYMIKE_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "coldstonecreamery": {
+    "fixedOffers": {
+      "5": "GT_COLDSTONE_US_5_EGIFT",
+      "10": "GT_COLDSTONE_US_10_EGIFT",
+      "25": "GT_COLDSTONE_US_25_EGIFT",
+      "50": "GT_COLDSTONE_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "bajafresh": {
+    "fixedOffers": {
+      "5": "BAJAFRESH_US_5_EGIFT",
+      "10": "BAJAFRESH_US_10_EGIFT",
+      "25": "BAJAFRESH_US_25_EGIFT",
+      "50": "BAJAFRESH_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "bubbagump": {
+    "fixedOffers": {
+      "10": "BUBBAGUMP_US_001_EGIFT",
+      "25": "BUBBAGUMP_US_002_EGIFT",
+      "50": "BUBBAGUMP_US_003_EGIFT",
+      "75": "BUBBAGUMP_US_004_EGIFT",
+      "100": "BUBBAGUMP_US_005_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "bahamabreeze": {
+    "fixedOffers": {
+      "10": "BAHAMABREEZE_US_10_EGIFT",
+      "25": "BAHAMABREEZE_US_25_EGIFT",
+      "50": "BAHAMABREEZE_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "rubytuesday": {
+    "fixedOffers": {
+      "25": "RUBYTUESDAY_US_001",
+      "50": "RUBYTUESDAY_US_002",
+      "75": "RUBYTUESDAY_US_003",
+      "100": "RUBYTUESDAY_US_004"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "seasons52": {
+    "fixedOffers": {
+      "10": "SEASON52_US_10_EGIFT",
+      "25": "SEASON52_US_25_EGIFT",
+      "50": "SEASON52_US_50_EGIFT",
+      "75": "SEASON52_US_75_EGIFT",
+      "100": "SEASON52_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "buffalowildwings": {
+    "fixedOffers": {
+      "25": "BUFFALOWILDWINGS_US_001_EGIFT",
+      "50": "BUFFALOWILDWINGS_US_002_EGIFT",
+      "75": "BUFFALOWILDWINGS_US_003_EGIFT",
+      "100": "BUFFALOWILDWINGS_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "southwest": {
+    "fixedOffers": {
+      "15": "SOUTHWESTAIRLINES_US_15_EGIFT",
+      "25": "SOUTHWESTAIRLINES_US_25_EGIFT",
+      "50": "SOUTHWESTAIRLINES_US_50_EGIFT",
+      "75": "SOUTHWESTAIRLINES_US_75_EGIFT",
+      "100": "SOUTHWESTAIRLINES_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "goldennugget": {
+    "fixedOffers": {
+      "5": "GT_GOLDENNUGGET_US_5_EGIFT",
+      "10": "GT_GOLDENNUGGET_US_10_EGIFT",
+      "25": "GT_GOLDENNUGGET_US_25_EGIFT",
+      "50": "GT_GOLDENNUGGET_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "amctheatres": {
+    "fixedOffers": {
+      "25": "AMC_US_001_EGIFT",
+      "50": "AMC_US_002_EGIFT",
+      "75": "AMC_US_003_EGIFT",
+      "100": "AMC_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "regal": {
+    "fixedOffers": {
+      "25": "REGAL_US_25_WHS",
+      "50": "REGAL_US_50_WHS",
+      "100": "REGAL_US_100_WHS"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "cinemark": {
+    "fixedOffers": {
+      "25": "CINEMARK_US_001_EGIFT",
+      "50": "CINEMARK_US_002_EGIFT",
+      "75": "CINEMARK_US_003_EGIFT",
+      "100": "CINEMARK_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "playstation": {
+    "fixedOffers": {
+      "10": "PLAYSTATION_US_001",
+      "25": "PLAYSTATION_US_002",
+      "50": "PLAYSTATION_US_003",
+      "75": "PLAYSTATION_US_004",
+      "100": "PLAYSTATION_US_005"
+    }
+  },
+  "buildabear": {
+    "fixedOffers": {
+      "5": "GT_BUILDABEAR_US_5_EGIFT",
+      "10": "GT_BUILDABEAR_US_10_EGIFT",
+      "25": "GT_BUILDABEAR_US_25_EGIFT",
+      "50": "GT_BUILDABEAR_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "fanatics": {
+    "fixedOffers": {
+      "5": "GT_FANATICS_US_5_EGIFT",
+      "10": "GT_FANATICS_US_10_EGIFT",
+      "25": "GT_FANATICS_US_25_EGIFT",
+      "50": "GT_FANATICS_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "rei": {
+    "fixedOffers": {
+      "25": "REI_US_25_EGIFT",
+      "50": "REI_US_50_EGIFT",
+      "75": "REI_US_75_EGIFT",
+      "100": "REI_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "basspro": {
+    "fixedOffers": {
+      "25": "BASSPROSHOP_US_001_EGIFT",
+      "50": "BASSPROSHOP_US_002_EGIFT",
+      "75": "BASSPROSHOP_US_003_EGIFT",
+      "100": "BASSPROSHOP_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "chewy": {
+    "fixedOffers": {
+      "5": "GT_CHEWY_US_5_EGIFT",
+      "10": "GT_CHEWY_US_10_EGIFT",
+      "25": "GT_CHEWY_US_25_EGIFT",
+      "50": "GT_CHEWY_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "barnesnoble": {
+    "fixedOffers": {
+      "25": "BARNESANDNOBLE_US_001_EGIFT",
+      "50": "BARNESANDNOBLE_US_002_EGIFT",
+      "75": "BARNESANDNOBLE_US_003_EGIFT",
+      "100": "BARNESANDNOBLE_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "michaels": {
+    "fixedOffers": {
+      "25": "MICHAELS_US_25_EGIFT",
+      "50": "MICHAELS_US_50_EGIFT",
+      "75": "MICHAELS_US_75_EGIFT",
+      "100": "MICHAELS_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "pandaexpress": {
+    "fixedOffers": {
+      "15": "PANDAEXPRESS_US_15_EGIFT",
+      "25": "PANDAEXPRESS_US_25_EGIFT",
+      "50": "PANDAEXPRESS_US_50_EGIFT",
+      "75": "PANDAEXPRESS_US_75_EGIFT",
+      "100": "PANDAEXPRESS_US_100_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "belk": {
+    "fixedOffers": {
+      "25": "BELK_US_25_EGIFT",
+      "50": "BELK_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "gap": {
+    "fixedOffers": {
+      "25": "GAP_US_001_EGIFT",
+      "50": "GAP_US_002_EGIFT",
+      "75": "GAP_US_003_EGIFT",
+      "100": "GAP_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "disney": {
+    "rangeOfferId": "DISNEY_US_OPEN"
+  },
+  "dunkin": {
+    "fixedOffers": {
+      "5": "DUNKIN_US_5_WHS",
+      "10": "DUNKIN_US_10_WHS",
+      "25": "DUNKIN_US_25_WHS",
+      "50": "DUNKIN_US_50_WHS"
+    }
+  },
+  "oldnavy": {
+    "fixedOffers": {
+      "25": "OLDNAVY_US_001",
+      "50": "OLDNAVY_US_002",
+      "75": "OLDNAVY_US_003",
+      "100": "OLDNAVY_US_004"
+    },
+    "requiredFields": [
+      "recipient.firstName"
+    ]
+  },
+  "burlington": {
+    "fixedOffers": {
+      "25": "BURLINGTON_US_001_EGIFT",
+      "50": "BURLINGTON_US_002_EGIFT",
+      "75": "BURLINGTON_US_003_EGIFT",
+      "100": "BURLINGTON_US_004_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "albertsons": {
+    "fixedOffers": {
+      "5": "ALBERTSONS_US_5_EGIFT",
+      "10": "ALBERTSONS_US_10_EGIFT",
+      "25": "ALBERTSONS_US_25_EGIFT",
+      "50": "ALBERTSONS_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName"
+    ]
+  },
+  "conoco": {
+    "fixedOffers": {
+      "5": "GT_CONOCO_US_5_EGIFT",
+      "10": "GT_CONOCO_US_10_EGIFT",
+      "25": "GT_CONOCO_US_25_EGIFT",
+      "50": "GT_CONOCO_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName"
+    ]
+  },
+  "fortnite": {
+    "fixedOffers": {
+      "25": "FORTNITE_US_25_WHS",
+      "50": "FORTNITE_US_50_WHS",
+      "75": "FORTNITE_US_75_WHS",
+      "100": "FORTNITE_US_100_WHS",
+      "150": "FORTNITE_US_150_WHS"
+    }
+  },
+  "eaplay": {
+    "fixedOffers": {
+      "15": "EAPLAY_US_001",
+      "27": "EAPLAY_US_002"
+    }
+  },
+  "pubg": {
+    "fixedOffers": {
+      "1": "PUBG_US_60UC_WHS",
+      "5": "PUBG_US_325UC_WHS",
+      "10": "PUBG_US_660 UC_WHS",
+      "25": "PUBG_US_1800UC_WHS",
+      "50": "PUBG_US_3850UC_WHS",
+      "100": "PUBG_US_8100 UC_WHS",
+      "200": "PUBG_US_16200UC_WHS",
+      "300": "PUBG_US_24300UC_WHS",
+      "400": "PUBG_US_32400UC_WHS",
+      "500": "PUBG_US_40500 UC_WHS"
+    },
+    "requiredFields": [
+      "recipient.firstName"
+    ]
+  },
+  "freefire": {
+    "fixedOffers": {
+      "1": "FREEFIRE_US_1_EGIFT",
+      "2": "FREEFIRE_US_2_EGIFT",
+      "5": "FREEFIRE_US_5_EGIFT",
+      "10": "FREEFIRE_US_10_EGIFT",
+      "20": "FREEFIRE_US_20_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "mobilelegends": {
+    "fixedOffers": {
+      "1": "MOBILELEGENDS_US_56D_WHS",
+      "5": "MOBILELEGENDS_US_278D_WHS",
+      "10": "MOBILELEGENDS_US_571D_WHS",
+      "20": "MOBILELEGENDS_US_1167D_WHS",
+      "30": "MOBILELEGENDS_US_1783D_WHS",
+      "50": "MOBILELEGENDS_US_2975D_WHS",
+      "100": "MOBILELEGENDS_US_6000D_WHS"
+    },
+    "requiredFields": [
+      "recipient.firstName"
+    ]
+  },
+  "gatorade": {
+    "fixedOffers": {
+      "25": "GATORADE_US_25_WHS",
+      "50": "GATORADE_US_50_WHS",
+      "100": "GATORADE_US_100_WHS"
+    }
+  },
+  "zwilling": {
+    "fixedOffers": {
+      "25": "ZWILLING_US_25",
+      "50": "ZWILLING_US_50",
+      "75": "ZWILLING_US_75",
+      "100": "ZWILLING_US_100",
+      "150": "ZWILLING_US_150",
+      "200": "ZWILLING_US_200"
+    }
+  },
+  "integralcare": {
+    "fixedOffers": {
+      "139": "INTEGRALCARE_US_139_WHS",
+      "230": "INTEGRALCARE_US_230_WHS"
+    }
+  }
+};

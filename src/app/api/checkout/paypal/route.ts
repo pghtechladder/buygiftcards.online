@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getBrand, isValidDenomination, chargeAmountCents } from "@/lib/brands";
 import { generateOrderNumber } from "@/lib/order";
+import { isFulfillableBrand } from "@/lib/giftcard-provider";
 import { createPayPalOrder, fulfillPayPalOrderById } from "@/lib/paypal";
 import { auth } from "@/lib/auth";
 import { writeTransactionLog } from "@/lib/logger";
@@ -84,6 +85,12 @@ export async function POST(req: NextRequest) {
         const brand = getBrand(item.brandSlug);
         if (!brand) {
           return NextResponse.json({ error: `Unknown brand: ${item.brandSlug}` }, { status: 400 });
+        }
+        if (!isFulfillableBrand(brand.slug)) {
+          return NextResponse.json(
+            { error: `${brand.name} is temporarily unavailable. Please choose another brand.` },
+            { status: 400 }
+          );
         }
         if (brand.type !== "both" && brand.type !== item.deliveryType) {
           return NextResponse.json(
