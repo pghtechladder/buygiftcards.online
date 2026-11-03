@@ -25,8 +25,8 @@ export async function getPayPalAccessToken(): Promise<{ accessToken: string; bas
   const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
   const candidateUrls = configuredBaseUrl
-    ? [configuredBaseUrl.replace(/\/+$/, ""), "https://api-m.paypal.com", "https://api-m.sandbox.paypal.com"]
-    : ["https://api-m.sandbox.paypal.com", "https://api-m.paypal.com"];
+    ? [configuredBaseUrl.replace(/\/+$/, ""), "https://api-m.paypal.com"]
+    : ["https://api-m.paypal.com", "https://api-m.sandbox.paypal.com"];
 
   const tried = new Set<string>();
   let lastError = "PayPal authentication failed";

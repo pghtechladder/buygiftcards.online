@@ -184,7 +184,7 @@ export function CartDrawer() {
         data.approveUrl ||
         data.url ||
         (data.links && data.links.find((l: { rel: string; href: string }) => l.rel === "payer-action" || l.rel === "approve")?.href) ||
-        (data.paypalOrderId ? `https://www.sandbox.paypal.com/checkoutnow?token=${encodeURIComponent(data.paypalOrderId)}` : undefined);
+        (data.paypalOrderId ? `https://www.paypal.com/checkoutnow?token=${encodeURIComponent(data.paypalOrderId)}` : undefined);
 
       if (!approveUrl) {
         throw new Error("PayPal approval redirect link is missing from response");
