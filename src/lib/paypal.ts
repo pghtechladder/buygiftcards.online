@@ -1,9 +1,12 @@
 import { loggedFetch, writeTransactionLog } from "./logger";
 
+// Sandbox credentials only. Live credentials must come from environment variables
+// (PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET / PAYPAL_API_BASE_URL) — never hard-code them.
+export const SANDBOX_PAYPAL_API_BASE_URL = "https://api-m.sandbox.paypal.com";
 export const DEFAULT_PAYPAL_CLIENT_ID =
-  "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg";
+  "BAAvgWHBMWqWeegN_69dmvEE4L1rO4bxEjWv-51rbfcPdEwdz9J9CxZmYrqIl5L7jZhkSK9LQLhAzTPrYc";
 export const DEFAULT_PAYPAL_CLIENT_SECRET =
-  "EP_l4rG98V--xxBunuX3F40UyCD9KsQP8QUY34snUH6XrJynonRROoNeA7ONF5whwyuRfXLVrgcgIlfT";
+  "EIwKAMvExy7u7me1y9-uZBB1vdcHUBKOFeGmGbL2XdGE8d0CcSf1K2g07DRWay4NRWe92HKG_lbXZTJ0";
 
 export function getPayPalCredentials() {
   const clientId =
@@ -11,22 +14,20 @@ export function getPayPalCredentials() {
     process.env.PAYPAL_CLIENT_ID ||
     DEFAULT_PAYPAL_CLIENT_ID;
   const clientSecret = process.env.PAYPAL_CLIENT_SECRET || DEFAULT_PAYPAL_CLIENT_SECRET;
-  const configuredBaseUrl = process.env.PAYPAL_API_BASE_URL;
+  const configuredBaseUrl = process.env.PAYPAL_API_BASE_URL || SANDBOX_PAYPAL_API_BASE_URL;
   return { clientId, clientSecret, configuredBaseUrl };
 }
 
 /**
- * Obtains a PayPal OAuth2 Bearer access token. Automatically attempts the configured
- * base URL (or Live first, then Sandbox) so both Sandbox and Live PayPal credentials
- * work seamlessly.
+ * Obtains a PayPal OAuth2 Bearer access token from exactly ONE environment — the configured
+ * PAYPAL_API_BASE_URL (sandbox by default). There is deliberately no cross-environment fallback:
+ * a sandbox misconfiguration must never silently charge on live, or vice versa.
  */
 export async function getPayPalAccessToken(): Promise<{ accessToken: string; baseUrl: string }> {
   const { clientId, clientSecret, configuredBaseUrl } = getPayPalCredentials();
   const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-  const candidateUrls = configuredBaseUrl
-    ? [configuredBaseUrl.replace(/\/+$/, ""), "https://api-m.paypal.com"]
-    : ["https://api-m.paypal.com", "https://api-m.sandbox.paypal.com"];
+  const candidateUrls = [configuredBaseUrl.replace(/\/+$/, "")];
 
   const tried = new Set<string>();
   let lastError = "PayPal authentication failed";

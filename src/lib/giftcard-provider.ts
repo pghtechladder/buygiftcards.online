@@ -317,233 +317,13 @@ export type ZenditOfferSpec = {
   requiredFields?: string[];
 };
 
+// Offer mapping now comes from the live Zendit catalog: see src/lib/zendit-offers.generated.ts
+// (regenerate with scripts/generate-zendit-map.mjs, verify with scripts/audit-catalog.mjs).
+// Only house cards are declared by hand — they are redeemed later on /redeem.
 export const BRAND_TO_ZENDIT_OFFER: Record<string, ZenditOfferSpec> = {
-  // ── House / Multi-Brand Cards (redeemable on /redeem to swap for any brand) ─
   buygiftcards: { rangeOfferId: "HOUSE_SWAP" },
   one4all: { rangeOfferId: "HOUSE_SWAP" },
   holidayfavorites: { rangeOfferId: "HOUSE_SWAP" },
-
-  // ── Live Zendit US Catalog Brands — Open Range Offers (`priceType: RANGE`) ─
-  ultabeauty: {
-    rangeOfferId: "ULTA_US_OPEN", // $5–$500 open range
-  },
-  underarmour: {
-    rangeOfferId: "UNDERARMOUR_US_OPEN", // $15–$500 open range
-  },
-  disney: {
-    rangeOfferId: "DISNEY_US_OPEN", // $15–$500 open range
-  },
-
-  // ── Live Zendit US Catalog Brands — Fixed Denomination Offers (`priceType: FIXED`) ─
-  googleplay: {
-    fixedOffers: {
-      10: "GOOGLEPLAY_US_001",
-      25: "GOOGLEPLAY_US_002",
-      50: "GOOGLEPLAY_US_003",
-      75: "GOOGLEPLAY_US_004",
-      100: "GOOGLEPLAY_US_005",
-    },
-  },
-  sephora: {
-    fixedOffers: {
-      10: "SEPHORA_US_001_EGIFT",
-      25: "SEPHORA_US_002_EGIFT",
-      50: "SEPHORA_US_003_EGIFT",
-      75: "SEPHORA_US_004_EGIFT",
-      100: "SEPHORA_US_005_EGIFT",
-    },
-  },
-  playstation: {
-    fixedOffers: {
-      10: "PLAYSTATION_US_001",
-      25: "PLAYSTATION_US_002",
-      50: "PLAYSTATION_US_003",
-      75: "PLAYSTATION_US_004",
-      100: "PLAYSTATION_US_005",
-    },
-  },
-  xbox: {
-    fixedOffers: {
-      10: "XBOX_GPESSENTIAL_US_1M_WHS",
-      15: "XBOX_US_15_EGIFT_WHS",
-      25: "XBOX_US_25_EGIFT_WHS",
-      50: "XBOX_US_50_EGIFT_WHS",
-      100: "XBOX_US_100_EGIFT_WHS",
-    },
-  },
-  gamestop: {
-    fixedOffers: {
-      5: "GAMESTOP_US_001_EGIFT",
-      10: "GAMESTOP_US_002_EGIFT",
-      25: "GAMESTOP_US_25_WHS",
-      50: "GAMESTOP_US_50_WHS",
-      75: "GAMESTOP_US_003_EGIFT",
-      100: "GAMESTOP_US_004_EGIFT",
-    },
-  },
-  shell: {
-    fixedOffers: {
-      10: "SHELL_US_10_WHS",
-      15: "SHELL_US_15_WHS",
-      25: "SHELL_US_25_WHS",
-      50: "SHELL_US_50_WHS",
-      100: "SHELL_US_100_WHS",
-    },
-  },
-  autozone: {
-    fixedOffers: {
-      20: "AUTOZONE_US_20_EGIFT",
-      50: "AUTOZONE_US_50_EGIFT",
-    },
-    requiredFields: ["recipient.firstName"],
-  },
-  chevron: {
-    fixedOffers: {
-      25: "GT_CHEVRONTEXACO_US_25_EGIFT",
-      50: "GT_CHEVRONTEXACO_US_50_EGIFT",
-    },
-    requiredFields: ["recipient.firstName"],
-  },
-  albertsons: {
-    fixedOffers: {
-      5: "ALBERTSONS_US_5_EGIFT",
-      10: "ALBERTSONS_US_10_EGIFT",
-      25: "ALBERTSONS_US_25_EGIFT",
-      50: "ALBERTSONS_US_50_EGIFT",
-    },
-    requiredFields: ["recipient.firstName"],
-  },
-  burlington: {
-    fixedOffers: {
-      25: "BURLINGTON_US_001_EGIFT",
-      50: "BURLINGTON_US_002_EGIFT",
-      75: "BURLINGTON_US_003_EGIFT",
-      100: "BURLINGTON_US_004_EGIFT",
-    },
-    requiredFields: ["recipient.firstName", "recipient.lastName"],
-  },
-  dunkin: {
-    fixedOffers: {
-      5: "DUNKIN_US_5_WHS",
-      10: "DUNKIN_US_10_WHS",
-      25: "DUNKIN_US_25_WHS",
-      50: "DUNKIN_US_50_WHS",
-    },
-  },
-  eaplay: {
-    fixedOffers: {
-      15: "EAPLAY_US_001",
-      25: "EAPLAY_US_002",
-    },
-    requiredFields: ["recipient.firstName"],
-  },
-  fortnite: {
-    fixedOffers: {
-      25: "FORTNITE_US_25_WHS",
-      50: "FORTNITE_US_50_WHS",
-      75: "FORTNITE_US_75_WHS",
-      100: "FORTNITE_US_100_WHS",
-      150: "FORTNITE_US_150_WHS",
-    },
-  },
-  freefire: {
-    fixedOffers: {
-      1: "FREEFIRE_US_1_EGIFT",
-      2: "FREEFIRE_US_2_EGIFT",
-      5: "FREEFIRE_US_5_EGIFT",
-      10: "FREEFIRE_US_10_EGIFT",
-      20: "FREEFIRE_US_20_EGIFT",
-    },
-    requiredFields: ["recipient.firstName", "recipient.lastName"],
-  },
-  gatorade: {
-    fixedOffers: {
-      25: "GATORADE_US_25_WHS",
-      50: "GATORADE_US_50_WHS",
-      100: "GATORADE_US_100_WHS",
-    },
-  },
-  conoco: {
-    fixedOffers: {
-      5: "GT_CONOCO_US_5_EGIFT",
-      10: "GT_CONOCO_US_10_EGIFT",
-      25: "GT_CONOCO_US_25_EGIFT",
-      50: "GT_CONOCO_US_50_EGIFT",
-    },
-    requiredFields: ["recipient.firstName"],
-  },
-  integralcare: {
-    fixedOffers: {
-      30: "INTEGRALCARE_US_29.99_WHS",
-      80: "INTEGRALCARE_US_79.99_WHS",
-      139: "INTEGRALCARE_US_139_WHS",
-      230: "INTEGRALCARE_US_230_WHS",
-    },
-  },
-  minecraft: {
-    fixedOffers: {
-      10: "MINECRAFT_US_9.99_EGIFT",
-      20: "MINECRAFT_US_19.99_EGIFT",
-      27: "MINECRAFTJAVABEDROCK_US_WHS",
-    },
-  },
-  mobilelegends: {
-    fixedOffers: {
-      1: "MOBILELEGENDS_US_56D_WHS",
-      5: "MOBILELEGENDS_US_278D_WHS",
-      10: "MOBILELEGENDS_US_571D_WHS",
-      20: "MOBILELEGENDS_US_1167D_WHS",
-      30: "MOBILELEGENDS_US_1783D_WHS",
-      50: "MOBILELEGENDS_US_2975D_WHS",
-      100: "MOBILELEGENDS_US_6000D_WHS",
-    },
-    requiredFields: ["recipient.firstName"],
-  },
-  oldnavy: {
-    fixedOffers: {
-      25: "OLDNAVY_US_001",
-      50: "OLDNAVY_US_002",
-      75: "OLDNAVY_US_003",
-      100: "OLDNAVY_US_004",
-    },
-    requiredFields: ["recipient.firstName"],
-  },
-  pubg: {
-    fixedOffers: {
-      1: "PUBG_US_60UC_WHS",
-      5: "PUBG_US_325UC_WHS",
-      10: "PUBG_US_660 UC_WHS",
-      25: "PUBG_US_1800UC_WHS",
-      50: "PUBG_US_3850UC_WHS",
-      100: "PUBG_US_8100 UC_WHS",
-      200: "PUBG_US_16200UC_WHS",
-      300: "PUBG_US_24300UC_WHS",
-      400: "PUBG_US_32400UC_WHS",
-      500: "PUBG_US_40500 UC_WHS",
-    },
-    requiredFields: ["recipient.firstName"],
-  },
-  razergold: {
-    fixedOffers: {
-      10: "RAZERGOLD_US_10",
-      25: "RAZERGOLD_US_25",
-      50: "RAZERGOLD_US_50",
-      75: "RAZERGOLD_US_75",
-      100: "RAZERGOLD_US_100",
-      150: "RAZERGOLD_US_150",
-      200: "RAZERGOLD_US_200",
-    },
-  },
-  zwilling: {
-    fixedOffers: {
-      25: "ZWILLING_US_25",
-      50: "ZWILLING_US_50",
-      75: "ZWILLING_US_75",
-      100: "ZWILLING_US_100",
-      150: "ZWILLING_US_150",
-      200: "ZWILLING_US_200",
-    },
-  },
 };
 
 function buildZenditRequiredFields(
@@ -602,23 +382,19 @@ export function isFulfillableBrand(slug: string): boolean {
 
 export class ZenditUnfulfillableError extends Error {}
 
-export const ZENDIT_PRODUCTION_API_URL = "https://api.zendit.io/v1";
-const DEFAULT_ZENDIT_API_KEY = "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9";
+export const ZENDIT_API_URL = "https://api.zendit.io/v1";
 
 export class ZenditProvider implements GiftCardProvider {
   private apiKey: string;
   private baseUrl: string;
 
   constructor() {
-    const prodCandidate = process.env.ZENDIT_PRODUCTION_API_KEY;
-    const apiCandidate = process.env.ZENDIT_API_KEY;
-    const key =
-      (prodCandidate && prodCandidate.startsWith("prod_") ? prodCandidate : undefined) ||
-      (apiCandidate && apiCandidate.startsWith("prod_") ? apiCandidate : undefined) ||
-      DEFAULT_ZENDIT_API_KEY;
+    // Environment is chosen purely by the key: `sand_...` = Zendit sandbox, `prod_...` = live.
+    // Nothing is hard-coded, so a missing key can never silently fall through to live purchases.
+    const key = process.env.ZENDIT_API_KEY;
     if (!key) throw new Error("ZENDIT_API_KEY is not set — required for ZenditProvider");
     this.apiKey = key;
-    this.baseUrl = (process.env.ZENDIT_API_BASE_URL || ZENDIT_PRODUCTION_API_URL).replace(/\/+$/, "");
+    this.baseUrl = (process.env.ZENDIT_API_BASE_URL || ZENDIT_API_URL).replace(/\/+$/, "");
   }
 
   async issue({
@@ -844,10 +620,11 @@ function buildProvider(): GiftCardProvider {
     : demo;
 
   // 1. Zendit (primary): uses ZENDIT_API_KEY or configured default key.
-  if (process.env.ZENDIT_API_KEY || DEFAULT_ZENDIT_API_KEY) {
-    const mappedCount = Object.keys(BRAND_TO_ZENDIT_OFFER).length;
+  if (process.env.ZENDIT_API_KEY) {
+    const mappedCount = Object.keys(ZENDIT_OFFERS).length;
+    const mode = process.env.ZENDIT_API_KEY.startsWith("prod_") ? "LIVE" : "SANDBOX";
     console.log(
-      `[giftcard-provider] Using ZenditProvider [PRODUCTION READY] ` +
+      `[giftcard-provider] Using ZenditProvider [${mode}] ` +
         `(${mappedCount} brands mapped, account: ${process.env.ZENDIT_USERNAME || "sri@techladder.io"})`
     );
     return new HybridZenditProvider(new ZenditProvider(), secondaryFallback);

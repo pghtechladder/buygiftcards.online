@@ -11,7 +11,7 @@ const fmt = (n: number) => `$${n.toFixed(2)}`;
 
 const PAYPAL_CLIENT_ID =
   process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
-  "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg";
+  "BAAvgWHBMWqWeegN_69dmvEE4L1rO4bxEjWv-51rbfcPdEwdz9J9CxZmYrqIl5L7jZhkSK9LQLhAzTPrYc"; // sandbox
 
 declare global {
   interface Window {
@@ -183,8 +183,7 @@ export function CartDrawer() {
       const approveUrl =
         data.approveUrl ||
         data.url ||
-        (data.links && data.links.find((l: { rel: string; href: string }) => l.rel === "payer-action" || l.rel === "approve")?.href) ||
-        (data.paypalOrderId ? `https://www.paypal.com/checkoutnow?token=${encodeURIComponent(data.paypalOrderId)}` : undefined);
+        (data.links && data.links.find((l: { rel: string; href: string }) => l.rel === "payer-action" || l.rel === "approve")?.href);
 
       if (!approveUrl) {
         throw new Error("PayPal approval redirect link is missing from response");

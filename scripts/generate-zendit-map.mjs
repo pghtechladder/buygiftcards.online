@@ -1,0 +1,142 @@
+// Regenerates src/lib/zendit-offers.generated.ts from the LIVE Zendit US voucher catalog,
+// then syncs brand denominations / min / max / fixedOnly / hidden flags in src/lib/brands.ts.
+// Face value is Zendit's `send` amount (NOT `price`, which can include markup).
+//
+//   ZENDIT_KEY=<key> node scripts/generate-zendit-map.mjs
+//
+// Single source of truth = the live catalog. Re-run whenever Zendit's catalog changes,
+// then run scripts/audit-catalog.mjs to verify.
+import fs from 'fs';
+
+const KEY = process.env.ZENDIT_KEY;
+if (!KEY) { console.error('Set ZENDIT_KEY'); process.exit(2); }
+
+const all = [];
+for (let off = 0; ; off += 1000) {
+  const r = await fetch(`https://api.zendit.io/v1/vouchers/offers?_limit=1000&_offset=${off}&country=US`, { headers: { Authorization: 'Bearer ' + KEY } });
+  const d = await r.json();
+  all.push(...(d.list || []));
+  if (!d.list || d.list.length < 1000) break;
+}
+const offers = all.filter(o => o.enabled !== false);
+
+const norm = s => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+const byBrand = new Map();
+for (const o of offers) {
+  const k = norm(o.brand);
+  if (!byBrand.has(k)) byBrand.set(k, []);
+  byBrand.get(k).push(o);
+}
+
+// slug -> Zendit brand (only where the automatic name match is not enough)
+const ALIAS = {
+  playstation: 'Playstation', saks: 'Saks', kohls: 'Kohl', basspro: 'BassProShops', darden: 'DardenRestaurants',
+  southwest: 'SouthwestAirlines', amctheatres: 'AMCEntertainment', regal: 'RegalEntertainment',
+  barnesnoble: 'barnesandnoble', cheesecakefactory: 'CheesecakeFactory', cvspharmacy: 'CVS',
+  chevron: 'ChevronandTexaco', jerseymikes: 'JerseyMike', containerstore: 'Container Store', boscovs: 'Boscov',
+  ultabeauty: 'Ulta', jambajuice: 'JambaJuiceCo', hotelscom: 'Hotelscom', homegoods: 'Homegoods', homesense: 'Homesense',
+  hm: 'HM', wolfermans: 'Wolfermans', popcornfactory: 'PopcornFactory', dickssportinggoods: 'DickSporting',
+  dicks: 'DickSporting', cheddars: 'CheddarsScratch', mccormick: 'McCormick&Schmick', moes: 'MoeSouthwestGrill',
+  aquarium: 'Aquarium', delta: 'DeltaAirLines', costplus: 'CostPlus', stubhub: 'StubHub', goplaygolf: 'GoPlayGolf',
+  krispykreme: 'KrispyKreme', pfchangs: 'PFChangs', sierra: 'Sierra', samsclub: 'SamsClub', siriusxm: 'SiriusXM',
+  slingtv: 'SlingTV', paramountplus: 'ParamountPlus', nbastore: 'NBAStore', texasroadhouse: 'TexasRoadhouse',
+  bobevans: 'BobEvans', logansroadhouse: 'LogansRoadhouse', ruthschris: 'RuthChris', pinkberry: 'Pinkberry',
+  wetseal: 'WetGo', maggianos: 'maggianos', bertuccis: 'bertuccis', mcalister: 'McAlisterDeli', mcalistersdeli: 'McAlisterDeli',
+  auntieannes: 'AuntieAnne', ihop: 'IHOP', gap: 'GAP', riverCrab: 'RiverCrabInn', mastros: 'Mastro', mortons: 'Mortons',
+  getgo: 'GetGo', gianteagle: 'GiantEagle', baskinrobbins: 'BaskinRobbins',
+};
+
+const faceOf = o => {
+  const x = o.send || o.price || {};
+  const div = x.currencyDivisor || 100;
+  return x.fixed != null ? { fixed: x.fixed / div } : { min: x.min / div, max: x.max / div };
+};
+const isFace = n => Number.isInteger(n) && n > 0;
+
+const src = fs.readFileSync('src/lib/brands.ts', 'utf8');
+const crlf = src.includes('\r\n');
+const house = ['buygiftcards', 'one4all', 'holidayfavorites'];
+const rows = [...src.matchAll(/^  \{ slug: "([^"]+)", name: "([^"]+)"/gm)].map(m => ({ slug: m[1], name: m[2].replace(/\\u0026/g, '&') }));
+
+const specs = {};
+const unmatched = [];
+const used = new Set();
+for (const { slug, name } of rows) {
+  if (house.includes(slug)) continue;
+  const cands = [ALIAS[slug] && norm(ALIAS[slug]), norm(name), slug].filter(Boolean);
+  const key = cands.find(c => byBrand.has(c));
+  if (!key) { unmatched.push(`${slug} ("${name}")`); continue; }
+  used.add(key);
+  const list = byBrand.get(key);
+  const spec = {};
+  const fixed = {};
+  const collisions = [];
+  for (const o of list) {
+    const f = faceOf(o);
+    if (o.priceType === 'RANGE' || f.min != null) {
+      if (isFace(f.min) && isFace(f.max)) spec.rangeOfferId = o.offerId;
+    } else if (isFace(f.fixed)) {
+      if (fixed[f.fixed]) {
+        // prefer explicit gift-card offers over subscriptions/in-game packs
+        const pref = id => (/EGIFT|GIFT/i.test(id) ? 0 : 1);
+        if (pref(o.offerId) < pref(fixed[f.fixed])) fixed[f.fixed] = o.offerId;
+        collisions.push(`${f.fixed}: ${o.offerId}`);
+      } else fixed[f.fixed] = o.offerId;
+    }
+  }
+  if (Object.keys(fixed).length) spec.fixedOffers = fixed;
+  const rf = list.find(o => (o.requiredFields || []).length)?.requiredFields;
+  if (rf) spec.requiredFields = rf.map(f => (typeof f === 'string' ? f : f.key || f.name));
+  if (collisions.length) console.log(`NOTE ${slug}: multiple offers for same face value -> ${collisions.join(', ')}; using`, JSON.stringify(fixed));
+  if (spec.rangeOfferId || spec.fixedOffers) specs[slug] = spec;
+  else unmatched.push(`${slug} ("${name}") [no whole-dollar offers]`);
+}
+
+fs.writeFileSync('src/lib/zendit-offers.generated.ts',
+`// AUTO-GENERATED by scripts/generate-zendit-map.mjs from the live Zendit US voucher catalog
+// (GET /v1/vouchers/offers?country=US). Do not edit by hand. Face value = Zendit \`send\` amount.
+// Brands not listed here have no Zendit offer and are hidden from the storefront.
+import type { ZenditOfferSpec } from "./giftcard-provider";
+
+export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = ${JSON.stringify(specs, null, 2)};
+`);
+
+// Sync brands.ts
+const nl = crlf ? '\r\n' : '\n';
+let hiddenN = 0, shown = 0, synced = 0;
+const out = src.split(/\r?\n/).map(l => {
+  const sm = l.match(/^  \{ slug: "([^"]+)"/);
+  if (!sm || house.includes(sm[1])) return l;
+  const slug = sm[1];
+  const spec = specs[slug];
+  let n = l;
+  const strip = t => t.replace(/, hidden: true, hiddenTag: "[A-Z_]+"/, '').replace(/ fixedOnly: true,/, '');
+  if (!spec) {
+    if (!/hidden: true/.test(n)) { n = n.replace(/ \},?$/, m => `, hidden: true, hiddenTag: "NO_SUPPLIER_OFFER"${m}`); hiddenN++; }
+    return n;
+  }
+  n = strip(n);
+  if (/hidden: true/.test(l)) shown++;
+  if (spec.fixedOffers && !spec.rangeOfferId) {
+    const ds = Object.keys(spec.fixedOffers).map(Number).sort((a, b) => a - b);
+    n = n.replace(/denominations: \[[^\]]*\]/, `fixedOnly: true, denominations: [${ds.join(', ')}]`)
+         .replace(/min: [\d.]+/, `min: ${ds[0]}`).replace(/max: [\d.]+/, `max: ${ds[ds.length - 1]}`);
+  } else if (spec.rangeOfferId) {
+    const o = offers.find(x => x.offerId === spec.rangeOfferId);
+    const f = faceOf(o);
+    const dm = n.match(/denominations: \[([^\]]*)\]/);
+    const ds = dm[1].split(',').map(s => Number(s.trim())).filter(d => d >= f.min && d <= f.max);
+    const min = Math.max(f.min, Number((n.match(/min: ([\d.]+)/) || [])[1] || f.min));
+    const max = Math.min(f.max, Number((n.match(/max: ([\d.]+)/) || [])[1] || f.max));
+    n = n.replace(/denominations: \[[^\]]*\]/, `denominations: [${ds.join(', ')}]`)
+         .replace(/min: [\d.]+/, `min: ${min}`).replace(/max: [\d.]+/, `max: ${max}`);
+  }
+  if (n !== l) synced++;
+  return n;
+});
+fs.writeFileSync('src/lib/brands.ts', out.join(nl));
+
+console.log(`mapped ${Object.keys(specs).length} brands; newly hidden ${hiddenN}; re-enabled ${shown}; lines synced ${synced}`);
+console.log('UNMATCHED (hidden):', unmatched.join(' | '));
+console.log('Zendit brands NOT used by any storefront brand:', [...byBrand.keys()].filter(k => !used.has(k)).join(', '));
+
