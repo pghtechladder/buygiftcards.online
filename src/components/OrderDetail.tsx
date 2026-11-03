@@ -48,6 +48,12 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [enteredEmail, setEnteredEmail] = useState(email);
   const [loading, setLoading] = useState(false);
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const lookup = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -135,72 +141,108 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
             </span>
           </div>
           <div className="border-t border-ink-50 pt-3">
-            {item.codes.map((c) => {
-              const isClaimUrl = /^https?:\/\//i.test(c.code);
-              return (
-                <div key={c.id} className="py-3 border-b border-dashed border-ink-100 last:border-0">
-                  {revealed[c.id] ? (
-                    <div className="flex flex-wrap gap-3 items-center">
-                      {isClaimUrl ? (
-                        <>
-                          <a
-                            href={c.code}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 transition"
-                          >
-                            <Icon name="gift" size={16} />
-                            Claim Gift Card
-                          </a>
-                          <button
-                            onClick={() => copyCode(c.id, c.code)}
-                            className="flex items-center gap-2 font-mono text-xs font-bold bg-ink-50 hover:bg-ink-100 px-3.5 py-2.5 rounded-lg transition max-w-full truncate"
-                            title={c.code}
-                          >
-                            <span className="truncate max-w-[260px] sm:max-w-[360px]">{c.code}</span>
-                            <Icon name={copiedId === c.id ? "checkCircle" : "copy"} size={14} className={copiedId === c.id ? "text-green-600" : "text-ink-400"} />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => copyCode(c.id, c.code)}
-                            className="flex items-center gap-2 font-mono font-bold bg-ink-50 hover:bg-ink-100 px-4 py-2 rounded-lg tracking-wider transition"
-                          >
-                            {c.code}
-                            <Icon name={copiedId === c.id ? "checkCircle" : "copy"} size={14} className={copiedId === c.id ? "text-green-600" : "text-ink-400"} />
-                          </button>
-                          {c.pin && (
-                            <div className="font-mono font-bold bg-ink-50 px-4 py-2 rounded-lg">PIN {c.pin}</div>
-                          )}
-                          {!c.pin.startsWith("REDEEMED") && (
-                            <Link
-                              href={`/redeem?code=${encodeURIComponent(c.code)}&pin=${encodeURIComponent(c.pin)}`}
-                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white font-bold text-xs hover:bg-brand-700 transition"
+            {(() => {
+              const orderCreatedAt = order ? new Date(order.createdAt).getTime() : 0;
+              const unlockAt = orderCreatedAt + 5 * 60 * 1000;
+              const remainingSecs = Math.max(0, Math.ceil((unlockAt - now) / 1000));
+              const isLocked = remainingSecs > 0;
+              const mins = Math.floor(remainingSecs / 60);
+              const secs = remainingSecs % 60;
+              const timeDisplay = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+
+              return item.codes.map((c) => {
+                const isClaimUrl = /^https?:\/\//i.test(c.code);
+
+                if (isLocked) {
+                  return (
+                    <div key={c.id} className="py-3 border-b border-dashed border-ink-100 last:border-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 flex-shrink-0">
+                            <Icon name="lock" size={16} />
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-amber-950">
+                              Security & Fraud Verification Window
+                            </div>
+                            <div className="text-[11px] text-amber-800">
+                              Redemption link activates in <span className="font-mono font-extrabold text-amber-950">{timeDisplay}</span> (5 mins from order time)
+                            </div>
+                          </div>
+                        </div>
+                        <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-200/70 text-amber-900 font-mono text-xs font-bold">
+                          <span>Unlocks in {timeDisplay}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={c.id} className="py-3 border-b border-dashed border-ink-100 last:border-0">
+                    {revealed[c.id] ? (
+                      <div className="flex flex-wrap gap-3 items-center">
+                        {isClaimUrl ? (
+                          <>
+                            <a
+                              href={c.code}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 transition"
                             >
-                              <Icon name="gift" size={14} />
-                              Redeem / Swap for Brand eGift Cards &rarr;
-                            </Link>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex justify-between items-center">
-                      <span className="font-mono text-ink-400 tracking-widest">
-                        {isClaimUrl ? "Claim Link ••••" : `•••• •••• •••• ${c.code.slice(-4)}`}
-                      </span>
-                      <button
-                        onClick={() => setRevealed((p) => ({ ...p, [c.id]: true }))}
-                        className="px-5 py-2 border-2 border-brand-600 text-brand-600 rounded-lg font-bold text-sm hover:bg-brand-600 hover:text-white transition"
-                      >
-                        {isClaimUrl ? "Reveal Claim Link" : "Reveal Code"}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                              <Icon name="gift" size={16} />
+                              Claim Gift Card
+                            </a>
+                            <button
+                              onClick={() => copyCode(c.id, c.code)}
+                              className="flex items-center gap-2 font-mono text-xs font-bold bg-ink-50 hover:bg-ink-100 px-3.5 py-2.5 rounded-lg transition max-w-full truncate"
+                              title={c.code}
+                            >
+                              <span className="truncate max-w-[260px] sm:max-w-[360px]">{c.code}</span>
+                              <Icon name={copiedId === c.id ? "checkCircle" : "copy"} size={14} className={copiedId === c.id ? "text-green-600" : "text-ink-400"} />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => copyCode(c.id, c.code)}
+                              className="flex items-center gap-2 font-mono font-bold bg-ink-50 hover:bg-ink-100 px-4 py-2 rounded-lg tracking-wider transition"
+                            >
+                              {c.code}
+                              <Icon name={copiedId === c.id ? "checkCircle" : "copy"} size={14} className={copiedId === c.id ? "text-green-600" : "text-ink-400"} />
+                            </button>
+                            {c.pin && (
+                              <div className="font-mono font-bold bg-ink-50 px-4 py-2 rounded-lg">PIN {c.pin}</div>
+                            )}
+                            {!c.pin.startsWith("REDEEMED") && (
+                              <Link
+                                href={`/redeem?code=${encodeURIComponent(c.code)}&pin=${encodeURIComponent(c.pin)}`}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white font-bold text-xs hover:bg-brand-700 transition"
+                              >
+                                <Icon name="gift" size={14} />
+                                Redeem / Swap for Brand eGift Cards &rarr;
+                              </Link>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex justify-between items-center">
+                        <span className="font-mono text-ink-400 tracking-widest">
+                          {isClaimUrl ? "Claim Link ••••" : `•••• •••• •••• ${c.code.slice(-4)}`}
+                        </span>
+                        <button
+                          onClick={() => setRevealed((p) => ({ ...p, [c.id]: true }))}
+                          className="px-5 py-2 border-2 border-brand-600 text-brand-600 rounded-lg font-bold text-sm hover:bg-brand-600 hover:text-white transition"
+                        >
+                          {isClaimUrl ? "Reveal Claim Link" : "Reveal Code"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })()}
           </div>
         </div>
       ))}

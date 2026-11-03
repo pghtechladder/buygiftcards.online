@@ -38,6 +38,21 @@ export async function POST(req: NextRequest) {
   const apiUrl = req.nextUrl.toString();
   try {
     const authSession = await auth();
+    if (!authSession?.user?.email) {
+      writeTransactionLog({
+        phase: "PROCESS_ERROR",
+        process: "PayPal.Checkout",
+        method: "POST",
+        apiUrl,
+        statusCode: 401,
+        error: "Authentication required to checkout",
+      });
+      return NextResponse.json(
+        { error: "Please sign in or create an account before checking out." },
+        { status: 401 }
+      );
+    }
+
     const rawBody = await req.json();
 
     writeTransactionLog({
