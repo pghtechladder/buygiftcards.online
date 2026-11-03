@@ -7,7 +7,11 @@
     "ZENDIT_API_KEY": "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9",
     "ZENDIT_PRODUCTION_API_KEY": "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9",
     "ZENDIT_API_BASE_URL": "https://api.zendit.io/v1",
-    "ZENDIT_USERNAME": "sri@techladder.io"
+    "ZENDIT_USERNAME": "sri@techladder.io",
+    "NEXT_PUBLIC_PAYPAL_CLIENT_ID": "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg",
+    "PAYPAL_CLIENT_ID": "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg",
+    "PAYPAL_CLIENT_SECRET": "EP_l4rG98V--xxBunuX3F40UyCD9KsQP8QUY34snUH6XrJynonRROoNeA7ONF5whwyuRfXLVrgcgIlfT",
+    "PAYPAL_API_BASE_URL": "https://api-m.paypal.com"
   },
   "headers": [
     {

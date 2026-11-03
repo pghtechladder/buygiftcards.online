@@ -11,7 +11,7 @@ const fmt = (n: number) => `$${n.toFixed(2)}`;
 
 const PAYPAL_CLIENT_ID =
   process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
-  "BAAvgWHBMWqWeegN_69dmvEE4L1rO4bxEjWv-51rbfcPdEwdz9J9CxZmYrqIl5L7jZhkSK9LQLhAzTPrYc";
+  "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg";
 
 declare global {
   interface Window {

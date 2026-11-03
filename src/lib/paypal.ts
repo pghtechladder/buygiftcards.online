@@ -1,9 +1,9 @@
 import { loggedFetch, writeTransactionLog } from "./logger";
 
 export const DEFAULT_PAYPAL_CLIENT_ID =
-  "BAAvgWHBMWqWeegN_69dmvEE4L1rO4bxEjWv-51rbfcPdEwdz9J9CxZmYrqIl5L7jZhkSK9LQLhAzTPrYc";
+  "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg";
 export const DEFAULT_PAYPAL_CLIENT_SECRET =
-  "EIwKAMvExy7u7me1y9-uZBB1vdcHUBKOFeGmGbL2XdGE8d0CcSf1K2g07DRWay4NRWe92HKG_lbXZTJ0";
+  "EP_l4rG98V--xxBunuX3F40UyCD9KsQP8QUY34snUH6XrJynonRROoNeA7ONF5whwyuRfXLVrgcgIlfT";
 
 export function getPayPalCredentials() {
   const clientId =
