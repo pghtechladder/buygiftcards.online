@@ -194,6 +194,7 @@ export async function POST(req: NextRequest) {
         paypalOrderId: paypalOrder.id,
         orderNumber,
         url: paypalOrder.approveUrl,
+        approveUrl: paypalOrder.approveUrl,
       });
     }
 
