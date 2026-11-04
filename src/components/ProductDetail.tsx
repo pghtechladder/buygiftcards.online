@@ -207,7 +207,7 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
             <span className="text-xs font-extrabold uppercase tracking-wider text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
               {b.category}
             </span>
-            {b.badge && (
+            {b.badge && !b.badge.includes("%") && (
               <span className="text-xs font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100 px-3 py-1 rounded-full">
                 {b.badge}
               </span>

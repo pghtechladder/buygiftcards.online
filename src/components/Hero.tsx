@@ -70,7 +70,7 @@ export function Hero() {
               className="w-36 sm:w-40 h-40 rounded-2xl bg-white/12 hover:bg-white/20 backdrop-blur border border-white/25 flex flex-col items-center justify-center gap-2.5 shadow-xl hover:-translate-y-1 transition relative"
               style={{ marginTop: i % 2 === 1 ? 14 : 0 }}
             >
-              {b.badge && (
+              {b.badge && !b.badge.includes("%") && (
                 <span className="absolute top-2.5 right-2.5 text-[9px] font-extrabold uppercase bg-amber-400 text-ink-950 px-2 py-0.5 rounded-full">
                   {b.badge}
                 </span>

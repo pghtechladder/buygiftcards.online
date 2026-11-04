@@ -15,7 +15,7 @@ export function BrandGrid({ items, title }: { items: Brand[]; title?: string }) 
             href={`/product/${b.slug}`}
             className="bg-white border border-ink-100 rounded-2xl overflow-hidden hover:shadow-xl hover:border-brand-300 hover:-translate-y-1 transition relative flex flex-col"
           >
-            {b.badge && (
+            {b.badge && !b.badge.includes("%") && (
               <span className="absolute top-3 left-3 z-10 bg-white/95 text-ink-900 text-[10px] font-extrabold px-2.5 py-1 rounded-md shadow">
                 {b.badge}
               </span>
