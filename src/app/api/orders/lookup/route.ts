@@ -68,11 +68,25 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const existingUser = await prisma.user.findUnique({
+    where: { email: order.customerEmail.trim().toLowerCase() },
+    select: { id: true },
+  });
+
+  // Automatically link order to user if not yet linked
+  if (existingUser && !order.userId) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { userId: existingUser.id },
+    });
+  }
+
   const unlockAtMs = new Date(order.createdAt).getTime() + 5 * 60 * 1000;
   const isLocked = Date.now() < unlockAtMs;
   const responseOrder = isLocked
     ? {
         ...order,
+        hasAccount: Boolean(existingUser),
         lockedUntil: new Date(unlockAtMs).toISOString(),
         items: order.items.map((it) => ({
           ...it,
@@ -83,7 +97,10 @@ export async function POST(req: NextRequest) {
           })),
         })),
       }
-    : order;
+    : {
+        ...order,
+        hasAccount: Boolean(existingUser),
+      };
 
   writeTransactionLog({
     phase: "PROCESS_COMPLETE",
@@ -92,7 +109,13 @@ export async function POST(req: NextRequest) {
     method: "POST",
     apiUrl,
     statusCode: 200,
-    details: { status: order.status, itemCount: order.items.length, emailSentAt: order.emailSentAt, isLocked },
+    details: {
+      status: order.status,
+      itemCount: order.items.length,
+      emailSentAt: order.emailSentAt,
+      isLocked,
+      hasAccount: Boolean(existingUser),
+    },
   });
-  return NextResponse.json({ order: responseOrder });
+  return NextResponse.json({ order: responseOrder, hasAccount: Boolean(existingUser) });
 }

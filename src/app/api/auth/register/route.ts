@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    await prisma.user.create({
+    const createdUser = await prisma.user.create({
       data: {
         email,
         firstName,
@@ -47,6 +47,19 @@ export async function POST(req: NextRequest) {
         marketingOptIn: marketingOptIn ?? false,
       },
     });
+
+    // Automatically attach any guest/PayPal orders placed with this same email ID
+    try {
+      await prisma.order.updateMany({
+        where: {
+          customerEmail: { equals: email, mode: "insensitive" },
+          userId: null,
+        },
+        data: { userId: createdUser.id },
+      });
+    } catch (err) {
+      console.warn("[/api/auth/register] Failed to link existing orders for email:", err);
+    }
 
     // A registration with the newsletter box checked should double-count as
     // a newsletter signup — reuse the same save-locally-first pattern as

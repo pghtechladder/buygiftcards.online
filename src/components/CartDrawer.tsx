@@ -66,7 +66,7 @@ export function CartDrawer() {
 
   // Load PayPal JS SDK when CartDrawer opens
   useEffect(() => {
-    if (!isOpen || items.length === 0 || !session?.user) return;
+    if (!isOpen || items.length === 0) return;
 
     if (window.paypal?.Buttons) {
       setSdkReady(true);
@@ -91,14 +91,11 @@ export function CartDrawer() {
       setSdkReady(false);
     };
     document.body.appendChild(script);
-  }, [isOpen, items.length, session?.user]);
+  }, [isOpen, items.length]);
 
   // Render PayPal Smart Buttons whenever SDK is ready & cart items change
   useEffect(() => {
-    if (!isOpen || !sdkReady || !window.paypal?.Buttons || !paypalContainerRef.current || items.length === 0 || !session?.user) {
-      if (paypalContainerRef.current && !session?.user) {
-        paypalContainerRef.current.innerHTML = "";
-      }
+    if (!isOpen || !sdkReady || !window.paypal?.Buttons || !paypalContainerRef.current || items.length === 0) {
       return;
     }
 
@@ -148,7 +145,10 @@ export function CartDrawer() {
           }
           clear();
           setOpen(false);
-          router.push(`/orders/${captured.order.orderNumber}`);
+          const emailParam = captured.order.customerEmail
+            ? `?email=${encodeURIComponent(captured.order.customerEmail)}`
+            : "";
+          router.push(`/orders/${captured.order.orderNumber}${emailParam}`);
         } catch (err) {
           setError(err instanceof Error ? err.message : "Payment capture failed");
           setLoading(false);
@@ -169,11 +169,6 @@ export function CartDrawer() {
   if (!isOpen) return null;
 
   const checkoutWithPayPalRedirect = async () => {
-    if (!session?.user) {
-      setError("Please sign in or create an account to proceed to checkout.");
-      openAuthModal("signin");
-      return;
-    }
     setLoading(true);
     setError(null);
     try {
@@ -308,50 +303,48 @@ export function CartDrawer() {
               </div>
             )}
 
-            {!session?.user ? (
-              <div className="p-4 rounded-xl bg-brand-50/70 border border-brand-100 text-center space-y-2.5">
+            {!session?.user && (
+              <div className="p-3.5 rounded-xl bg-brand-50/80 border border-brand-100 text-center space-y-2">
                 <div className="text-xs font-bold text-brand-950 flex items-center justify-center gap-1.5">
                   <Icon name="lock" size={14} className="text-brand-700" />
-                  Account required to checkout
+                  Create Account Before or After PayPal Checkout
                 </div>
-                <p className="text-[12px] text-ink-600">
-                  Please sign in or create an account to securely complete your gift card purchase.
+                <p className="text-[11px] text-ink-600 leading-relaxed">
+                  Create an account or sign in now, <strong>or</strong> pay with PayPal below and create your account with your same PayPal email right after payment completes.
                 </p>
-                <div className="flex gap-2 pt-1">
+                <div className="flex gap-2 pt-0.5">
+                  <button
+                    onClick={() => openAuthModal("register")}
+                    className="flex-1 py-2 px-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition"
+                  >
+                    Create Account First
+                  </button>
                   <button
                     onClick={() => openAuthModal("signin")}
-                    className="flex-1 py-2.5 px-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition"
+                    className="flex-1 py-2 px-3 rounded-lg border border-brand-300 hover:bg-white text-brand-900 font-bold text-xs transition bg-white/80"
                   >
                     Sign In
                   </button>
-                  <button
-                    onClick={() => openAuthModal("register")}
-                    className="flex-1 py-2.5 px-3 rounded-lg border border-brand-300 hover:bg-white text-brand-900 font-bold text-xs transition bg-white/70"
-                  >
-                    Create Account
-                  </button>
                 </div>
               </div>
-            ) : (
-              <>
-                {/* Primary Direct PayPal Checkout Button */}
-                <button
-                  onClick={checkoutWithPayPalRedirect}
-                  disabled={loading}
-                  className="w-full py-3.5 px-5 rounded-xl bg-[#FFC439] hover:bg-[#f2b829] text-[#003087] font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z" />
-                  </svg>
-                  <span>
-                    {loading ? "Processing PayPal Checkout…" : `Pay with PayPal · ${fmt(total)}`}
-                  </span>
-                </button>
-
-                {/* Interactive PayPal Smart Buttons (PayPal + Venmo / Pay Later / Debit & Credit Card) */}
-                <div ref={paypalContainerRef} className="min-h-[45px]" />
-              </>
             )}
+
+            {/* Primary Direct PayPal Checkout Button */}
+            <button
+              onClick={checkoutWithPayPalRedirect}
+              disabled={loading}
+              className="w-full py-3.5 px-5 rounded-xl bg-[#FFC439] hover:bg-[#f2b829] text-[#003087] font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z" />
+              </svg>
+              <span>
+                {loading ? "Processing PayPal Checkout…" : `Pay with PayPal · ${fmt(total)}`}
+              </span>
+            </button>
+
+            {/* Interactive PayPal Smart Buttons (PayPal + Venmo / Pay Later / Debit & Credit Card) */}
+            <div ref={paypalContainerRef} className="min-h-[45px]" />
 
             <div className="flex items-center justify-center gap-1.5 pt-1 text-xs text-ink-400">
               <Icon name="lock" size={13} />

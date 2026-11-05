@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { signIn, useSession } from "next-auth/react";
 import { Icon } from "./Icon";
+import { PASSWORD_RULE_TEXT, isValidPassword } from "@/lib/passwordRules";
 
 const fmt = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
@@ -17,6 +19,7 @@ const STATUS_STYLE: Record<string, string> = {
 type Order = {
   orderNumber: string;
   customerEmail: string;
+  hasAccount?: boolean;
   subtotalCents: number;
   totalCents: number;
   taxCents: number | null;
@@ -42,6 +45,7 @@ type Order = {
 };
 
 export function OrderDetail({ orderNumber, email }: { orderNumber: string; email: string }) {
+  const { data: session, status: sessionStatus } = useSession();
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
@@ -50,19 +54,32 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
   const [loading, setLoading] = useState(false);
   const [now, setNow] = useState(Date.now());
 
+  // Post-payment account creation / sign-in state (locked to order.customerEmail)
+  const [authTab, setAuthTab] = useState<"register" | "signin">("register");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const lookup = async (e?: React.FormEvent) => {
+  const lookup = async (e?: React.FormEvent, overrideEmail?: string) => {
     e?.preventDefault();
+    const targetEmail = (overrideEmail ?? enteredEmail).trim();
+    if (!targetEmail) return;
     setLoading(true);
     setError(null);
     const res = await fetch("/api/orders/lookup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderNumber, email: enteredEmail }),
+      body: JSON.stringify({ orderNumber, email: targetEmail }),
     });
     const data = await res.json();
     setLoading(false);
@@ -71,12 +88,22 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
       return;
     }
     setOrder(data.order);
+    if (data.order?.hasAccount) {
+      setAuthTab("signin");
+    } else {
+      setAuthTab("register");
+    }
   };
 
   useEffect(() => {
-    if (email) lookup();
+    if (email) {
+      lookup(undefined, email);
+    } else if (session?.user?.email && !order) {
+      setEnteredEmail(session.user.email);
+      lookup(undefined, session.user.email);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [email, session?.user?.email]);
 
   const copyCode = async (id: string, code: string) => {
     try {
@@ -86,12 +113,95 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
     } catch {}
   };
 
+  const handlePostPaymentRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!order) return;
+    setAuthError(null);
+
+    if (!firstName.trim() || !lastName.trim() || !password || !confirmPassword) {
+      setAuthError("Please fill in all required fields to complete your account.");
+      return;
+    }
+    if (!isValidPassword(password)) {
+      setAuthError(PASSWORD_RULE_TEXT);
+      return;
+    }
+    if (password !== confirmPassword) {
+      setAuthError("Passwords do not match.");
+      return;
+    }
+
+    setAuthLoading(true);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: order.customerEmail,
+          phone: phone.trim() || undefined,
+          password,
+          confirmPassword,
+          marketingOptIn,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (String(data.error || "").toLowerCase().includes("already exists")) {
+          setAuthTab("signin");
+          setAuthError("An account with this email already exists. Please enter your password to sign in.");
+        } else {
+          setAuthError(data.error || "Could not create account.");
+        }
+        return;
+      }
+
+      const signInRes = await signIn("credentials", {
+        email: order.customerEmail,
+        password,
+        redirect: false,
+      });
+      if (signInRes?.error) {
+        setAuthTab("signin");
+        setAuthError("Account created! Please sign in with your password.");
+      }
+    } catch {
+      setAuthError("Something went wrong. Please try again.");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handlePostPaymentSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!order) return;
+    setAuthError(null);
+    if (!password) {
+      setAuthError("Please enter your password.");
+      return;
+    }
+    setAuthLoading(true);
+    try {
+      const result = await signIn("credentials", {
+        email: order.customerEmail,
+        password,
+        redirect: false,
+      });
+      if (result?.error) {
+        setAuthError("Invalid password for this email account.");
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
   if (!order) {
     return (
       <div className="max-w-md mx-auto px-6 py-16">
         <div className="bg-white border border-ink-100 rounded-3xl p-10 shadow-sm">
           <h1 className="text-xl font-extrabold mb-4">Confirm your email to view order {orderNumber}</h1>
-          <form onSubmit={lookup} className="space-y-4">
+          <form onSubmit={(e) => lookup(e)} className="space-y-4">
             <input
               value={enteredEmail}
               onChange={(e) => setEnteredEmail(e.target.value)}
@@ -103,6 +213,239 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
               {loading ? "Checking…" : "View Order"}
             </button>
           </form>
+        </div>
+      </div>
+    );
+  }
+
+  const sessionEmail = session?.user?.email;
+  const isSignedInAsBuyer =
+    sessionStatus === "authenticated" &&
+    typeof sessionEmail === "string" &&
+    sessionEmail.trim().toLowerCase() === order.customerEmail.trim().toLowerCase();
+
+  // If the customer completed PayPal checkout without signing in first,
+  // present the Account Creation Page pre-filled and locked to the exact same PayPal email ID.
+  if (sessionStatus !== "loading" && !isSignedInAsBuyer) {
+    return (
+      <div className="max-w-xl mx-auto px-6 py-12">
+        <div className="bg-white border border-ink-100 rounded-3xl p-8 sm:p-10 shadow-sm">
+          <div className="flex items-center gap-3 p-4 rounded-2xl bg-green-50 border border-green-200/80 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-700 flex-shrink-0">
+              <Icon name="checkCircle" size={22} />
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-green-950">
+                PayPal Payment Completed · Order #{order.orderNumber}
+              </div>
+              <div className="text-xs text-green-800 mt-0.5">
+                Total Paid: <strong>{fmt(order.totalCents)}</strong> · Linked to <strong>{order.customerEmail}</strong>
+              </div>
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-extrabold text-ink-950 mb-1.5">
+            {authTab === "register"
+              ? "Create Your Account to Access Your Gift Cards"
+              : "Sign In to Access Your Gift Cards"}
+          </h1>
+          <p className="text-sm text-ink-600 mb-6">
+            {authTab === "register"
+              ? "Complete your account setup below using the same email ID from your PayPal checkout to view and manage your gift cards."
+              : "An account already exists for your PayPal email ID. Sign in below to access your order."}
+          </p>
+
+          <div className="flex gap-6 border-b border-ink-100 mb-6">
+            <button
+              type="button"
+              onClick={() => {
+                setAuthTab("register");
+                setAuthError(null);
+              }}
+              className={`pb-3 text-sm font-bold border-b-2 transition ${
+                authTab === "register"
+                  ? "text-brand-600 border-brand-500"
+                  : "text-ink-400 border-transparent hover:text-ink-600"
+              }`}
+            >
+              Create Account
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthTab("signin");
+                setAuthError(null);
+              }}
+              className={`pb-3 text-sm font-bold border-b-2 transition ${
+                authTab === "signin"
+                  ? "text-brand-600 border-brand-500"
+                  : "text-ink-400 border-transparent hover:text-ink-600"
+              }`}
+            >
+              Already Have an Account? Sign In
+            </button>
+          </div>
+
+          {authTab === "register" ? (
+            <form onSubmit={handlePostPaymentRegister} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-ink-600 mb-1.5">
+                  Checkout Email ID (Matched from PayPal)
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    value={order.customerEmail}
+                    readOnly
+                    className="w-full px-4 py-3 border-2 border-ink-200 rounded-xl bg-ink-100/80 text-ink-700 font-semibold cursor-not-allowed outline-none"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold px-2 py-0.5 rounded bg-brand-100 text-brand-800">
+                    Verified Email
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-ink-600 mb-1.5">First name *</label>
+                  <input
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="First name"
+                    required
+                    className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-ink-600 mb-1.5">Last name *</label>
+                  <input
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Last name"
+                    required
+                    className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-ink-600 mb-1.5">Phone (optional)</label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="(555) 000-0000"
+                  className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-ink-600 mb-1.5">Create Password *</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
+                />
+                <p className="text-xs text-ink-400 mt-1.5">{PASSWORD_RULE_TEXT}</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-ink-600 mb-1.5">Confirm Password *</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
+                />
+              </div>
+
+              <label className="flex items-start gap-2.5 text-xs text-ink-600">
+                <input
+                  type="checkbox"
+                  checked={marketingOptIn}
+                  onChange={(e) => setMarketingOptIn(e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span>
+                  Sign me up for emails about deals and new brands. By registering you agree to the{" "}
+                  <Link href="/terms" className="font-semibold text-brand-600 hover:text-brand-700">
+                    Terms of Use
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/privacy" className="font-semibold text-brand-600 hover:text-brand-700">
+                    Privacy Policy
+                  </Link>
+                  .
+                </span>
+              </label>
+
+              {authError && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                  {authError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full py-3.5 rounded-xl bg-brand-600 text-white font-bold hover:bg-brand-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {authLoading && <Icon name="loader" size={16} className="animate-spin" />}
+                {authLoading
+                  ? "Creating Account & Linking Order…"
+                  : `Create Account (${order.customerEmail}) & View Order`}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handlePostPaymentSignIn} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-ink-600 mb-1.5">
+                  Checkout Email ID (Matched from PayPal)
+                </label>
+                <input
+                  type="email"
+                  value={order.customerEmail}
+                  readOnly
+                  className="w-full px-4 py-3 border-2 border-ink-200 rounded-xl bg-ink-100/80 text-ink-700 font-semibold cursor-not-allowed outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-ink-600 mb-1.5">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
+                />
+              </div>
+
+              <div className="text-right">
+                <Link href="/reset-password" className="text-xs font-semibold text-brand-600 hover:text-brand-700">
+                  Forgot password?
+                </Link>
+              </div>
+
+              {authError && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                  {authError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full py-3.5 rounded-xl bg-brand-600 text-white font-bold hover:bg-brand-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {authLoading && <Icon name="loader" size={16} className="animate-spin" />}
+                {authLoading ? "Signing In…" : `Sign In (${order.customerEmail}) & View Order`}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     );
@@ -302,12 +645,6 @@ function StatusStep({ state, label, detail }: { state: StepState; label: string;
   );
 }
 
-// The visible order `status` (PENDING/PAID/FULFILLED/FAILED/REFUNDED) only
-// tells you the payment/fulfillment state — it says nothing about whether
-// the confirmation email actually reached the customer, which is tracked
-// separately (emailSentAt/emailError) since Resend can silently reject a
-// send without the order itself failing. This lays both out explicitly
-// rather than collapsing them into one badge.
 function OrderStatusTimeline({ order }: { order: Order }) {
   const paymentOk = order.status !== "PENDING" && order.status !== "FAILED";
   const fulfilled = order.status === "FULFILLED" || order.status === "REFUNDED";

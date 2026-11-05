@@ -250,6 +250,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
   orderNumber: string;
   customerEmail: string;
   status: string;
+  hasExistingAccount?: boolean;
 }> {
   const { prisma } = await import("./prisma");
   const { giftCardProvider } = await import("./giftcard-provider");
@@ -263,10 +264,15 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
   });
 
   if (existing && existing.status === "FULFILLED" && existing.items.some((i) => i.codes.length > 0)) {
+    const existingAccount = await prisma.user.findUnique({
+      where: { email: existing.customerEmail.trim().toLowerCase() },
+      select: { id: true },
+    });
     return {
       orderNumber: existing.orderNumber,
       customerEmail: existing.customerEmail,
       status: existing.status,
+      hasExistingAccount: Boolean(existingAccount),
     };
   }
 
@@ -282,8 +288,16 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
   }
 
   const finalEmail =
+    (order.customerEmail && order.customerEmail !== "pending@buygiftcards.online"
+      ? order.customerEmail
+      : captured.payerEmail) ||
     captured.payerEmail ||
-    (order.customerEmail !== "pending@buygiftcards.online" ? order.customerEmail : "support@buygiftcards.online");
+    "support@buygiftcards.online";
+
+  const matchedUser = await prisma.user.findUnique({
+    where: { email: finalEmail.trim().toLowerCase() },
+    select: { id: true },
+  });
 
   let cartMeta: Array<{
     s: string;
@@ -308,6 +322,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
     where: { id: order.id },
     data: {
       customerEmail: finalEmail,
+      userId: order.userId ?? matchedUser?.id ?? undefined,
       status: "PAID",
       stripePaymentIntentId: captured.captureId ? `paypal_cap_${captured.captureId}` : `paypal_${paypalOrderId}`,
       billingLine1: captured.billingAddress?.line1 ?? order.billingLine1,
@@ -420,6 +435,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
     orderNumber: fulfilledOrder.orderNumber,
     customerEmail: fulfilledOrder.customerEmail,
     status: "FULFILLED",
+    hasExistingAccount: Boolean(matchedUser),
   };
 }
 

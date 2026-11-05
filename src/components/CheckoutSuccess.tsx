@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { Icon } from "./Icon";
 
 export function CheckoutSuccess() {
+  const router = useRouter();
   const params = useSearchParams();
   const { clear } = useCart();
   const paypalToken = params.get("token");
@@ -32,6 +33,9 @@ export function CheckoutSuccess() {
       if (data.order) {
         setOrder(data.order);
         setStatus("ready");
+        router.replace(
+          `/orders/${data.order.orderNumber}?email=${encodeURIComponent(data.order.customerEmail)}`
+        );
       } else if (attempts < 10) {
         setTimeout(poll, 1500);
       } else {
@@ -39,7 +43,7 @@ export function CheckoutSuccess() {
       }
     };
     poll();
-  }, [sessionId]);
+  }, [sessionId, router]);
 
   return (
     <div className="max-w-lg mx-auto px-6 py-20 text-center">
