@@ -68,6 +68,23 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const unlockAtMs = new Date(order.createdAt).getTime() + 5 * 60 * 1000;
+  const isLocked = Date.now() < unlockAtMs;
+  const responseOrder = isLocked
+    ? {
+        ...order,
+        lockedUntil: new Date(unlockAtMs).toISOString(),
+        items: order.items.map((it) => ({
+          ...it,
+          codes: it.codes.map((c) => ({
+            ...c,
+            code: "LOCKED_FOR_5_MINUTES",
+            pin: "",
+          })),
+        })),
+      }
+    : order;
+
   writeTransactionLog({
     phase: "PROCESS_COMPLETE",
     process: "Orders.Lookup",
@@ -75,7 +92,7 @@ export async function POST(req: NextRequest) {
     method: "POST",
     apiUrl,
     statusCode: 200,
-    details: { status: order.status, itemCount: order.items.length, emailSentAt: order.emailSentAt },
+    details: { status: order.status, itemCount: order.items.length, emailSentAt: order.emailSentAt, isLocked },
   });
-  return NextResponse.json({ order });
+  return NextResponse.json({ order: responseOrder });
 }

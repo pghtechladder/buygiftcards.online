@@ -93,37 +93,46 @@ export class DemoGiftCardProvider implements GiftCardProvider {
 // not offered in this sandbox catalog, not a matching failure — re-run
 // this once you have production catalog access to fill in the rest.
 export const BRAND_TO_TANGO_UTID: Record<string, string | Record<number, string>> = {
+  // House Multi-Brand Choice Cards (backed by Tango Reward Link US U957978)
+  buygiftcards: "U957978",
+  one4all: "U957978",
+  holidayfavorites: "U957978",
+
+  // Prepaid Visa USD
+  visa: "U677579",
+
+  // Retail, Tech, Dining, Entertainment, Travel (100% verified USD Tango catalog)
+  amazon: "U163059",
   starbucks: "U761382",
   doordash: "U964209",
   uber: "U552132",
-  steam: { 20: "U128267" },
   airbnb: "U986050",
   walmart: "U640032",
   panera: "U455508",
-  xbox: { 100: "U635195", 15: "U533358", 25: "U684145", 50: "U554576" },
+  xbox: { 15: "U533358", 25: "U684145", 50: "U554576", 100: "U635195" },
   ubereats: "U517295",
+  googleplay: "U505722",
   lowes: "U589797",
   adidas: "U561621",
   autozone: "U605768",
-  advanceautoparts: { 10: "U421313", 100: "U757661", 25: "U360639", 50: "U021383" },
+  advanceautoparts: { 10: "U421313", 25: "U360639", 50: "U021383", 100: "U757661" },
   jiffylube: "U909478",
-  cvspharmacy: { 10: "U922376", 100: "U057891", 25: "U105443", 5: "U029039", 50: "U360814" },
+  cvspharmacy: { 5: "U029039", 10: "U922376", 25: "U105443", 50: "U360814", 100: "U057891" },
   bathbodyworks: "U728067",
   saks: "U574235",
-  macys: { 10: "U814874", 100: "U154340", 25: "U002285", 5: "U452033", 50: "U010277" },
+  macys: { 5: "U452033", 10: "U814874", 25: "U002285", 50: "U010277", 100: "U154340" },
   staples: "U054405",
-  containerstore: "U939746",
   totalwine: "U481673",
-  jcpenney: { 10: "U957067", 100: "U055714", 25: "U424837", 5: "U333200", 50: "U420399" },
+  jcpenney: { 5: "U333200", 10: "U957067", 25: "U424837", 50: "U420399", 100: "U055714" },
   shutterfly: { 25: "U034114", 50: "U159838" },
   groupon: "U513938",
+  wayfair: "U335404",
+  crateandbarrel: "U851147",
   underarmour: "U396551",
-  gamestop: { 10: "U008738", 100: "U606897", 20: "U134841", 30: "U261536", 50: "U882261" },
   llbean: "U020624",
-  dsw: { 100: "U266243", 25: "U497669", 50: "U942465" },
+  dsw: { 25: "U497669", 50: "U942465", 100: "U266243" },
   chicos: "U506551",
   boscovs: "U747187",
-  aeo: "U094392",
   carters: "U448010",
   stitchfix: "U633671",
   subway: "U835764",
@@ -132,13 +141,11 @@ export const BRAND_TO_TANGO_UTID: Record<string, string | Record<number, string>
   bjsrestaurants: "U254643",
   chilis: "U714697",
   grubhub: "U407739",
-  krispykreme: "U774099",
   olivegarden: "U009367",
   outback: "U020421",
   applebees: "U291543",
   burgerking: "U414456",
-  planetsmoothie: "U260455",
-  sweetfrog: { 10: "U911418", 25: "U699112", 5: "U923701" },
+  sweetfrog: { 5: "U923701", 10: "U911418", 25: "U699112" },
   bubbagump: "U664253",
   carrabbas: "U667894",
   bahamabreeze: "U498786",
@@ -151,14 +158,19 @@ export const BRAND_TO_TANGO_UTID: Record<string, string | Record<number, string>
   amctheatres: { 10: "U154092" },
   regal: "U209942",
   cinemark: { 25: "U828533", 50: "U472558" },
+  playstation: { 10: "U881915", 25: "U839613", 50: "U859575", 75: "U868075", 100: "U091078" },
   spafinder: "U477356",
-  fanatics: { 100: "U789465", 25: "U080019", 50: "U883973" },
+  fanatics: { 25: "U080019", 50: "U883973", 100: "U789465" },
   basspro: "U318911",
   petco: "U469706",
   chewy: "U799664",
   barnesnoble: "U049172",
   gap: "U053802",
-  hellofresh: { 100: "U238418" },
+  disney: "U321640",
+  dunkin: "U983646",
+  oldnavy: "U956235",
+  albertsons: "U778376",
+  razergold: { 10: "U804708", 20: "U092970", 50: "U841792" },
 };
 
 function requireEnv(name: string): string {
@@ -166,6 +178,9 @@ function requireEnv(name: string): string {
   if (!value) throw new Error(`${name} is not set — required for TangoCardProvider`);
   return value;
 }
+
+let lastTangoOrderTime = 0;
+let tangoQueue: Promise<unknown> = Promise.resolve();
 
 export class TangoCardProvider implements GiftCardProvider {
   private baseUrl: string;
@@ -185,7 +200,19 @@ export class TangoCardProvider implements GiftCardProvider {
     this.customerIdentifier = requireEnv("TANGO_CUSTOMER_IDENTIFIER");
   }
 
-  async issue({ brandSlug, amountCents }: { brandSlug: string; amountCents: number }): Promise<IssuedCard> {
+  async issue(params: IssueCardParams): Promise<IssuedCard> {
+    // Serialize Tango order calls and enforce >=1,100ms spacing to respect
+    // Tango's 1 req/sec per-account rate limit (HTTP 429 code 429001).
+    const next = tangoQueue.then(
+      () => this.issueInternal(params),
+      () => this.issueInternal(params)
+    );
+    tangoQueue = next.catch(() => {});
+    return next;
+  }
+
+  private async issueInternal({ brandSlug, amountCents }: IssueCardParams): Promise<IssuedCard> {
+    const isHouseBrand = HOUSE_BRAND_SLUGS.includes(brandSlug);
     const mapping = BRAND_TO_TANGO_UTID[brandSlug];
     if (!mapping) {
       throw new Error(
@@ -194,10 +221,10 @@ export class TangoCardProvider implements GiftCardProvider {
     }
 
     let utid: string;
+    const dollars = amountCents / 100;
     if (typeof mapping === "string") {
-      utid = mapping; // variable-value card, works for any amount
+      utid = mapping; // variable-value card, works for any amount within min/max
     } else {
-      const dollars = amountCents / 100;
       const found = mapping[dollars];
       if (!found) {
         throw new Error(
@@ -211,45 +238,95 @@ export class TangoCardProvider implements GiftCardProvider {
     const tangoPayload = {
       accountIdentifier: this.accountIdentifier,
       customerIdentifier: this.customerIdentifier,
-      amount: amountCents / 100,
+      amount: dollars,
       utid,
       sendEmail: false, // we deliver the code ourselves via our own email
     };
-    const { res, data, rawText } = await loggedFetch({
-      process: `TangoCardProvider.issue(${brandSlug})`,
-      url: `${this.baseUrl}/orders`,
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json",
-      },
-      bodyObj: tangoPayload,
-    });
+
+    let res!: Response;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let data: any;
+    let rawText = "";
+
+    for (let attempt = 1; attempt <= 4; attempt++) {
+      const elapsed = Date.now() - lastTangoOrderTime;
+      if (elapsed < 1150) {
+        await new Promise((r) => setTimeout(r, 1150 - elapsed));
+      }
+      lastTangoOrderTime = Date.now();
+
+      const fetched = await loggedFetch({
+        process: `TangoCardProvider.issue(${brandSlug}, $${dollars}, attempt #${attempt})`,
+        url: `${this.baseUrl}/orders`,
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/json",
+        },
+        bodyObj: tangoPayload,
+      });
+      res = fetched.res;
+      data = fetched.data;
+      rawText = fetched.rawText;
+
+      if (res.status === 429 && attempt < 4) {
+        await new Promise((r) => setTimeout(r, 1250 * attempt));
+        continue;
+      }
+      break;
+    }
 
     if (!res.ok) {
       throw new Error(`Tango Card order failed (${res.status}): ${rawText}`);
     }
-    // Verified against a real sandbox order (Starbucks, $5): the response
-    // has reward.credentialList = [{ label, value, type, credentialType }],
-    // and credentialType varies by brand/reward — card-number brands use
-    // "cardNumber"/"pin", others (confirmed: Starbucks) deliver a
-    // "redemptionUrl" instead with no PIN at all. Handle both rather than
-    // assuming one shape.
-    type Credential = { credentialType?: string; value?: string };
+
+    type Credential = { credentialType?: string; label?: string; value?: string };
     const credentialList: Credential[] = data?.reward?.credentialList ?? [];
 
     const cardNumber = credentialList.find((c) => c.credentialType === "cardNumber")?.value;
-    const pin = credentialList.find((c) => c.credentialType === "pin")?.value ?? "";
+    const pin =
+      credentialList.find(
+        (c) => c.credentialType === "pin" || c.credentialType === "rewardSecurityCode"
+      )?.value ?? "";
     const redemptionUrl = credentialList.find(
-      (c) => c.credentialType === "redemptionUrl" || c.credentialType === "claimUrl"
+      (c) =>
+        c.credentialType === "redemptionUrl" ||
+        c.credentialType === "claimUrl" ||
+        c.credentialType === "rewardSecurityUrl" ||
+        c.credentialType === "bypassUrl"
     )?.value;
 
-    const code = cardNumber ?? redemptionUrl ?? credentialList[0]?.value;
-    if (!code) {
+    const tangoCode = redemptionUrl ?? cardNumber ?? credentialList[0]?.value;
+    if (!tangoCode) {
       throw new Error(`Tango Card order succeeded but no redeemable code was found in the response: ${JSON.stringify(data)}`);
     }
 
-    return { code, pin, isDemo: false };
+    const finalCode = isHouseBrand ? generateDemoCode() : String(tangoCode);
+    const finalPin = isHouseBrand ? generateDemoPin() : String(pin);
+
+    writeTransactionLog({
+      phase: "PROCESS_COMPLETE",
+      process: `TangoCardProvider.issue(${brandSlug}, $${dollars})`,
+      transactionId: data?.referenceOrderID,
+      apiUrl: `${this.baseUrl}/orders`,
+      details: {
+        brandSlug,
+        utid,
+        referenceOrderID: data?.referenceOrderID,
+        status: data?.status,
+        amountCharged: data?.amountCharged,
+        tangoCredential: String(tangoCode),
+        issuedCode: finalCode,
+      },
+    });
+
+    return {
+      code: finalCode,
+      pin: finalPin,
+      isDemo: false,
+      zenditTransactionId: data?.referenceOrderID,
+      zenditOfferId: utid,
+    };
   }
 }
 
@@ -373,13 +450,12 @@ const ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
   ...BRAND_TO_ZENDIT_OFFER,
 };
 
-/** True if the brand can actually be fulfilled (house card or has a Zendit offer). */
+/** True if the brand can actually be fulfilled (house card or has a Tango/Zendit offer). */
 export function isFulfillableBrand(slug: string): boolean {
   if (HOUSE_BRAND_SLUGS.includes(slug)) return true;
-  // If Tango is configured, check if brand has a Tango UTID mapping
+  // When Tango is active, strictly verify Tango UTID mapping (Zendit is kept aside)
   if (isTangoActive()) {
-    const utid = BRAND_TO_TANGO_UTID[slug];
-    if (utid) return true;
+    return Boolean(BRAND_TO_TANGO_UTID[slug]);
   }
   const spec = ZENDIT_OFFERS[slug];
   return Boolean(spec && (spec.fixedOffers || (spec.rangeOfferId && spec.rangeOfferId !== "HOUSE_SWAP")));

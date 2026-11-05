@@ -1,0 +1,4774 @@
+{
+  "generatedAt": "2026-11-05T19:36:52.632Z",
+  "paypalSandbox": {
+    "baseUrl": "https://api-m.sandbox.paypal.com",
+    "clientIdPrefix": "BAAvgWHBMWqWeegN...",
+    "merchantEmail": "sb-akxwm53654275@business.example.com",
+    "oauthStatus": 200,
+    "oauthLatencyMs": 697,
+    "createOrderStatus": 201,
+    "createOrderLatencyMs": 341,
+    "sampleOrderId": "2A817311L5830812U",
+    "sampleOrderStatus": "CREATED",
+    "passed": true
+  },
+  "tangoSandbox": {
+    "baseUrl": "https://integration-api.tangocard.com/raas/v2",
+    "platformName": "QAPlatform2",
+    "accountIdentifier": "testing1234account",
+    "customerIdentifier": "customer-5554",
+    "startingBalance": 1822,
+    "endingBalance": 384.97,
+    "totalBrandsTested": 73,
+    "liveOrdersPassed": 73,
+    "liveOrdersFailed": 0,
+    "totalDenomsChecked": 300,
+    "totalDenomsPassed": 300
+  },
+  "brandResults": [
+    {
+      "slug": "buygiftcards",
+      "name": "BuyGiftCards.online Gift Card",
+      "category": "Multi-Brand",
+      "min": 10,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 5,
+      "denominations": [
+        25,
+        50,
+        75,
+        100,
+        150,
+        250,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 150,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 250,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U957978",
+        "httpStatus": 201,
+        "latencyMs": 969,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-38",
+        "tangoBrandName": "Reward Link US",
+        "tangoRewardName": "Reward Link US",
+        "credentialTypes": "redemptionUrl, expirationDate",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "visa",
+      "name": "Visa Virtual Account",
+      "category": "Visa",
+      "min": 10,
+      "max": 250,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        150,
+        200,
+        250
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U677579",
+          "tangoBrand": "Visa® Prepaid Card USD",
+          "tangoReward": "Visa® Prepaid Card USD",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U677579",
+          "tangoBrand": "Visa® Prepaid Card USD",
+          "tangoReward": "Visa® Prepaid Card USD",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U677579",
+          "tangoBrand": "Visa® Prepaid Card USD",
+          "tangoReward": "Visa® Prepaid Card USD",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 150,
+          "utid": "U677579",
+          "tangoBrand": "Visa® Prepaid Card USD",
+          "tangoReward": "Visa® Prepaid Card USD",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U677579",
+          "tangoBrand": "Visa® Prepaid Card USD",
+          "tangoReward": "Visa® Prepaid Card USD",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 250,
+          "utid": "U677579",
+          "tangoBrand": "Visa® Prepaid Card USD",
+          "tangoReward": "Visa® Prepaid Card USD",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U677579",
+        "httpStatus": 201,
+        "latencyMs": 873,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-67",
+        "tangoBrandName": "Visa® Prepaid Card USD",
+        "tangoRewardName": "Visa® Prepaid Card USD",
+        "credentialTypes": "redemptionUrl, cardNumber",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "one4all",
+      "name": "One4all Multi-Brand Gift Card",
+      "category": "Multi-Brand",
+      "min": 15,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 5,
+      "denominations": [
+        25,
+        50,
+        75,
+        100,
+        150,
+        250
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 150,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 250,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U957978",
+        "httpStatus": 201,
+        "latencyMs": 541,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-70",
+        "tangoBrandName": "Reward Link US",
+        "tangoRewardName": "Reward Link US",
+        "credentialTypes": "redemptionUrl, expirationDate",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "holidayfavorites",
+      "name": "Holiday Favorites Multi-Brand",
+      "category": "Multi-Brand",
+      "min": 15,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 5,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U957978",
+          "tangoBrand": "Reward Link US",
+          "tangoReward": "Reward Link US",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U957978",
+        "httpStatus": 201,
+        "latencyMs": 663,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-72",
+        "tangoBrandName": "Reward Link US",
+        "tangoRewardName": "Reward Link US",
+        "credentialTypes": "redemptionUrl, expirationDate",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "amazon",
+      "name": "Amazon",
+      "category": "Shopping",
+      "min": 15,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U163059",
+          "tangoBrand": "Amazon.com",
+          "tangoReward": "Amazon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U163059",
+          "tangoBrand": "Amazon.com",
+          "tangoReward": "Amazon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U163059",
+          "tangoBrand": "Amazon.com",
+          "tangoReward": "Amazon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U163059",
+          "tangoBrand": "Amazon.com",
+          "tangoReward": "Amazon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U163059",
+          "tangoBrand": "Amazon.com",
+          "tangoReward": "Amazon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U163059",
+        "httpStatus": 201,
+        "latencyMs": 454,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-74",
+        "tangoBrandName": "Amazon.com",
+        "tangoRewardName": "Amazon eGift Card",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "starbucks",
+      "name": "Starbucks",
+      "category": "Food & Drink",
+      "min": 5,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 1,
+      "denominations": [
+        5,
+        10,
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U761382",
+          "tangoBrand": "Starbucks",
+          "tangoReward": "Starbucks Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U761382",
+          "tangoBrand": "Starbucks",
+          "tangoReward": "Starbucks Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U761382",
+          "tangoBrand": "Starbucks",
+          "tangoReward": "Starbucks Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U761382",
+          "tangoBrand": "Starbucks",
+          "tangoReward": "Starbucks Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U761382",
+        "httpStatus": 201,
+        "latencyMs": 955,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-76",
+        "tangoBrandName": "Starbucks",
+        "tangoRewardName": "Starbucks Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "doordash",
+      "name": "DoorDash",
+      "category": "Food & Drink",
+      "min": 25,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 1.6,
+      "denominations": [
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U964209",
+          "tangoBrand": "DoorDash",
+          "tangoReward": "DoorDash Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U964209",
+          "tangoBrand": "DoorDash",
+          "tangoReward": "DoorDash Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U964209",
+        "httpStatus": 201,
+        "latencyMs": 1674,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-40",
+        "tangoBrandName": "DoorDash",
+        "tangoRewardName": "DoorDash Gift Card",
+        "credentialTypes": "pin",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "uber",
+      "name": "Uber",
+      "category": "Travel",
+      "min": 15,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 0.7,
+      "denominations": [
+        15,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 15,
+          "utid": "U552132",
+          "tangoBrand": "Uber",
+          "tangoReward": "Uber Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U552132",
+          "tangoBrand": "Uber",
+          "tangoReward": "Uber Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U552132",
+          "tangoBrand": "Uber",
+          "tangoReward": "Uber Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U552132",
+          "tangoBrand": "Uber",
+          "tangoReward": "Uber Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U552132",
+          "tangoBrand": "Uber",
+          "tangoReward": "Uber Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 15,
+        "utid": "U552132",
+        "httpStatus": 201,
+        "latencyMs": 1252,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-79",
+        "tangoBrandName": "Uber",
+        "tangoRewardName": "Uber Gift Card",
+        "credentialTypes": "pin",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "airbnb",
+      "name": "Airbnb",
+      "category": "Travel",
+      "min": 50,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 0,
+      "denominations": [
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 50,
+          "utid": "U986050",
+          "tangoBrand": "Airbnb",
+          "tangoReward": "Airbnb Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U986050",
+          "tangoBrand": "Airbnb",
+          "tangoReward": "Airbnb Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 50,
+        "utid": "U986050",
+        "httpStatus": 201,
+        "latencyMs": 1344,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-81",
+        "tangoBrandName": "Airbnb",
+        "tangoRewardName": "Airbnb Gift Card",
+        "credentialTypes": "pin, cardNumber",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "walmart",
+      "name": "Walmart",
+      "category": "Shopping",
+      "min": 10,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U640032",
+          "tangoBrand": "Walmart",
+          "tangoReward": "Walmart eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U640032",
+          "tangoBrand": "Walmart",
+          "tangoReward": "Walmart eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U640032",
+          "tangoBrand": "Walmart",
+          "tangoReward": "Walmart eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U640032",
+          "tangoBrand": "Walmart",
+          "tangoReward": "Walmart eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U640032",
+        "httpStatus": 201,
+        "latencyMs": 1465,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-83",
+        "tangoBrandName": "Walmart",
+        "tangoRewardName": "Walmart eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "panera",
+      "name": "Panera Bread",
+      "category": "Food & Drink",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2.3,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U455508",
+          "tangoBrand": "Panera Bread",
+          "tangoReward": "Panera Bread eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U455508",
+          "tangoBrand": "Panera Bread",
+          "tangoReward": "Panera Bread eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U455508",
+          "tangoBrand": "Panera Bread",
+          "tangoReward": "Panera Bread eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U455508",
+        "httpStatus": 201,
+        "latencyMs": 1476,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-86",
+        "tangoBrandName": "Panera Bread",
+        "tangoRewardName": "Panera Bread eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "xbox",
+      "name": "Xbox",
+      "category": "Gaming",
+      "min": 15,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2.1,
+      "denominations": [
+        15,
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 15,
+          "utid": "U533358",
+          "tangoBrand": "Xbox",
+          "tangoReward": "Xbox Digital Gift Card $15 ",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U684145",
+          "tangoBrand": "Xbox",
+          "tangoReward": "Xbox Digital Gift Card $25",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U554576",
+          "tangoBrand": "Xbox",
+          "tangoReward": "Xbox Digital Gift Card $50",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U635195",
+          "tangoBrand": "Xbox",
+          "tangoReward": "Xbox Digital Gift Card $100",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 15,
+        "utid": "U533358",
+        "httpStatus": 201,
+        "latencyMs": 1470,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-88",
+        "tangoBrandName": "Xbox",
+        "tangoRewardName": "Xbox Digital Gift Card $15 ",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "ubereats",
+      "name": "Uber Eats",
+      "category": "Food & Drink",
+      "min": 15,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 0,
+      "denominations": [
+        15,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 15,
+          "utid": "U517295",
+          "tangoBrand": "Uber Eats",
+          "tangoReward": "Uber Eats Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U517295",
+          "tangoBrand": "Uber Eats",
+          "tangoReward": "Uber Eats Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U517295",
+          "tangoBrand": "Uber Eats",
+          "tangoReward": "Uber Eats Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U517295",
+          "tangoBrand": "Uber Eats",
+          "tangoReward": "Uber Eats Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U517295",
+          "tangoBrand": "Uber Eats",
+          "tangoReward": "Uber Eats Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 15,
+        "utid": "U517295",
+        "httpStatus": 201,
+        "latencyMs": 1057,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-91",
+        "tangoBrandName": "Uber Eats",
+        "tangoRewardName": "Uber Eats Gift Card",
+        "credentialTypes": "pin",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "googleplay",
+      "name": "Google Play",
+      "category": "Tech",
+      "min": 10,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 1.5,
+      "denominations": [
+        10,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U505722",
+          "tangoBrand": "Google Play gift code",
+          "tangoReward": "Google Play Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U505722",
+          "tangoBrand": "Google Play gift code",
+          "tangoReward": "Google Play Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U505722",
+          "tangoBrand": "Google Play gift code",
+          "tangoReward": "Google Play Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U505722",
+          "tangoBrand": "Google Play gift code",
+          "tangoReward": "Google Play Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U505722",
+          "tangoBrand": "Google Play gift code",
+          "tangoReward": "Google Play Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U505722",
+        "httpStatus": 201,
+        "latencyMs": 1267,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-42",
+        "tangoBrandName": "Google Play gift code",
+        "tangoRewardName": "Google Play Gift Code",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "lowes",
+      "name": "Lowe's",
+      "category": "Home",
+      "min": 25,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 5,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U589797",
+          "tangoBrand": "Lowe's",
+          "tangoReward": "Lowe's E-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U589797",
+          "tangoBrand": "Lowe's",
+          "tangoReward": "Lowe's E-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U589797",
+          "tangoBrand": "Lowe's",
+          "tangoReward": "Lowe's E-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U589797",
+          "tangoBrand": "Lowe's",
+          "tangoReward": "Lowe's E-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U589797",
+          "tangoBrand": "Lowe's",
+          "tangoReward": "Lowe's E-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U589797",
+        "httpStatus": 201,
+        "latencyMs": 1060,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-93",
+        "tangoBrandName": "Lowe's",
+        "tangoRewardName": "Lowe's E-Gift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "adidas",
+      "name": "Adidas",
+      "category": "Fashion",
+      "min": 50,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3.7,
+      "denominations": [
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 50,
+          "utid": "U561621",
+          "tangoBrand": "adidas",
+          "tangoReward": "adidas Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U561621",
+          "tangoBrand": "adidas",
+          "tangoReward": "adidas Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 50,
+        "utid": "U561621",
+        "httpStatus": 201,
+        "latencyMs": 961,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-95",
+        "tangoBrandName": "adidas",
+        "tangoRewardName": "adidas Gift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "autozone",
+      "name": "AutoZone",
+      "category": "Gas & Auto",
+      "min": 20,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 2.7,
+      "denominations": [
+        20,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 20,
+          "utid": "U605768",
+          "tangoBrand": "AutoZone®",
+          "tangoReward": "AutoZone® E-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U605768",
+          "tangoBrand": "AutoZone®",
+          "tangoReward": "AutoZone® E-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 20,
+        "utid": "U605768",
+        "httpStatus": 201,
+        "latencyMs": 1492,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-45",
+        "tangoBrandName": "AutoZone®",
+        "tangoRewardName": "AutoZone® E-Gift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "advanceautoparts",
+      "name": "Advance Auto Parts",
+      "category": "Gas & Auto",
+      "min": 10,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 0,
+      "denominations": [
+        10,
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U421313",
+          "tangoBrand": "Advance Auto Parts",
+          "tangoReward": "Advance Auto Parts eGift Card $10",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U360639",
+          "tangoBrand": "Advance Auto Parts",
+          "tangoReward": "Advance Auto Parts eGift Card $25",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U021383",
+          "tangoBrand": "Advance Auto Parts",
+          "tangoReward": "Advance Auto Parts eGift Card $50",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U757661",
+          "tangoBrand": "Advance Auto Parts",
+          "tangoReward": "Advance Auto Parts eGift Card $100",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U421313",
+        "httpStatus": 201,
+        "latencyMs": 958,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-97",
+        "tangoBrandName": "Advance Auto Parts",
+        "tangoRewardName": "Advance Auto Parts eGift Card $10",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "jiffylube",
+      "name": "Jiffy Lube",
+      "category": "Gas & Auto",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 4.5,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U909478",
+          "tangoBrand": "Jiffy Lube®",
+          "tangoReward": "Jiffy Lube® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U909478",
+          "tangoBrand": "Jiffy Lube®",
+          "tangoReward": "Jiffy Lube® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U909478",
+          "tangoBrand": "Jiffy Lube®",
+          "tangoReward": "Jiffy Lube® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U909478",
+          "tangoBrand": "Jiffy Lube®",
+          "tangoReward": "Jiffy Lube® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U909478",
+        "httpStatus": 201,
+        "latencyMs": 952,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150697-99",
+        "tangoBrandName": "Jiffy Lube®",
+        "tangoRewardName": "Jiffy Lube® eGift Card",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "cvspharmacy",
+      "name": "CVS Pharmacy",
+      "category": "Grocery",
+      "min": 5,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3,
+      "denominations": [
+        5,
+        10,
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U029039",
+          "tangoBrand": "CVS Pharmacy®",
+          "tangoReward": "CVS Pharmacy® Gift Card $5",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U922376",
+          "tangoBrand": "CVS Pharmacy®",
+          "tangoReward": "CVS Pharmacy® Gift Card $10",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U105443",
+          "tangoBrand": "CVS Pharmacy®",
+          "tangoReward": "CVS Pharmacy® Gift Card $25",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U360814",
+          "tangoBrand": "CVS Pharmacy®",
+          "tangoReward": "CVS Pharmacy® Gift Card $50",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U057891",
+          "tangoBrand": "CVS Pharmacy®",
+          "tangoReward": "CVS Pharmacy® Gift Card $100",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U029039",
+        "httpStatus": 201,
+        "latencyMs": 963,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-47",
+        "tangoBrandName": "CVS Pharmacy®",
+        "tangoRewardName": "CVS Pharmacy® Gift Card $5",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "bathbodyworks",
+      "name": "Bath & Body Works",
+      "category": "Shopping",
+      "min": 10,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U728067",
+          "tangoBrand": "Bath & Body Works",
+          "tangoReward": "Bath & Body Works eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U728067",
+          "tangoBrand": "Bath & Body Works",
+          "tangoReward": "Bath & Body Works eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U728067",
+          "tangoBrand": "Bath & Body Works",
+          "tangoReward": "Bath & Body Works eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U728067",
+          "tangoBrand": "Bath & Body Works",
+          "tangoReward": "Bath & Body Works eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U728067",
+          "tangoBrand": "Bath & Body Works",
+          "tangoReward": "Bath & Body Works eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U728067",
+        "httpStatus": 201,
+        "latencyMs": 854,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-01",
+        "tangoBrandName": "Bath & Body Works",
+        "tangoRewardName": "Bath & Body Works eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "saks",
+      "name": "Saks Fifth Avenue",
+      "category": "Shopping",
+      "min": 10,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2.9,
+      "denominations": [
+        10,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U574235",
+          "tangoBrand": "Saks Fifth Avenue",
+          "tangoReward": "Saks Fifth Avenue eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U574235",
+          "tangoBrand": "Saks Fifth Avenue",
+          "tangoReward": "Saks Fifth Avenue eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U574235",
+          "tangoBrand": "Saks Fifth Avenue",
+          "tangoReward": "Saks Fifth Avenue eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U574235",
+          "tangoBrand": "Saks Fifth Avenue",
+          "tangoReward": "Saks Fifth Avenue eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U574235",
+          "tangoBrand": "Saks Fifth Avenue",
+          "tangoReward": "Saks Fifth Avenue eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U574235",
+        "httpStatus": 201,
+        "latencyMs": 1110,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-04",
+        "tangoBrandName": "Saks Fifth Avenue",
+        "tangoRewardName": "Saks Fifth Avenue eGift Card ",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "macys",
+      "name": "Macy's",
+      "category": "Shopping",
+      "min": 5,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 0,
+      "denominations": [
+        5,
+        10,
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U452033",
+          "tangoBrand": "Macy's",
+          "tangoReward": "Macy's E-Gift Card $5.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U814874",
+          "tangoBrand": "Macy's",
+          "tangoReward": "Macy's E-Gift Card $10.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U002285",
+          "tangoBrand": "Macy's",
+          "tangoReward": "Macy's E-Gift Card $25.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U010277",
+          "tangoBrand": "Macy's",
+          "tangoReward": "Macy's E-Gift Card $50.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U154340",
+          "tangoBrand": "Macy's",
+          "tangoReward": "Macy's E-Gift Card $100.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U452033",
+        "httpStatus": 201,
+        "latencyMs": 1047,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-05",
+        "tangoBrandName": "Macy's",
+        "tangoRewardName": "Macy's E-Gift Card $5.00",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "staples",
+      "name": "Staples",
+      "category": "Shopping",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U054405",
+          "tangoBrand": "Staples",
+          "tangoReward": "Staples eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U054405",
+          "tangoBrand": "Staples",
+          "tangoReward": "Staples eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U054405",
+          "tangoBrand": "Staples",
+          "tangoReward": "Staples eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U054405",
+          "tangoBrand": "Staples",
+          "tangoReward": "Staples eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U054405",
+        "httpStatus": 201,
+        "latencyMs": 1269,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-08",
+        "tangoBrandName": "Staples",
+        "tangoRewardName": "Staples eGift Card",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "totalwine",
+      "name": "Total Wine & More",
+      "category": "Shopping",
+      "min": 25,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U481673",
+          "tangoBrand": "Total Wine & More",
+          "tangoReward": "Total Wine & More eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U481673",
+          "tangoBrand": "Total Wine & More",
+          "tangoReward": "Total Wine & More eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U481673",
+          "tangoBrand": "Total Wine & More",
+          "tangoReward": "Total Wine & More eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U481673",
+          "tangoBrand": "Total Wine & More",
+          "tangoReward": "Total Wine & More eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U481673",
+          "tangoBrand": "Total Wine & More",
+          "tangoReward": "Total Wine & More eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U481673",
+        "httpStatus": 201,
+        "latencyMs": 975,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-49",
+        "tangoBrandName": "Total Wine & More",
+        "tangoRewardName": "Total Wine & More eGift",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "jcpenney",
+      "name": "JCPenney",
+      "category": "Shopping",
+      "min": 5,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 0,
+      "denominations": [
+        5,
+        10,
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U333200",
+          "tangoBrand": "JCPenney",
+          "tangoReward": "JCPenney E-Gift Card $5.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U957067",
+          "tangoBrand": "JCPenney",
+          "tangoReward": "JCPenney E-Gift Card $10.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U424837",
+          "tangoBrand": "JCPenney",
+          "tangoReward": "JCPenney E-Gift Card $25.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U420399",
+          "tangoBrand": "JCPenney",
+          "tangoReward": "JCPenney E-Gift Card $50.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U055714",
+          "tangoBrand": "JCPenney",
+          "tangoReward": "JCPenney E-Gift Card $100.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U333200",
+        "httpStatus": 201,
+        "latencyMs": 954,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-12",
+        "tangoBrandName": "JCPenney",
+        "tangoRewardName": "JCPenney E-Gift Card $5.00",
+        "credentialTypes": "pin, cardNumber",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "shutterfly",
+      "name": "Shutterfly",
+      "category": "Shopping",
+      "min": 25,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 3,
+      "denominations": [
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U034114",
+          "tangoBrand": "Shutterfly, Inc.",
+          "tangoReward": "Shutterfly Gift Certificate $25",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U159838",
+          "tangoBrand": "Shutterfly, Inc.",
+          "tangoReward": "Shutterfly Gift Certificate $50",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U034114",
+        "httpStatus": 201,
+        "latencyMs": 1060,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-14",
+        "tangoBrandName": "Shutterfly, Inc.",
+        "tangoRewardName": "Shutterfly Gift Certificate $25",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "groupon",
+      "name": "Groupon",
+      "category": "Shopping",
+      "min": 15,
+      "max": 200,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        15,
+        25,
+        50,
+        100,
+        200
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 15,
+          "utid": "U513938",
+          "tangoBrand": "Groupon",
+          "tangoReward": "Groupon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U513938",
+          "tangoBrand": "Groupon",
+          "tangoReward": "Groupon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U513938",
+          "tangoBrand": "Groupon",
+          "tangoReward": "Groupon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U513938",
+          "tangoBrand": "Groupon",
+          "tangoReward": "Groupon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U513938",
+          "tangoBrand": "Groupon",
+          "tangoReward": "Groupon eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 15,
+        "utid": "U513938",
+        "httpStatus": 201,
+        "latencyMs": 1270,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-17",
+        "tangoBrandName": "Groupon",
+        "tangoRewardName": "Groupon eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "wayfair",
+      "name": "Wayfair",
+      "category": "Home",
+      "min": 25,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U335404",
+          "tangoBrand": "Wayfair.com",
+          "tangoReward": "Wayfair.com eGift Card  ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U335404",
+          "tangoBrand": "Wayfair.com",
+          "tangoReward": "Wayfair.com eGift Card  ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U335404",
+          "tangoBrand": "Wayfair.com",
+          "tangoReward": "Wayfair.com eGift Card  ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U335404",
+          "tangoBrand": "Wayfair.com",
+          "tangoReward": "Wayfair.com eGift Card  ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U335404",
+          "tangoBrand": "Wayfair.com",
+          "tangoReward": "Wayfair.com eGift Card  ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U335404",
+        "httpStatus": 201,
+        "latencyMs": 1270,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-51",
+        "tangoBrandName": "Wayfair.com",
+        "tangoRewardName": "Wayfair.com eGift Card  ",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "crateandbarrel",
+      "name": "Crate & Barrel",
+      "category": "Home",
+      "min": 10,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U851147",
+          "tangoBrand": "Crate and Barrel",
+          "tangoReward": "Crate and Barrel eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U851147",
+          "tangoBrand": "Crate and Barrel",
+          "tangoReward": "Crate and Barrel eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U851147",
+          "tangoBrand": "Crate and Barrel",
+          "tangoReward": "Crate and Barrel eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U851147",
+          "tangoBrand": "Crate and Barrel",
+          "tangoReward": "Crate and Barrel eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U851147",
+          "tangoBrand": "Crate and Barrel",
+          "tangoReward": "Crate and Barrel eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U851147",
+        "httpStatus": 201,
+        "latencyMs": 879,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-18",
+        "tangoBrandName": "Crate and Barrel",
+        "tangoRewardName": "Crate and Barrel eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "underarmour",
+      "name": "Under Armour",
+      "category": "Fashion",
+      "min": 15,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 4.4,
+      "denominations": [
+        15,
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 15,
+          "utid": "U396551",
+          "tangoBrand": "Under Armour®",
+          "tangoReward": "Under Armour® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U396551",
+          "tangoBrand": "Under Armour®",
+          "tangoReward": "Under Armour® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U396551",
+          "tangoBrand": "Under Armour®",
+          "tangoReward": "Under Armour® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U396551",
+          "tangoBrand": "Under Armour®",
+          "tangoReward": "Under Armour® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U396551",
+          "tangoBrand": "Under Armour®",
+          "tangoReward": "Under Armour® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U396551",
+          "tangoBrand": "Under Armour®",
+          "tangoReward": "Under Armour® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 15,
+        "utid": "U396551",
+        "httpStatus": 201,
+        "latencyMs": 1461,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-21",
+        "tangoBrandName": "Under Armour®",
+        "tangoRewardName": "Under Armour® eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "llbean",
+      "name": "L.L.Bean",
+      "category": "Fashion",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3.9,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U020624",
+          "tangoBrand": "L.L.Bean",
+          "tangoReward": "L.L.Bean eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U020624",
+          "tangoBrand": "L.L.Bean",
+          "tangoReward": "L.L.Bean eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U020624",
+          "tangoBrand": "L.L.Bean",
+          "tangoReward": "L.L.Bean eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U020624",
+        "httpStatus": 201,
+        "latencyMs": 374,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-23",
+        "tangoBrandName": "L.L.Bean",
+        "tangoRewardName": "L.L.Bean eGift",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "dsw",
+      "name": "DSW",
+      "category": "Fashion",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U497669",
+          "tangoBrand": "DSW",
+          "tangoReward": "DSW eGift Card $25",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U942465",
+          "tangoBrand": "DSW",
+          "tangoReward": "DSW eGift Card $50",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U266243",
+          "tangoBrand": "DSW",
+          "tangoReward": "DSW eGift Card $100",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U497669",
+        "httpStatus": 201,
+        "latencyMs": 1081,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-26",
+        "tangoBrandName": "DSW",
+        "tangoRewardName": "DSW eGift Card $25",
+        "credentialTypes": "pin, cardNumber",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "chicos",
+      "name": "Chico's",
+      "category": "Fashion",
+      "min": 10,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 3.8,
+      "denominations": [
+        10,
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U506551",
+          "tangoBrand": "Chico's",
+          "tangoReward": "Chico's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U506551",
+          "tangoBrand": "Chico's",
+          "tangoReward": "Chico's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U506551",
+          "tangoBrand": "Chico's",
+          "tangoReward": "Chico's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U506551",
+        "httpStatus": 201,
+        "latencyMs": 1265,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-28",
+        "tangoBrandName": "Chico's",
+        "tangoRewardName": "Chico's eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "boscovs",
+      "name": "Boscov's",
+      "category": "Shopping",
+      "min": 15,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 5.1,
+      "denominations": [
+        15,
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 15,
+          "utid": "U747187",
+          "tangoBrand": "Boscov's",
+          "tangoReward": "Boscov's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U747187",
+          "tangoBrand": "Boscov's",
+          "tangoReward": "Boscov's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U747187",
+          "tangoBrand": "Boscov's",
+          "tangoReward": "Boscov's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 15,
+        "utid": "U747187",
+        "httpStatus": 201,
+        "latencyMs": 970,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-53",
+        "tangoBrandName": "Boscov's",
+        "tangoRewardName": "Boscov's eGift Card",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "carters",
+      "name": "Carter's / OshKosh B'gosh",
+      "category": "Kids",
+      "min": 10,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 6.2,
+      "denominations": [
+        10,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U448010",
+          "tangoBrand": "Carters/OshKosh B'gosh",
+          "tangoReward": "Carter's - OshKosh B'gosh eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U448010",
+          "tangoBrand": "Carters/OshKosh B'gosh",
+          "tangoReward": "Carter's - OshKosh B'gosh eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U448010",
+          "tangoBrand": "Carters/OshKosh B'gosh",
+          "tangoReward": "Carter's - OshKosh B'gosh eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U448010",
+          "tangoBrand": "Carters/OshKosh B'gosh",
+          "tangoReward": "Carter's - OshKosh B'gosh eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U448010",
+          "tangoBrand": "Carters/OshKosh B'gosh",
+          "tangoReward": "Carter's - OshKosh B'gosh eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U448010",
+        "httpStatus": 201,
+        "latencyMs": 565,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-30",
+        "tangoBrandName": "Carters/OshKosh B'gosh",
+        "tangoRewardName": "Carter's - OshKosh B'gosh eGift",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "stitchfix",
+      "name": "Stitch Fix",
+      "category": "Fashion",
+      "min": 5,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3.5,
+      "denominations": [
+        5,
+        10,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U633671",
+          "tangoBrand": "Stitch Fix®",
+          "tangoReward": "Stitch Fix® Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U633671",
+          "tangoBrand": "Stitch Fix®",
+          "tangoReward": "Stitch Fix® Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U633671",
+          "tangoBrand": "Stitch Fix®",
+          "tangoReward": "Stitch Fix® Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U633671",
+          "tangoBrand": "Stitch Fix®",
+          "tangoReward": "Stitch Fix® Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U633671",
+          "tangoBrand": "Stitch Fix®",
+          "tangoReward": "Stitch Fix® Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U633671",
+          "tangoBrand": "Stitch Fix®",
+          "tangoReward": "Stitch Fix® Gift Code",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U633671",
+        "httpStatus": 201,
+        "latencyMs": 1055,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-32",
+        "tangoBrandName": "Stitch Fix®",
+        "tangoRewardName": "Stitch Fix® Gift Code",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "subway",
+      "name": "Subway",
+      "category": "Food & Drink",
+      "min": 5,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 0.5,
+      "denominations": [
+        5,
+        10,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U835764",
+          "tangoBrand": "Subway",
+          "tangoReward": "Subway® eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U835764",
+          "tangoBrand": "Subway",
+          "tangoReward": "Subway® eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U835764",
+          "tangoBrand": "Subway",
+          "tangoReward": "Subway® eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U835764",
+          "tangoBrand": "Subway",
+          "tangoReward": "Subway® eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U835764",
+          "tangoBrand": "Subway",
+          "tangoReward": "Subway® eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U835764",
+          "tangoBrand": "Subway",
+          "tangoReward": "Subway® eGift Card ",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U835764",
+        "httpStatus": 201,
+        "latencyMs": 1067,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-34",
+        "tangoBrandName": "Subway",
+        "tangoRewardName": "Subway® eGift Card ",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "darden",
+      "name": "Darden Restaurants",
+      "category": "Food & Drink",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2.8,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U516600",
+          "tangoBrand": "Darden® Restaurants",
+          "tangoReward": "Darden eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U516600",
+          "tangoBrand": "Darden® Restaurants",
+          "tangoReward": "Darden eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U516600",
+          "tangoBrand": "Darden® Restaurants",
+          "tangoReward": "Darden eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U516600",
+          "tangoBrand": "Darden® Restaurants",
+          "tangoReward": "Darden eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U516600",
+        "httpStatus": 201,
+        "latencyMs": 1064,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-36",
+        "tangoBrandName": "Darden® Restaurants",
+        "tangoRewardName": "Darden eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "dominos",
+      "name": "Domino's",
+      "category": "Food & Drink",
+      "min": 5,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3,
+      "denominations": [
+        5,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U012700",
+          "tangoBrand": "Domino's Pizza",
+          "tangoReward": "Domino's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U012700",
+          "tangoBrand": "Domino's Pizza",
+          "tangoReward": "Domino's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U012700",
+          "tangoBrand": "Domino's Pizza",
+          "tangoReward": "Domino's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U012700",
+          "tangoBrand": "Domino's Pizza",
+          "tangoReward": "Domino's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U012700",
+          "tangoBrand": "Domino's Pizza",
+          "tangoReward": "Domino's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U012700",
+        "httpStatus": 201,
+        "latencyMs": 978,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-55",
+        "tangoBrandName": "Domino's Pizza",
+        "tangoRewardName": "Domino's eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "bjsrestaurants",
+      "name": "BJ's Restaurants",
+      "category": "Food & Drink",
+      "min": 15,
+      "max": 200,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U254643",
+          "tangoBrand": "BJ's Restaurants",
+          "tangoReward": "BJ's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U254643",
+          "tangoBrand": "BJ's Restaurants",
+          "tangoReward": "BJ's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U254643",
+          "tangoBrand": "BJ's Restaurants",
+          "tangoReward": "BJ's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U254643",
+          "tangoBrand": "BJ's Restaurants",
+          "tangoReward": "BJ's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U254643",
+        "httpStatus": 201,
+        "latencyMs": 1263,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-38",
+        "tangoBrandName": "BJ's Restaurants",
+        "tangoRewardName": "BJ's eGift Card",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "chilis",
+      "name": "Chili's",
+      "category": "Food & Drink",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 4.4,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U714697",
+          "tangoBrand": "Chili's",
+          "tangoReward": "Chili's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U714697",
+          "tangoBrand": "Chili's",
+          "tangoReward": "Chili's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U714697",
+          "tangoBrand": "Chili's",
+          "tangoReward": "Chili's eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U714697",
+        "httpStatus": 201,
+        "latencyMs": 1013,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-41",
+        "tangoBrandName": "Chili's",
+        "tangoRewardName": "Chili's eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "grubhub",
+      "name": "Grubhub",
+      "category": "Food & Drink",
+      "min": 10,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U407739",
+          "tangoBrand": "Grubhub",
+          "tangoReward": "Grubhub Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U407739",
+          "tangoBrand": "Grubhub",
+          "tangoReward": "Grubhub Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U407739",
+          "tangoBrand": "Grubhub",
+          "tangoReward": "Grubhub Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U407739",
+          "tangoBrand": "Grubhub",
+          "tangoReward": "Grubhub Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U407739",
+          "tangoBrand": "Grubhub",
+          "tangoReward": "Grubhub Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U407739",
+        "httpStatus": 201,
+        "latencyMs": 749,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-43",
+        "tangoBrandName": "Grubhub",
+        "tangoRewardName": "Grubhub Gift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "olivegarden",
+      "name": "Olive Garden",
+      "category": "Food & Drink",
+      "min": 10,
+      "max": 250,
+      "fixedOnly": false,
+      "discountPercent": 2.8,
+      "denominations": [
+        25,
+        50,
+        100,
+        250
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U009367",
+          "tangoBrand": "Olive Garden®",
+          "tangoReward": "Olive Garden® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U009367",
+          "tangoBrand": "Olive Garden®",
+          "tangoReward": "Olive Garden® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U009367",
+          "tangoBrand": "Olive Garden®",
+          "tangoReward": "Olive Garden® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 250,
+          "utid": "U009367",
+          "tangoBrand": "Olive Garden®",
+          "tangoReward": "Olive Garden® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U009367",
+        "httpStatus": 201,
+        "latencyMs": 870,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-45",
+        "tangoBrandName": "Olive Garden®",
+        "tangoRewardName": "Olive Garden® eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "outback",
+      "name": "Outback Steakhouse",
+      "category": "Food & Drink",
+      "min": 20,
+      "max": 100,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U020421",
+          "tangoBrand": "Outback Steakhouse",
+          "tangoReward": "Outback Steakhouse eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U020421",
+          "tangoBrand": "Outback Steakhouse",
+          "tangoReward": "Outback Steakhouse eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U020421",
+          "tangoBrand": "Outback Steakhouse",
+          "tangoReward": "Outback Steakhouse eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U020421",
+        "httpStatus": 201,
+        "latencyMs": 1471,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-57",
+        "tangoBrandName": "Outback Steakhouse",
+        "tangoRewardName": "Outback Steakhouse eGiftCard",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "applebees",
+      "name": "Applebee's",
+      "category": "Food & Drink",
+      "min": 15,
+      "max": 200,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U291543",
+          "tangoBrand": "Applebee’s®",
+          "tangoReward": "Applebee’s® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U291543",
+          "tangoBrand": "Applebee’s®",
+          "tangoReward": "Applebee’s® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U291543",
+          "tangoBrand": "Applebee’s®",
+          "tangoReward": "Applebee’s® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U291543",
+          "tangoBrand": "Applebee’s®",
+          "tangoReward": "Applebee’s® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U291543",
+        "httpStatus": 201,
+        "latencyMs": 1462,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-47",
+        "tangoBrandName": "Applebee’s®",
+        "tangoRewardName": "Applebee’s® eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "burgerking",
+      "name": "Burger King",
+      "category": "Food & Drink",
+      "min": 10,
+      "max": 100,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U414456",
+          "tangoBrand": "BURGER KING®",
+          "tangoReward": "BURGER KING® eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U414456",
+          "tangoBrand": "BURGER KING®",
+          "tangoReward": "BURGER KING® eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U414456",
+          "tangoBrand": "BURGER KING®",
+          "tangoReward": "BURGER KING® eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U414456",
+        "httpStatus": 201,
+        "latencyMs": 891,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-49",
+        "tangoBrandName": "BURGER KING®",
+        "tangoRewardName": "BURGER KING® eGift",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "sweetfrog",
+      "name": "Sweetfrog",
+      "category": "Food & Drink",
+      "min": 5,
+      "max": 25,
+      "fixedOnly": true,
+      "discountPercent": 0,
+      "denominations": [
+        5,
+        10,
+        25
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U923701",
+          "tangoBrand": "SweetFrog® Frozen Yogurt",
+          "tangoReward": "SweetFrog® Gift Card $5",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U911418",
+          "tangoBrand": "SweetFrog® Frozen Yogurt",
+          "tangoReward": "SweetFrog® Gift Card $10",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U699112",
+          "tangoBrand": "SweetFrog® Frozen Yogurt",
+          "tangoReward": "SweetFrog® Gift Card $25",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U923701",
+        "httpStatus": 201,
+        "latencyMs": 958,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-51",
+        "tangoBrandName": "SweetFrog® Frozen Yogurt",
+        "tangoRewardName": "SweetFrog® Gift Card $5",
+        "credentialTypes": "cardNumber",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "bubbagump",
+      "name": "Bubba Gump Shrimp Co.",
+      "category": "Food & Drink",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 5,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U664253",
+          "tangoBrand": "Bubba Gump Shrimp Co.®",
+          "tangoReward": "Bubba Gump Shrimp Co.® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U664253",
+          "tangoBrand": "Bubba Gump Shrimp Co.®",
+          "tangoReward": "Bubba Gump Shrimp Co.® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U664253",
+          "tangoBrand": "Bubba Gump Shrimp Co.®",
+          "tangoReward": "Bubba Gump Shrimp Co.® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U664253",
+          "tangoBrand": "Bubba Gump Shrimp Co.®",
+          "tangoReward": "Bubba Gump Shrimp Co.® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U664253",
+        "httpStatus": 201,
+        "latencyMs": 856,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-60",
+        "tangoBrandName": "Bubba Gump Shrimp Co.®",
+        "tangoRewardName": "Bubba Gump Shrimp Co.® eGift Card",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "carrabbas",
+      "name": "Carrabba's Italian Grill",
+      "category": "Food & Drink",
+      "min": 20,
+      "max": 200,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U667894",
+          "tangoBrand": "Carrabba's Italian Grill",
+          "tangoReward": "Carrabba's Italian Grill eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U667894",
+          "tangoBrand": "Carrabba's Italian Grill",
+          "tangoReward": "Carrabba's Italian Grill eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U667894",
+          "tangoBrand": "Carrabba's Italian Grill",
+          "tangoReward": "Carrabba's Italian Grill eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U667894",
+        "httpStatus": 201,
+        "latencyMs": 1272,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-54",
+        "tangoBrandName": "Carrabba's Italian Grill",
+        "tangoRewardName": "Carrabba's Italian Grill eGiftCard",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "bahamabreeze",
+      "name": "Bahama Breeze",
+      "category": "Food & Drink",
+      "min": 10,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 3,
+      "denominations": [
+        10,
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U498786",
+          "tangoBrand": "Bahama Breeze®",
+          "tangoReward": "Bahama Breeze® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U498786",
+          "tangoBrand": "Bahama Breeze®",
+          "tangoReward": "Bahama Breeze® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U498786",
+          "tangoBrand": "Bahama Breeze®",
+          "tangoReward": "Bahama Breeze® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U498786",
+        "httpStatus": 201,
+        "latencyMs": 865,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-56",
+        "tangoBrandName": "Bahama Breeze®",
+        "tangoRewardName": "Bahama Breeze® eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "rubytuesday",
+      "name": "Ruby Tuesday",
+      "category": "Food & Drink",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U479635",
+          "tangoBrand": "Ruby Tuesday",
+          "tangoReward": "Ruby Tuesday e-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U479635",
+          "tangoBrand": "Ruby Tuesday",
+          "tangoReward": "Ruby Tuesday e-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U479635",
+          "tangoBrand": "Ruby Tuesday",
+          "tangoReward": "Ruby Tuesday e-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U479635",
+          "tangoBrand": "Ruby Tuesday",
+          "tangoReward": "Ruby Tuesday e-Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U479635",
+        "httpStatus": 201,
+        "latencyMs": 1668,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-58",
+        "tangoBrandName": "Ruby Tuesday",
+        "tangoRewardName": "Ruby Tuesday e-Gift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "seasons52",
+      "name": "Seasons 52",
+      "category": "Food & Drink",
+      "min": 10,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2.5,
+      "denominations": [
+        10,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U446590",
+          "tangoBrand": "Seasons 52®",
+          "tangoReward": "Seasons 52® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U446590",
+          "tangoBrand": "Seasons 52®",
+          "tangoReward": "Seasons 52® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U446590",
+          "tangoBrand": "Seasons 52®",
+          "tangoReward": "Seasons 52® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U446590",
+          "tangoBrand": "Seasons 52®",
+          "tangoReward": "Seasons 52® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U446590",
+          "tangoBrand": "Seasons 52®",
+          "tangoReward": "Seasons 52® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U446590",
+        "httpStatus": 201,
+        "latencyMs": 1263,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-61",
+        "tangoBrandName": "Seasons 52®",
+        "tangoRewardName": "Seasons 52® eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "longhornsteakhouse",
+      "name": "LongHorn Steakhouse",
+      "category": "Food & Drink",
+      "min": 10,
+      "max": 250,
+      "fixedOnly": false,
+      "discountPercent": 2.8,
+      "denominations": [
+        25,
+        50,
+        100,
+        250
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U501409",
+          "tangoBrand": "LongHorn Steakhouse®",
+          "tangoReward": "LongHorn Steakhouse® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U501409",
+          "tangoBrand": "LongHorn Steakhouse®",
+          "tangoReward": "LongHorn Steakhouse® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U501409",
+          "tangoBrand": "LongHorn Steakhouse®",
+          "tangoReward": "LongHorn Steakhouse® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 250,
+          "utid": "U501409",
+          "tangoBrand": "LongHorn Steakhouse®",
+          "tangoReward": "LongHorn Steakhouse® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U501409",
+        "httpStatus": 201,
+        "latencyMs": 958,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-63",
+        "tangoBrandName": "LongHorn Steakhouse®",
+        "tangoRewardName": "LongHorn Steakhouse® eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "omahasteaks",
+      "name": "Omaha Steaks",
+      "category": "Food & Drink",
+      "min": 20,
+      "max": 200,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U019801",
+          "tangoBrand": "Omaha Steaks",
+          "tangoReward": "Omaha Steaks eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U019801",
+          "tangoBrand": "Omaha Steaks",
+          "tangoReward": "Omaha Steaks eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U019801",
+          "tangoBrand": "Omaha Steaks",
+          "tangoReward": "Omaha Steaks eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U019801",
+          "tangoBrand": "Omaha Steaks",
+          "tangoReward": "Omaha Steaks eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U019801",
+        "httpStatus": 201,
+        "latencyMs": 1472,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-62",
+        "tangoBrandName": "Omaha Steaks",
+        "tangoRewardName": "Omaha Steaks eGift",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "buffalowildwings",
+      "name": "Buffalo Wild Wings",
+      "category": "Food & Drink",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U203426",
+          "tangoBrand": "Buffalo Wild Wings®",
+          "tangoReward": "Buffalo Wild Wings® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U203426",
+          "tangoBrand": "Buffalo Wild Wings®",
+          "tangoReward": "Buffalo Wild Wings® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U203426",
+          "tangoBrand": "Buffalo Wild Wings®",
+          "tangoReward": "Buffalo Wild Wings® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U203426",
+          "tangoBrand": "Buffalo Wild Wings®",
+          "tangoReward": "Buffalo Wild Wings® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U203426",
+        "httpStatus": 201,
+        "latencyMs": 1056,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-65",
+        "tangoBrandName": "Buffalo Wild Wings®",
+        "tangoRewardName": "Buffalo Wild Wings® eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "southwest",
+      "name": "Southwest Airlines",
+      "category": "Travel",
+      "min": 15,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3,
+      "denominations": [
+        15,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 15,
+          "utid": "U557938",
+          "tangoBrand": "Southwest® Airlines",
+          "tangoReward": "Southwest® Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U557938",
+          "tangoBrand": "Southwest® Airlines",
+          "tangoReward": "Southwest® Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U557938",
+          "tangoBrand": "Southwest® Airlines",
+          "tangoReward": "Southwest® Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U557938",
+          "tangoBrand": "Southwest® Airlines",
+          "tangoReward": "Southwest® Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U557938",
+          "tangoBrand": "Southwest® Airlines",
+          "tangoReward": "Southwest® Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 15,
+        "utid": "U557938",
+        "httpStatus": 201,
+        "latencyMs": 1264,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-67",
+        "tangoBrandName": "Southwest® Airlines",
+        "tangoRewardName": "Southwest® Gift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "amctheatres",
+      "name": "AMC Theatres",
+      "category": "Entertainment",
+      "min": 10,
+      "max": 10,
+      "fixedOnly": true,
+      "discountPercent": 2.5,
+      "denominations": [
+        10
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U154092",
+          "tangoBrand": "AMC Theatres®",
+          "tangoReward": "AMC® Gift Card $10.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U154092",
+        "httpStatus": 201,
+        "latencyMs": 959,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-70",
+        "tangoBrandName": "AMC Theatres®",
+        "tangoRewardName": "AMC® Gift Card $10.00",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "regal",
+      "name": "Regal Cinemas",
+      "category": "Entertainment",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U209942",
+          "tangoBrand": "Regal Entertainment Group",
+          "tangoReward": "Regal Entertainment Group eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U209942",
+          "tangoBrand": "Regal Entertainment Group",
+          "tangoReward": "Regal Entertainment Group eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U209942",
+          "tangoBrand": "Regal Entertainment Group",
+          "tangoReward": "Regal Entertainment Group eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U209942",
+        "httpStatus": 201,
+        "latencyMs": 942,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-72",
+        "tangoBrandName": "Regal Entertainment Group",
+        "tangoRewardName": "Regal Entertainment Group eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "cinemark",
+      "name": "Cinemark",
+      "category": "Entertainment",
+      "min": 25,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 1.5,
+      "denominations": [
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U828533",
+          "tangoBrand": "Cinemark",
+          "tangoReward": "Cinemark Gift Card $25",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U472558",
+          "tangoBrand": "Cinemark",
+          "tangoReward": "Cinemark Gift Card $50",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U828533",
+        "httpStatus": 201,
+        "latencyMs": 1253,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-74",
+        "tangoBrandName": "Cinemark",
+        "tangoRewardName": "Cinemark Gift Card $25",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "playstation",
+      "name": "Sony PlayStation Store",
+      "category": "Gaming",
+      "min": 10,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3.6,
+      "denominations": [
+        10,
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U881915",
+          "tangoBrand": "PlayStation®Store",
+          "tangoReward": "PlayStation®Store Card $10",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U839613",
+          "tangoBrand": "PlayStation®Store",
+          "tangoReward": "PlayStation®Store Card $25",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U859575",
+          "tangoBrand": "PlayStation®Store",
+          "tangoReward": "PlayStation®Store Card $50",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U868075",
+          "tangoBrand": "PlayStation®Store",
+          "tangoReward": "PlayStation®Store Card $75",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U091078",
+          "tangoBrand": "PlayStation®Store",
+          "tangoReward": "PlayStation®Store Card $100",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U881915",
+        "httpStatus": 201,
+        "latencyMs": 1491,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-64",
+        "tangoBrandName": "PlayStation®Store",
+        "tangoRewardName": "PlayStation®Store Card $10",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "spafinder",
+      "name": "Spafinder",
+      "category": "Beauty",
+      "min": 10,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U477356",
+          "tangoBrand": "Spafinder® Wellness 365™",
+          "tangoReward": "Spafinder Wellness 365™ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U477356",
+          "tangoBrand": "Spafinder® Wellness 365™",
+          "tangoReward": "Spafinder Wellness 365™ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U477356",
+          "tangoBrand": "Spafinder® Wellness 365™",
+          "tangoReward": "Spafinder Wellness 365™ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U477356",
+          "tangoBrand": "Spafinder® Wellness 365™",
+          "tangoReward": "Spafinder Wellness 365™ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U477356",
+          "tangoBrand": "Spafinder® Wellness 365™",
+          "tangoReward": "Spafinder Wellness 365™ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U477356",
+        "httpStatus": 201,
+        "latencyMs": 1274,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-76",
+        "tangoBrandName": "Spafinder® Wellness 365™",
+        "tangoRewardName": "Spafinder Wellness 365™ eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "fanatics",
+      "name": "Fanatics",
+      "category": "Shopping",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 4,
+      "denominations": [
+        25,
+        50,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U080019",
+          "tangoBrand": "Fanatics",
+          "tangoReward": "Fanatics Online Gift Certificate $25.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U883973",
+          "tangoBrand": "Fanatics",
+          "tangoReward": "Fanatics Online Gift Certificate $50.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U789465",
+          "tangoBrand": "Fanatics",
+          "tangoReward": "Fanatics Online Gift Certificate $100.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U080019",
+        "httpStatus": 201,
+        "latencyMs": 1450,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-78",
+        "tangoBrandName": "Fanatics",
+        "tangoRewardName": "Fanatics Online Gift Certificate $25.00",
+        "credentialTypes": "pin, cardNumber",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "basspro",
+      "name": "Bass Pro Shops",
+      "category": "Sports & Outdoors",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 3,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U318911",
+          "tangoBrand": "Bass Pro Shops®",
+          "tangoReward": "Bass Pro Shops® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U318911",
+          "tangoBrand": "Bass Pro Shops®",
+          "tangoReward": "Bass Pro Shops® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U318911",
+          "tangoBrand": "Bass Pro Shops®",
+          "tangoReward": "Bass Pro Shops® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U318911",
+          "tangoBrand": "Bass Pro Shops®",
+          "tangoReward": "Bass Pro Shops® eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U318911",
+        "httpStatus": 201,
+        "latencyMs": 1655,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-80",
+        "tangoBrandName": "Bass Pro Shops®",
+        "tangoRewardName": "Bass Pro Shops® eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "petco",
+      "name": "Petco",
+      "category": "Home",
+      "min": 10,
+      "max": 200,
+      "fixedOnly": false,
+      "discountPercent": 0,
+      "denominations": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U469706",
+          "tangoBrand": "Petco",
+          "tangoReward": "Petco eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U469706",
+          "tangoBrand": "Petco",
+          "tangoReward": "Petco eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U469706",
+          "tangoBrand": "Petco",
+          "tangoReward": "Petco eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U469706",
+          "tangoBrand": "Petco",
+          "tangoReward": "Petco eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U469706",
+        "httpStatus": 201,
+        "latencyMs": 1457,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-83",
+        "tangoBrandName": "Petco",
+        "tangoRewardName": "Petco eGift Card",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "chewy",
+      "name": "Chewy",
+      "category": "Home",
+      "min": 5,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 0.9,
+      "denominations": [
+        5,
+        10,
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U799664",
+          "tangoBrand": "Chewy®",
+          "tangoReward": "Chewy eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U799664",
+          "tangoBrand": "Chewy®",
+          "tangoReward": "Chewy eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U799664",
+          "tangoBrand": "Chewy®",
+          "tangoReward": "Chewy eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U799664",
+          "tangoBrand": "Chewy®",
+          "tangoReward": "Chewy eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U799664",
+        "httpStatus": 201,
+        "latencyMs": 467,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150695-66",
+        "tangoBrandName": "Chewy®",
+        "tangoRewardName": "Chewy eGift",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "barnesnoble",
+      "name": "Barnes & Noble",
+      "category": "Shopping",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 2.7,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U049172",
+          "tangoBrand": "Barnes & Noble",
+          "tangoReward": "Barnes & Noble eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U049172",
+          "tangoBrand": "Barnes & Noble",
+          "tangoReward": "Barnes & Noble eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U049172",
+          "tangoBrand": "Barnes & Noble",
+          "tangoReward": "Barnes & Noble eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U049172",
+          "tangoBrand": "Barnes & Noble",
+          "tangoReward": "Barnes & Noble eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U049172",
+        "httpStatus": 201,
+        "latencyMs": 1458,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-86",
+        "tangoBrandName": "Barnes & Noble",
+        "tangoRewardName": "Barnes & Noble eGift Card",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "gap",
+      "name": "Gap",
+      "category": "Fashion",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 4,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U053802",
+          "tangoBrand": "GAP",
+          "tangoReward": "Gap eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U053802",
+          "tangoBrand": "GAP",
+          "tangoReward": "Gap eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U053802",
+          "tangoBrand": "GAP",
+          "tangoReward": "Gap eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U053802",
+          "tangoBrand": "GAP",
+          "tangoReward": "Gap eGiftCard",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U053802",
+        "httpStatus": 201,
+        "latencyMs": 1668,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-88",
+        "tangoBrandName": "GAP",
+        "tangoRewardName": "Gap eGiftCard",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "disney",
+      "name": "Disney",
+      "category": "Entertainment",
+      "min": 15,
+      "max": 500,
+      "fixedOnly": false,
+      "discountPercent": 0.2,
+      "denominations": [
+        15,
+        25,
+        50,
+        100,
+        200,
+        500
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 15,
+          "utid": "U321640",
+          "tangoBrand": "Disney",
+          "tangoReward": "Disney Gift Card eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U321640",
+          "tangoBrand": "Disney",
+          "tangoReward": "Disney Gift Card eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U321640",
+          "tangoBrand": "Disney",
+          "tangoReward": "Disney Gift Card eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U321640",
+          "tangoBrand": "Disney",
+          "tangoReward": "Disney Gift Card eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 200,
+          "utid": "U321640",
+          "tangoBrand": "Disney",
+          "tangoReward": "Disney Gift Card eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 500,
+          "utid": "U321640",
+          "tangoBrand": "Disney",
+          "tangoReward": "Disney Gift Card eGift",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 15,
+        "utid": "U321640",
+        "httpStatus": 201,
+        "latencyMs": 1473,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-91",
+        "tangoBrandName": "Disney",
+        "tangoRewardName": "Disney Gift Card eGift",
+        "credentialTypes": "redemptionUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "dunkin",
+      "name": "Dunkin'",
+      "category": "Food & Drink",
+      "min": 5,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 0,
+      "denominations": [
+        5,
+        10,
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U983646",
+          "tangoBrand": "Dunkin'",
+          "tangoReward": "Dunkin’ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U983646",
+          "tangoBrand": "Dunkin'",
+          "tangoReward": "Dunkin’ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U983646",
+          "tangoBrand": "Dunkin'",
+          "tangoReward": "Dunkin’ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U983646",
+          "tangoBrand": "Dunkin'",
+          "tangoReward": "Dunkin’ eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U983646",
+        "httpStatus": 201,
+        "latencyMs": 1261,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-93",
+        "tangoBrandName": "Dunkin'",
+        "tangoRewardName": "Dunkin’ eGift Card",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "oldnavy",
+      "name": "Old Navy",
+      "category": "Fashion",
+      "min": 25,
+      "max": 100,
+      "fixedOnly": true,
+      "discountPercent": 5.7,
+      "denominations": [
+        25,
+        50,
+        75,
+        100
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 25,
+          "utid": "U956235",
+          "tangoBrand": "Old Navy",
+          "tangoReward": "Old Navy eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U956235",
+          "tangoBrand": "Old Navy",
+          "tangoReward": "Old Navy eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 75,
+          "utid": "U956235",
+          "tangoBrand": "Old Navy",
+          "tangoReward": "Old Navy eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 100,
+          "utid": "U956235",
+          "tangoBrand": "Old Navy",
+          "tangoReward": "Old Navy eGift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 25,
+        "utid": "U956235",
+        "httpStatus": 201,
+        "latencyMs": 855,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-95",
+        "tangoBrandName": "Old Navy",
+        "tangoRewardName": "Old Navy eGift Card",
+        "credentialTypes": "bypassUrl",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "albertsons",
+      "name": "Albertsons",
+      "category": "Grocery",
+      "min": 5,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 0,
+      "denominations": [
+        5,
+        10,
+        25,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 5,
+          "utid": "U778376",
+          "tangoBrand": "Albertsons Companies",
+          "tangoReward": "Albertsons Companies Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 10,
+          "utid": "U778376",
+          "tangoBrand": "Albertsons Companies",
+          "tangoReward": "Albertsons Companies Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 25,
+          "utid": "U778376",
+          "tangoBrand": "Albertsons Companies",
+          "tangoReward": "Albertsons Companies Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U778376",
+          "tangoBrand": "Albertsons Companies",
+          "tangoReward": "Albertsons Companies Gift Card",
+          "valueType": "VARIABLE_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 5,
+        "utid": "U778376",
+        "httpStatus": 201,
+        "latencyMs": 1471,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150698-98",
+        "tangoBrandName": "Albertsons Companies",
+        "tangoRewardName": "Albertsons Companies Gift Card",
+        "credentialTypes": "rewardSecurityCode, rewardSecurityUrl",
+        "credentialCount": 2,
+        "passed": true,
+        "errorMessage": null
+      }
+    },
+    {
+      "slug": "razergold",
+      "name": "Razer Gold",
+      "category": "Gaming",
+      "min": 10,
+      "max": 50,
+      "fixedOnly": true,
+      "discountPercent": 2.2,
+      "denominations": [
+        10,
+        20,
+        50
+      ],
+      "denomCheckPassed": true,
+      "denomResults": [
+        {
+          "amount": 10,
+          "utid": "U804708",
+          "tangoBrand": "Razer Gold",
+          "tangoReward": "Razer Gold eGift Card $10.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 20,
+          "utid": "U092970",
+          "tangoBrand": "Razer Gold",
+          "tangoReward": "Razer Gold eGift Card $20.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        },
+        {
+          "amount": 50,
+          "utid": "U841792",
+          "tangoBrand": "Razer Gold",
+          "tangoReward": "Razer Gold eGift Card $50.00",
+          "valueType": "FIXED_VALUE",
+          "valid": true
+        }
+      ],
+      "liveOrder": {
+        "testedAmount": 10,
+        "utid": "U804708",
+        "httpStatus": 201,
+        "latencyMs": 1263,
+        "orderStatus": "COMPLETE",
+        "referenceOrderID": "RA261105-150699-00",
+        "tangoBrandName": "Razer Gold",
+        "tangoRewardName": "Razer Gold eGift Card $10.00",
+        "credentialTypes": "cardNumber",
+        "credentialCount": 1,
+        "passed": true,
+        "errorMessage": null
+      }
+    }
+  ]
+}

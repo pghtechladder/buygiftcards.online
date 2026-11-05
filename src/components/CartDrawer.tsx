@@ -91,7 +91,7 @@ export function CartDrawer() {
       setSdkReady(false);
     };
     document.body.appendChild(script);
-  }, [isOpen, items.length]);
+  }, [isOpen, items.length, session?.user]);
 
   // Render PayPal Smart Buttons whenever SDK is ready & cart items change
   useEffect(() => {
@@ -164,7 +164,7 @@ export function CartDrawer() {
     buttons.render(container).catch((err) => {
       console.warn("[PayPal Buttons render error]", err);
     });
-  }, [isOpen, sdkReady, serializedItems, idempotencyKey, clear, setOpen, router]);
+  }, [isOpen, sdkReady, serializedItems, idempotencyKey, clear, setOpen, router, session?.user]);
 
   if (!isOpen) return null;
 
@@ -355,7 +355,7 @@ export function CartDrawer() {
 
             <div className="flex items-center justify-center gap-1.5 pt-1 text-xs text-ink-400">
               <Icon name="lock" size={13} />
-              Secure PayPal Checkout · Instant eGift Delivery
+              Secure PayPal Sandbox Checkout · Instant Tango eGift Delivery
             </div>
           </div>
         )}

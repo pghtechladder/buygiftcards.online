@@ -77,6 +77,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Source gift card not found." }, { status: 404 });
     }
 
+    // Enforce 5-minute post-order activation security window
+    const orderCreatedMs = new Date(sourceCard.orderItem.order.createdAt).getTime();
+    const unlockAtMs = orderCreatedMs + 5 * 60 * 1000;
+    if (Date.now() < unlockAtMs) {
+      const remainingSecs = Math.ceil((unlockAtMs - Date.now()) / 1000);
+      const mins = Math.floor(remainingSecs / 60);
+      const secs = remainingSecs % 60;
+      return NextResponse.json(
+        {
+          error: `For security and fraud verification, this card activates 5 minutes after purchase. Please try again in ${mins}:${String(secs).padStart(2, "0")}.`,
+        },
+        { status: 403 }
+      );
+    }
+
     if (sourceCard.pin.startsWith("REDEEMED")) {
       writeTransactionLog({
         phase: "PROCESS_ERROR",
