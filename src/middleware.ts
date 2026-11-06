@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { parseDeviceFromUserAgent } from "@/lib/device";
 
 export function middleware(req: NextRequest) {
-  const host = req.headers.get("host") || "";
+  const host = (req.headers.get("host") || "").toLowerCase().split(":")[0];
   const proto = req.headers.get("x-forwarded-proto") || "https";
   const pathname = req.nextUrl.pathname;
 
