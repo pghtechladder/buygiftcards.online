@@ -31,16 +31,16 @@ export function ResponsiveHomeSwitcher({
       return;
     }
 
-    const checkViewportAndUA = () => {
+    const mql = window.matchMedia("(max-width: 767px)");
+    const handleViewportChange = (e: MediaQueryListEvent | MediaQueryList) => {
       const parsed = parseDeviceFromUserAgent(navigator.userAgent);
       setDeviceInfo(parsed);
-      const smallScreen = window.innerWidth < 768;
-      setIsMobileView(parsed.isMobile || smallScreen);
+      setIsMobileView(parsed.isMobile || e.matches);
     };
 
-    checkViewportAndUA();
-    window.addEventListener("resize", checkViewportAndUA);
-    return () => window.removeEventListener("resize", checkViewportAndUA);
+    handleViewportChange(mql);
+    mql.addEventListener("change", handleViewportChange);
+    return () => mql.removeEventListener("change", handleViewportChange);
   }, [forceView]);
 
   if (isMobileView) {

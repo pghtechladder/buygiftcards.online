@@ -112,7 +112,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <GoogleAnalytics />
               <DemoBanner />
               <Nav />
-              {children}
+              <main id="main-content">{children}</main>
               <Footer />
               <MobileBottomNav />
               <CartDrawer />

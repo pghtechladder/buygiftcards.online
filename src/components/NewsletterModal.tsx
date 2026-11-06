@@ -15,7 +15,7 @@ export function NewsletterModal() {
     try {
       if (localStorage.getItem(STORAGE_KEY)) return;
     } catch {}
-    const t = setTimeout(() => setVisible(true), 1200);
+    const t = setTimeout(() => setVisible(true), 6000);
     return () => clearTimeout(t);
   }, []);
 
@@ -51,10 +51,10 @@ export function NewsletterModal() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
+    <div role="dialog" aria-modal="true" aria-labelledby="newsletter-modal-title" className="fixed inset-0 z-[600] flex items-center justify-center p-4">
       <div onClick={dismiss} className="absolute inset-0 bg-ink-950/60 backdrop-blur-sm" />
       <div className="relative bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-slide-in">
-        <button onClick={dismiss} aria-label="Close" className="absolute top-4 right-4 text-ink-400 hover:text-ink-900 transition">
+        <button onClick={dismiss} aria-label="Close newsletter dialog" className="absolute top-4 right-4 text-ink-500 hover:text-ink-900 transition">
           <Icon name="x" size={20} />
         </button>
 
@@ -63,15 +63,15 @@ export function NewsletterModal() {
             <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
               <Icon name="checkCircle" size={26} className="text-green-600" />
             </div>
-            <h2 className="text-lg font-extrabold mb-2">You're in</h2>
-            <p className="text-sm text-ink-600">We'll email you about deals and new brands.</p>
+            <h2 id="newsletter-modal-title" className="text-lg font-extrabold mb-2">You&apos;re in</h2>
+            <p className="text-sm text-ink-600">We&apos;ll email you about deals and new brands.</p>
           </div>
         ) : (
           <>
             <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mb-4">
               <Icon name="mail" size={26} className="text-brand-600" />
             </div>
-            <h2 className="text-xl font-extrabold mb-2">Get gift card deals in your inbox</h2>
+            <h2 id="newsletter-modal-title" className="text-xl font-extrabold mb-2">Get gift card deals in your inbox</h2>
             <p className="text-sm text-ink-600 mb-5">
               Subscribe for discounts, promotions, and new brand drops. No spam — unsubscribe anytime.
             </p>
@@ -79,6 +79,7 @@ export function NewsletterModal() {
               <input
                 required
                 type="email"
+                aria-label="Email address for gift card deals"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
@@ -92,7 +93,7 @@ export function NewsletterModal() {
                 {status === "loading" ? "Subscribing…" : "Subscribe"}
               </button>
             </form>
-            <button onClick={dismiss} className="w-full text-center text-xs text-ink-400 mt-3 hover:text-ink-600 transition">
+            <button onClick={dismiss} className="w-full text-center text-xs text-ink-600 mt-3 hover:text-ink-900 transition">
               No thanks
             </button>
           </>

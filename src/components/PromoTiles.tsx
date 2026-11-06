@@ -40,12 +40,12 @@ export function PromoTiles() {
           >
             <span
               className="w-11 h-11 rounded-full flex items-center justify-center mb-4"
-              style={{ background: `${t.accent}33`, color: t.accent === "#1a1f71" ? "#7c86e8" : "#3fc99a" }}
+              style={{ background: `${t.accent}33`, color: t.accent === "#1a1f71" ? "#9ba3f5" : "#4ade80" }}
             >
               <Icon name={t.icon} size={20} />
             </span>
             <div className="font-bold text-base mb-2">{t.title}</div>
-            <p className="text-sm text-white/60 leading-relaxed flex-1">{t.copy}</p>
+            <p className="text-sm text-white/80 leading-relaxed flex-1">{t.copy}</p>
             <span className="mt-4 text-sm font-bold text-accent-400 flex items-center gap-1.5">
               {t.ctaLabel}
               <Icon name="chevronRight" size={13} />

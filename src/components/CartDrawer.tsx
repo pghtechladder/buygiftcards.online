@@ -55,14 +55,15 @@ export function CartDrawer() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const updateDevice = () => {
+    const mql = window.matchMedia("(max-width: 767px)");
+    const updateDevice = (e: MediaQueryListEvent | MediaQueryList) => {
       const info = parseDeviceFromUserAgent(navigator.userAgent);
       setDevice(info);
-      setIsMobileScreen(info.isMobile || window.innerWidth < 768);
+      setIsMobileScreen(info.isMobile || e.matches);
     };
-    updateDevice();
-    window.addEventListener("resize", updateDevice);
-    return () => window.removeEventListener("resize", updateDevice);
+    updateDevice(mql);
+    mql.addEventListener("change", updateDevice);
+    return () => mql.removeEventListener("change", updateDevice);
   }, []);
 
   const idempotencyKey = useMemo(

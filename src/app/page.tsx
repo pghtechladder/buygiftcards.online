@@ -51,7 +51,8 @@ export default async function HomePage({
       <BrandGrid items={featured} title="Featured gift cards" />
 
       {/* Giftcards.com-style Self-Service Quick Bar */}
-      <section className="max-w-7xl mx-auto px-6 py-10">
+      <section aria-labelledby="self-service-heading" className="max-w-7xl mx-auto px-6 py-10">
+        <h2 id="self-service-heading" className="sr-only">Self-Service Gift Card Tools</h2>
         <div className="bg-white border border-ink-100 rounded-3xl p-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-6 shadow-sm">
           {[
             {

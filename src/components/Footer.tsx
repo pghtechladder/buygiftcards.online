@@ -51,20 +51,20 @@ const COLUMNS = [
 
 export function Footer() {
   return (
-    <footer className="bg-ink-950 text-ink-400 mt-16 border-t border-white/10">
+    <footer className="bg-ink-950 text-white/80 mt-16 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-2 md:grid-cols-5 gap-10">
         <div className="col-span-2 md:col-span-1">
           <div className="flex items-center gap-2 mb-4">
             <div className="bg-white rounded-lg p-1">
-              <Image src="/logo-mark-512.png" alt="" width={28} height={28} unoptimized className="rounded" />
+              <Image src="/logo-mark-512.png" alt="BuyGiftCards.online" width={28} height={28} className="rounded" />
             </div>
             <span className="text-white font-extrabold">buygiftcards.online</span>
           </div>
-          <p className="text-xs leading-relaxed text-ink-400 mb-4">
+          <p className="text-xs leading-relaxed text-white/75 mb-4">
             Your trusted digital &amp; physical gift card marketplace. Shop 165+ top retail, dining, travel, and
-            entertainment brands with instant email delivery and secure Stripe checkout.
+            entertainment brands with instant email delivery and secure Credit/Debit Card or PayPal checkout.
           </p>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] text-amber-300 font-semibold">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-[11px] text-amber-300 font-semibold">
             🎄 Holiday Season Ready
           </div>
         </div>
@@ -72,14 +72,14 @@ export function Footer() {
           <div key={col.title}>
             <div className="text-white text-xs font-bold uppercase tracking-wider mb-4">{col.title}</div>
             {col.links.map(([label, href]) => (
-              <Link key={label} href={href} className="block text-sm mb-2.5 hover:text-white transition">
+              <Link key={label} href={href} className="block text-sm text-white/80 mb-2.5 hover:text-white transition">
                 {label}
               </Link>
             ))}
           </div>
         ))}
       </div>
-      <div className="border-t border-white/10 px-6 py-6 text-xs text-center text-ink-400 flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto gap-3">
+      <div className="border-t border-white/10 px-6 py-6 text-xs text-center text-white/75 flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto gap-3">
         <div>
           © {new Date().getFullYear()} buygiftcards.online. All rights reserved. All merchant trademarks and logos are the property of their respective owners.
         </div>

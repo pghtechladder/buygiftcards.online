@@ -33,10 +33,10 @@ export function BrandGrid({ items, title }: { items: Brand[]; title?: string }) 
             </div>
             <div className={`bg-ink-950 text-white px-4 pb-3 flex-1 flex flex-col justify-center ${b.discountPercent ? "pt-5" : "pt-3"}`}>
               <div className="font-bold text-sm leading-tight mb-1 line-clamp-2">{b.name}</div>
-              <div className="text-white/70 text-xs font-semibold">
+              <div className="text-white/80 text-xs font-semibold">
                 {b.discountPercent ? (
                   <>
-                    <span className="line-through text-white/40 mr-1.5">{fmt(b.min)}</span>
+                    <span className="line-through text-white/75 mr-1.5">{fmt(b.min)}</span>
                     From {fmt(Math.round(b.min * (1 - b.discountPercent / 100) * 100) / 100)}
                   </>
                 ) : (

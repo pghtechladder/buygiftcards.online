@@ -46,6 +46,7 @@ export function VisitorCounter() {
   return (
     <Link
       href="/analytics"
+      aria-label={`Live website visitors: ${formattedVisitors} total visitors, ${stats.activeNow} online now`}
       title={`Live Visitors: ${stats.activeNow} online · Total Page Views: ${stats.totalPageHits.toLocaleString("en-US")}`}
       className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-ink-950/95 hover:bg-ink-900 text-white border border-white/15 shadow-xl backdrop-blur-md transition group"
     >

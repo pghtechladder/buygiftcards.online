@@ -16,6 +16,7 @@ export function BrandLogoStrip({ items, title }: { items: Brand[]; title?: strin
           <Link
             key={b.slug}
             href={`/product/${b.slug}`}
+            aria-label={`Buy ${b.name} Gift Card`}
             title={b.name}
             className="w-20 h-20 rounded-2xl border border-ink-100 bg-white flex items-center justify-center hover:border-brand-300 hover:shadow-md hover:-translate-y-0.5 transition"
           >

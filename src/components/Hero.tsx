@@ -78,7 +78,7 @@ export function Hero() {
               )}
               <BrandLogo domain={b.domain} name={b.name} size={50} radius={12} bg="rgba(255,255,255,0.96)" />
               <span className="text-xs font-bold text-white text-center px-3 line-clamp-1">{b.name}</span>
-              <span className="text-[11px] text-white/75">${b.min} – ${b.max}</span>
+              <span className="text-[11px] text-white/85">${b.min} – ${b.max}</span>
             </Link>
           ))}
         </div>

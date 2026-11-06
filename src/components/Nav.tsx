@@ -113,17 +113,18 @@ export function Nav() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center h-16 gap-3 sm:gap-6">
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <Image src="/logo-mark-512.png" alt="" width={36} height={36} priority className="rounded-[9px]" />
+          <Link href="/" aria-label="BuyGiftCards.online Home" className="flex items-center gap-2 flex-shrink-0">
+            <Image src="/logo-mark-512.png" alt="BuyGiftCards.online logo" width={36} height={36} priority className="rounded-[9px]" />
             <span className="hidden sm:inline text-lg font-extrabold tracking-tight text-ink-900">
               buygiftcards<span className="text-brand-600">.online</span>
             </span>
           </Link>
 
-          <form onSubmit={submitSearch} className="flex-1 min-w-0 max-w-lg relative">
+          <form onSubmit={submitSearch} role="search" aria-label="Search gift cards" className="flex-1 min-w-0 max-w-lg relative">
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              aria-label="Search gift card brands"
               placeholder="Search 165+ gift card brands, Visa, Amazon, Starbucks…"
               className="w-full rounded-full border border-ink-100 bg-ink-50 pl-10 pr-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
             />
@@ -205,7 +206,7 @@ export function Nav() {
           </div>
         </div>
 
-        <div className="flex gap-1 overflow-x-auto -mt-px pb-px scrollbar-none">
+        <nav aria-label="Main categories" className="flex gap-1 overflow-x-auto -mt-px pb-px scrollbar-none">
           <Suspense
             fallback={NAV_LINKS.map((l) => (
               <span
@@ -218,7 +219,7 @@ export function Nav() {
           >
             <NavLinks />
           </Suspense>
-        </div>
+        </nav>
       </div>
     </header>
   );

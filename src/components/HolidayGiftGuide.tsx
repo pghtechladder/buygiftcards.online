@@ -108,7 +108,7 @@ export function HolidayGiftGuide() {
                   <h3 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-200 transition">
                     {col.title}
                   </h3>
-                  <p className="text-xs text-white/75 leading-relaxed mb-5">{col.subtitle}</p>
+                  <p className="text-xs text-white/85 leading-relaxed mb-5">{col.subtitle}</p>
                 </div>
 
                 <div>

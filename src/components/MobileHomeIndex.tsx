@@ -107,9 +107,10 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
         </p>
 
         {/* Mobile Instant Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="relative">
+        <form onSubmit={handleSearchSubmit} role="search" aria-label="Search gift card brands" className="relative">
           <input
             type="search"
+            aria-label="Search gift card brands"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search Amazon, Visa, Starbucks, Xbox…"
@@ -211,6 +212,7 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
               >
                 <Link
                   href={`/product/${b.slug}`}
+                  aria-label={`View ${b.name} Gift Card details`}
                   className="h-24 flex items-center justify-center relative"
                   style={{ background: `linear-gradient(145deg, ${b.color}, ${b.color}cc)` }}
                 >
@@ -314,6 +316,7 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
             >
               <Link
                 href={`/product/${b.slug}`}
+                aria-label={`View ${b.name} Gift Card details`}
                 className="h-24 flex items-center justify-center relative"
                 style={{ background: `linear-gradient(150deg, ${b.color}, ${b.color}cc)` }}
               >
@@ -384,9 +387,9 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
         </div>
       </section>
 
-      {/* Mobile Bottom Sheet for 1-Tap Quick Purchase */}
+      {/* Quick Buy Modal */}
       {quickBuyBrand && (
-        <div className="fixed inset-0 z-[550] flex items-end justify-center">
+        <div role="dialog" aria-modal="true" aria-labelledby="quick-buy-title" className="fixed inset-0 z-[550] flex items-end justify-center">
           <div
             onClick={() => setQuickBuyBrand(null)}
             className="absolute inset-0 bg-ink-950/60 backdrop-blur-xs"
@@ -396,14 +399,15 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
               <div className="flex items-center gap-3">
                 <BrandLogo domain={quickBuyBrand.domain} name={quickBuyBrand.name} size={48} radius={12} />
                 <div>
-                  <h3 className="font-extrabold text-base text-ink-950">{quickBuyBrand.name} eGift Card</h3>
+                  <h3 id="quick-buy-title" className="font-extrabold text-base text-ink-950">{quickBuyBrand.name} eGift Card</h3>
                   <p className="text-xs text-ink-500">Instant digital delivery · $0 fees</p>
                 </div>
               </div>
               <button
                 type="button"
+                aria-label="Close quick purchase dialog"
                 onClick={() => setQuickBuyBrand(null)}
-                className="p-2 rounded-full bg-ink-50 text-ink-500"
+                className="p-2 rounded-full bg-ink-50 text-ink-600"
               >
                 <Icon name="x" size={18} />
               </button>

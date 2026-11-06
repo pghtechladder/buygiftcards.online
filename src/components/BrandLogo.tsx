@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { logoUrl } from "@/lib/brands";
 
@@ -17,7 +18,7 @@ export function BrandLogo({
   bg?: string;
 }) {
   const [err, setErr] = useState(false);
-  const src = logoUrl(domain, Math.max(size, 128));
+  const src = logoUrl(domain, Math.max(size * 2, 96));
 
   if (err) {
     return (
@@ -31,12 +32,12 @@ export function BrandLogo({
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    <Image
       src={src}
       alt={`${name} logo`}
       width={size}
       height={size}
+      sizes={`${size}px`}
       style={{ borderRadius: radius, background: bg, objectFit: "contain", padding: size > 50 ? 8 : 4 }}
       className="flex-shrink-0"
       onError={() => setErr(true)}
