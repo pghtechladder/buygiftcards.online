@@ -8,6 +8,7 @@ import { useAuthModal } from "@/context/AuthModalContext";
 import { getBrand, chargeAmountCents } from "@/lib/brands";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
+import { trackRetailEvent } from "@/lib/analytics";
 
 const fmt = (n: number) => `$${n.toFixed(2)}`;
 
@@ -68,6 +69,18 @@ export function CartDrawer() {
   useEffect(() => {
     if (!isOpen || items.length === 0) return;
 
+    trackRetailEvent("view_cart", {
+      currency: "USD",
+      value: total,
+      items: items.map((i) => ({
+        item_id: i.brandSlug,
+        item_name: i.brandName,
+        item_variant: i.deliveryType,
+        price: i.amount,
+        quantity: i.qty,
+      })),
+    });
+
     if (window.paypal?.Buttons) {
       setSdkReady(true);
       return;
@@ -112,6 +125,17 @@ export function CartDrawer() {
       },
       createOrder: async () => {
         setError(null);
+        trackRetailEvent("begin_checkout", {
+          currency: "USD",
+          value: total,
+          payment_type: "paypal_smart_buttons",
+          items: items.map((i) => ({
+            item_id: i.brandSlug,
+            item_name: i.brandName,
+            price: i.amount,
+            quantity: i.qty,
+          })),
+        });
         const res = await fetch("/api/checkout/paypal", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -143,6 +167,18 @@ export function CartDrawer() {
           if (!res.ok || !captured.order) {
             throw new Error(captured.error || "Failed to capture PayPal payment");
           }
+          trackRetailEvent("purchase", {
+            transaction_id: captured.order.orderNumber,
+            paypal_order_id: data.orderID,
+            currency: "USD",
+            value: total,
+            items: items.map((i) => ({
+              item_id: i.brandSlug,
+              item_name: i.brandName,
+              price: i.amount,
+              quantity: i.qty,
+            })),
+          });
           clear();
           setOpen(false);
           const emailParam = captured.order.customerEmail
@@ -171,6 +207,17 @@ export function CartDrawer() {
   const checkoutWithPayPalRedirect = async () => {
     setLoading(true);
     setError(null);
+    trackRetailEvent("begin_checkout", {
+      currency: "USD",
+      value: total,
+      payment_type: "paypal_redirect",
+      items: items.map((i) => ({
+        item_id: i.brandSlug,
+        item_name: i.brandName,
+        price: i.amount,
+        quantity: i.qty,
+      })),
+    });
     try {
       const res = await fetch("/api/checkout/paypal", {
         method: "POST",

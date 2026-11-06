@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { getBrand, chargeAmountCents } from "@/lib/brands";
+import { trackRetailEvent } from "@/lib/analytics";
 
 export type CartItem = {
   key: string;
@@ -69,13 +70,47 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...item, key }];
     });
+    const brand = getBrand(item.brandSlug);
+    const chargeDollars = brand ? chargeAmountCents(brand, item.amount) / 100 : item.amount;
+    trackRetailEvent("add_to_cart", {
+      currency: "USD",
+      value: Math.round(chargeDollars * item.qty * 100) / 100,
+      items: [
+        {
+          item_id: item.brandSlug,
+          item_name: item.brandName,
+          item_category: brand?.category || "Gift Card",
+          item_variant: item.deliveryType,
+          price: chargeDollars,
+          quantity: item.qty,
+        },
+      ],
+    });
     setOpen(true);
   };
 
   const updateQty = (key: string, qty: number) =>
     setItems((prev) => prev.map((i) => (i.key === key ? { ...i, qty: Math.max(1, Math.min(10, qty)) } : i)));
 
-  const remove = (key: string) => setItems((prev) => prev.filter((i) => i.key !== key));
+  const remove = (key: string) => {
+    const existing = items.find((i) => i.key === key);
+    if (existing) {
+      trackRetailEvent("remove_from_cart", {
+        currency: "USD",
+        value: existing.amount * existing.qty,
+        items: [
+          {
+            item_id: existing.brandSlug,
+            item_name: existing.brandName,
+            item_variant: existing.deliveryType,
+            price: existing.amount,
+            quantity: existing.qty,
+          },
+        ],
+      });
+    }
+    setItems((prev) => prev.filter((i) => i.key !== key));
+  };
   const clear = () => setItems([]);
 
   const count = items.reduce((s, i) => s + i.qty, 0);

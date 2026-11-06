@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Brand, BRANDS, HOUSE_BRAND_SLUGS } from "@/lib/brands";
 import { BrandLogo } from "./BrandLogo";
 import { BrandGrid } from "./BrandGrid";
 import { useCart } from "@/context/CartContext";
 import { Icon } from "./Icon";
+import { trackRetailEvent } from "@/lib/analytics";
 
 const fmt = (n: number) => `$${n.toFixed(2)}`;
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
@@ -51,6 +52,23 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
 
   const activeDesign = OCCASION_DESIGNS.find((d) => d.id === designId) ?? OCCASION_DESIGNS[0];
   const relatedBrands = BRANDS.filter((x) => x.category === b.category && x.slug !== b.slug).slice(0, 5);
+
+  useEffect(() => {
+    trackRetailEvent("view_item", {
+      currency: "USD",
+      value: amt,
+      items: [
+        {
+          item_id: b.slug,
+          item_name: b.name,
+          item_category: b.category,
+          price: amt,
+          quantity: 1,
+        },
+      ],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [b.slug]);
 
   const onPhotoSelected = async (file: File | undefined) => {
     if (!file) return;

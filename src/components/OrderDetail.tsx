@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { Icon } from "./Icon";
 import { PASSWORD_RULE_TEXT, isValidPassword } from "@/lib/passwordRules";
+import { trackRetailEvent } from "@/lib/analytics";
 
 const fmt = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
@@ -109,6 +110,7 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
     try {
       await navigator.clipboard.writeText(code.replace(/\s/g, ""));
       setCopiedId(id);
+      trackRetailEvent("copy_gift_code", { order_number: orderNumber, code_id: id });
       setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1500);
     } catch {}
   };
@@ -156,6 +158,11 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
         }
         return;
       }
+
+      trackRetailEvent("sign_up", {
+        method: "post_paypal_checkout",
+        order_number: order.orderNumber,
+      });
 
       const signInRes = await signIn("credentials", {
         email: order.customerEmail,
@@ -575,7 +582,14 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
                           {isClaimUrl ? "Claim Link ••••" : `•••• •••• •••• ${c.code.slice(-4)}`}
                         </span>
                         <button
-                          onClick={() => setRevealed((p) => ({ ...p, [c.id]: true }))}
+                          onClick={() => {
+                            setRevealed((p) => ({ ...p, [c.id]: true }));
+                            trackRetailEvent("reveal_gift_code", {
+                              order_number: order.orderNumber,
+                              brand_name: item.brandName,
+                              amount: item.denomCents / 100,
+                            });
+                          }}
                           className="px-5 py-2 border-2 border-brand-600 text-brand-600 rounded-lg font-bold text-sm hover:bg-brand-600 hover:text-white transition"
                         >
                           {isClaimUrl ? "Reveal Claim Link" : "Reveal Code"}

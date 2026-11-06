@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { BRANDS, CATEGORIES, HOUSE_BRAND_SLUGS, Brand } from "@/lib/brands";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Icon } from "@/components/Icon";
+import { trackRetailEvent } from "@/lib/analytics";
 
 type VerifiedCard = {
   id: string;
@@ -100,6 +101,10 @@ function RedeemPortalContent() {
       setCard(data.card);
       setDeliveryEmail(data.card.customerEmail || "");
       setBasket([]);
+      trackRetailEvent("redeem_lookup", {
+        brand_slug: data.card?.brandSlug,
+        balance_dollars: (data.card?.balanceCents || 0) / 100,
+      });
     } catch (err) {
       setVerifyError(err instanceof Error ? err.message : "Verification failed.");
     } finally {
@@ -212,6 +217,13 @@ function RedeemPortalContent() {
         throw new Error(data.error || "Redemption failed.");
       }
       setResult(data);
+      trackRetailEvent("redeem_exchange", {
+        order_number: data.orderNumber,
+        source_brand: data.sourceBrandName,
+        redeemed_count: data.redeemedItems?.length || 0,
+        value: selectedCents / 100,
+        currency: "USD",
+      });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setExchangeError(err instanceof Error ? err.message : "Could not complete redemption.");

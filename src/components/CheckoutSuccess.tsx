@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { Icon } from "./Icon";
+import { trackRetailEvent } from "@/lib/analytics";
 
 export function CheckoutSuccess() {
   const router = useRouter();
@@ -33,6 +34,10 @@ export function CheckoutSuccess() {
       if (data.order) {
         setOrder(data.order);
         setStatus("ready");
+        trackRetailEvent("purchase", {
+          transaction_id: data.order.orderNumber,
+          currency: "USD",
+        });
         router.replace(
           `/orders/${data.order.orderNumber}?email=${encodeURIComponent(data.order.customerEmail)}`
         );

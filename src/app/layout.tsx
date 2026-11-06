@@ -12,6 +12,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
 import { LiveChatWidget } from "@/components/LiveChatWidget";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionProviderWrapper>
           <CartProvider>
             <AuthModalProvider>
+              <GoogleAnalytics />
               <DemoBanner />
               <Nav />
               {children}
