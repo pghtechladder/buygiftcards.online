@@ -1,16 +1,25 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Group Gift Cards Online — Pool Contributions for One Big eGift Card",
+  title: "Group Gift Cards Online — Pool Money for eGifts",
   description:
-    "Start an online group gift card for coworkers, bosses, teachers, weddings, or birthdays. Pool contributions and greeting card messages from everyone into a single high-value digital eGift card at buygiftcards.online.",
+    "Start an online group gift card for coworkers, teachers, weddings, or birthdays. Pool contributions into a single digital eGift card at buygiftcards.online.",
   keywords: [
     "group gift cards online",
     "pool money for gift card",
     "office group gift card",
     "teacher group gift card",
   ],
-  alternates: { canonical: "/group-gifts" },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/group-gifts" },
+  openGraph: {
+    title: "BuyGiftCards.online | Group Gift Cards Online",
+    description:
+      "Start an online group gift card for coworkers, teachers, weddings, or birthdays. Pool contributions into a single digital eGift card at buygiftcards.online.",
+    url: "https://buygiftcards.online/group-gifts",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 export default function GroupGiftsLayout({ children }: { children: React.ReactNode }) {

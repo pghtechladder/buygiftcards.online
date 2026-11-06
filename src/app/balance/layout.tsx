@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Check Gift Card Balance Online — Verify Order & Merchant Card Funds",
+  title: "Check Gift Card Balance & Verify Order Funds",
   description:
-    "Check your gift card balance online at buygiftcards.online. Verify remaining funds on your order, check a 16-digit card number or claim link, or access official balance portals for Visa, Mastercard, Amazon, Starbucks, Target, and Walmart.",
+    "Check your gift card balance online at buygiftcards.online. Verify remaining funds on your order or access official balance portals for Visa, Amazon & more.",
   keywords: [
     "check gift card balance online",
     "gift card balance lookup",
@@ -12,13 +12,15 @@ export const metadata: Metadata = {
     "verify egift card status",
     "buygiftcards.online balance check",
   ],
+  robots: { index: true, follow: true },
   alternates: { canonical: "https://buygiftcards.online/balance" },
   openGraph: {
-    title: "Check Gift Card Balance Online — BuyGiftCards.online",
+    title: "BuyGiftCards.online | Check Gift Card Balance Online",
     description:
-      "Verify remaining funds on your buygiftcards.online order, check a 16-digit card number or claim link, or jump directly to official retailer balance portals.",
+      "Check your gift card balance online at buygiftcards.online. Verify remaining funds on your order or access official balance portals for Visa, Amazon & more.",
     url: "https://buygiftcards.online/balance",
     type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
   },
 };
 

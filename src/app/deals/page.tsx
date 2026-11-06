@@ -5,9 +5,9 @@ import { BrandGrid } from "@/components/BrandGrid";
 import { Icon } from "@/components/Icon";
 
 export const metadata: Metadata = {
-  title: "Buy Discounted Gift Cards Online — Save Up to 15% Instantly",
+  title: "Discounted Gift Cards & Instant eGift Deals",
   description:
-    "Buy discounted gift cards online and save up to 15% automatically at checkout. Get 100% full face value on dining, fashion, gaming, and multi-brand eGift cards with instant email delivery at buygiftcards.online.",
+    "Buy discounted gift cards online and save up to 15% at checkout. Get 100% full face value on dining, gaming, and retail eGift cards with instant delivery.",
   keywords: [
     "buy discounted gift cards online",
     "gift card deals online",
@@ -15,7 +15,16 @@ export const metadata: Metadata = {
     "cheap gift cards online instant delivery",
     "buy gift cards on sale",
   ],
-  alternates: { canonical: "/deals" },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/deals" },
+  openGraph: {
+    title: "BuyGiftCards.online | Discounted Gift Cards & Instant eGift Deals",
+    description:
+      "Buy discounted gift cards online and save up to 15% at checkout. Get 100% full face value on dining, gaming, and retail eGift cards with instant delivery.",
+    url: "https://buygiftcards.online/deals",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 export default function DealsPage() {

@@ -3,10 +3,19 @@ import Link from "next/link";
 import { Icon } from "@/components/Icon";
 
 export const metadata: Metadata = {
-  title: "Gift Safe — Gift Card Scam Prevention & Consumer Fraud Protection",
+  title: "Gift Safe — Scam Prevention & Fraud Protection",
   description:
-    "Learn how to buy gift cards online safely, spot common gift card scams, protect your digital claim links and PINs, and report suspected fraud at buygiftcards.online.",
-  alternates: { canonical: "/gift-safe" },
+    "Learn how to buy gift cards online safely, spot common gift card scams, protect your digital claim links and PINs, and report fraud at buygiftcards.online.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/gift-safe" },
+  openGraph: {
+    title: "BuyGiftCards.online | Gift Safe — Consumer Fraud Protection",
+    description:
+      "Learn how to buy gift cards online safely, spot common gift card scams, protect your digital claim links and PINs, and report fraud at buygiftcards.online.",
+    url: "https://buygiftcards.online/gift-safe",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 const TIPS = [

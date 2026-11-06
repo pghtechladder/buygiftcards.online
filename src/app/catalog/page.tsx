@@ -10,37 +10,58 @@ export async function generateMetadata({
   searchParams: Promise<{ q?: string; type?: string; category?: string; price?: string; deals?: string }>;
 }): Promise<Metadata> {
   const { q, type, category, deals } = await searchParams;
+  const siteUrl = "https://buygiftcards.online";
   if (q) {
     return {
-      title: `Search "${q}" Gift Cards Online`,
+      title: `Search "${q}" Gift Cards`,
       robots: { index: false, follow: true },
     };
   }
   if (category) {
+    const title = `Buy ${category} Gift Cards Online`;
+    const description = `Buy ${category.toLowerCase()} digital gift cards and eGift cards online with instant email delivery, $0 purchase fees, and secure checkout at buygiftcards.online.`;
+    const url = `${siteUrl}/catalog?category=${encodeURIComponent(category)}`;
     return {
-      title: `Buy ${category} Gift Cards Online — Instant Digital eGift Cards`,
-      description: `Buy ${category.toLowerCase()} digital gift cards and eGift cards online with instant email delivery at buygiftcards.online.`,
-      alternates: { canonical: `/catalog?category=${encodeURIComponent(category)}` },
+      title,
+      description,
+      robots: { index: true, follow: true },
+      alternates: { canonical: url },
+      openGraph: { title, description, url, type: "website", images: [`${siteUrl}/logo-full.png`] },
     };
   }
   if (deals === "1") {
+    const title = "Buy Discounted Gift Cards Online";
+    const description = "Buy discounted digital gift cards online and save up to 15% automatically at checkout while receiving 100% full face value via instant email delivery.";
+    const url = `${siteUrl}/deals`;
     return {
-      title: "Buy Discounted Gift Cards Online — Instant Savings at Checkout",
-      description: "Buy discounted digital gift cards online and save automatically at checkout while receiving 100% full face value.",
-      alternates: { canonical: "/deals" },
+      title,
+      description,
+      robots: { index: true, follow: true },
+      alternates: { canonical: url },
+      openGraph: { title, description, url, type: "website", images: [`${siteUrl}/logo-full.png`] },
     };
   }
   if (type === "egift") {
+    const title = "Buy Instant eGift Cards Online";
+    const description = `Browse ${BRANDS.length}+ instant digital eGift cards delivered by email within minutes. Zero purchase fees on retail brands at buygiftcards.online.`;
+    const url = `${siteUrl}/catalog?type=egift`;
     return {
-      title: "Buy Instant eGift Cards Online — Digital Email Delivery",
-      description: `Browse ${BRANDS.length}+ instant digital eGift cards delivered by email within minutes.`,
-      alternates: { canonical: "/catalog?type=egift" },
+      title,
+      description,
+      robots: { index: true, follow: true },
+      alternates: { canonical: url },
+      openGraph: { title, description, url, type: "website", images: [`${siteUrl}/logo-full.png`] },
     };
   }
+  const title = `All ${BRANDS.length}+ Digital & Physical Gift Cards`;
+  const description = `Browse our complete catalog of ${BRANDS.length}+ digital gift cards and instant eGift cards. Filter by category, price, or instant discounts at buygiftcards.online.`;
+  const url = `${siteUrl}/catalog`;
   return {
-    title: `Buy Gift Cards Online — All ${BRANDS.length}+ Digital eGift & Brand Cards`,
-    description: `Browse our complete catalog of ${BRANDS.length}+ digital gift cards and instant eGift cards. Filter by category, price, or instant discounts at buygiftcards.online.`,
-    alternates: { canonical: "/catalog" },
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: "website", images: [`${siteUrl}/logo-full.png`] },
   };
 }
 

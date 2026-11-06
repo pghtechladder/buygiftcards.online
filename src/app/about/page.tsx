@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Icon } from "@/components/Icon";
 
 export const metadata: Metadata = {
-  title: "About BuyGiftCards.online — Official Digital eGift Card Marketplace",
+  title: "About Us — Official Digital Gift Card Store",
   description:
-    "BuyGiftCards.online is a trusted online gift card platform offering 165+ digital eGift cards and physical gift cards with instant email delivery, $0 purchase fees on brand cards, and secure Credit/Debit Card or PayPal checkout.",
+    "BuyGiftCards.online is a trusted online gift card store offering 165+ digital eGift and physical cards with instant email delivery and $0 purchase fees.",
   keywords: [
     "about buygiftcards.online",
     "buy gift cards online platform",
@@ -13,13 +13,15 @@ export const metadata: Metadata = {
     "instant egift card delivery",
     "multi-brand choice gift card",
   ],
+  robots: { index: true, follow: true },
   alternates: { canonical: "https://buygiftcards.online/about" },
   openGraph: {
-    title: "About BuyGiftCards.online — Official Digital eGift Card Marketplace",
+    title: "BuyGiftCards.online | About Our Official Digital Gift Card Store",
     description:
-      "Shop 165+ digital eGift cards and physical gift cards with instant email delivery, $0 purchase fees on brand cards, and secure Credit/Debit Card or PayPal checkout.",
+      "BuyGiftCards.online is a trusted online gift card store offering 165+ digital eGift and physical cards with instant email delivery and $0 purchase fees.",
     url: "https://buygiftcards.online/about",
     type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
   },
 };
 

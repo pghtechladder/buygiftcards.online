@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Data Security & Checkout Protection",
+  title: "Privacy Policy — Data & Checkout Security",
   description:
-    "Learn how buygiftcards.online protects your personal information, payment security, and recipient gift card delivery details.",
-  alternates: { canonical: "/privacy" },
+    "Learn how buygiftcards.online protects your personal information, payment security, and recipient digital gift card delivery details.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/privacy" },
+  openGraph: {
+    title: "BuyGiftCards.online | Privacy Policy — Data & Checkout Security",
+    description:
+      "Learn how buygiftcards.online protects your personal information, payment security, and recipient digital gift card delivery details.",
+    url: "https://buygiftcards.online/privacy",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 export default function PrivacyPage() {

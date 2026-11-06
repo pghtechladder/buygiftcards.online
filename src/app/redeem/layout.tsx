@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Redeem Your Gift Card Online — Swap & Split Balance Across 165+ Brands",
+  title: "Redeem Gift Card Online — Swap 165+ Brands",
   description:
-    "Redeem your BuyGiftCards.online Choice Card, One4all Multi-Brand, or Holiday Favorites gift card online. Enter your 16-digit card number and PIN to swap or split your balance across Amazon, Visa, Starbucks, Target, and 165+ top brands.",
+    "Redeem your BuyGiftCards.online Choice Card or One4all gift card online. Enter your 16-digit card number and PIN to swap or split across 165+ top brands.",
   keywords: [
     "redeem gift card online",
     "redeem multi-brand gift card",
@@ -11,7 +11,16 @@ export const metadata: Metadata = {
     "swap gift card balance",
     "buygiftcards.online redeem",
   ],
-  alternates: { canonical: "/redeem" },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/redeem" },
+  openGraph: {
+    title: "BuyGiftCards.online | Redeem Gift Card Online — Swap 165+ Brands",
+    description:
+      "Redeem your BuyGiftCards.online Choice Card or One4all gift card online. Enter your 16-digit card number and PIN to swap or split across 165+ top brands.",
+    url: "https://buygiftcards.online/redeem",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 export default function RedeemLayout({ children }: { children: React.ReactNode }) {

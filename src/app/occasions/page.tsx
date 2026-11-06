@@ -5,9 +5,9 @@ import { BrandGrid } from "@/components/BrandGrid";
 import { Icon } from "@/components/Icon";
 
 export const metadata: Metadata = {
-  title: "Gift Cards by Occasion — Birthday, Holiday, Wedding & Thank You eGift Cards",
+  title: "Gift Cards by Occasion — Birthday & Holidays",
   description:
-    "Buy gift cards online for every occasion—Holidays, Birthdays, Thank You, Weddings, and Graduations. Personalize with custom photos, festive themes, and instant email delivery at buygiftcards.online.",
+    "Buy gift cards online for every occasion—Holidays, Birthdays, Thank You, and Weddings. Personalize with custom photos and send via instant email delivery.",
   keywords: [
     "birthday gift cards online",
     "holiday egift cards",
@@ -16,7 +16,16 @@ export const metadata: Metadata = {
     "wedding gift cards online",
     "graduation gift cards",
   ],
-  alternates: { canonical: "/occasions" },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/occasions" },
+  openGraph: {
+    title: "BuyGiftCards.online | Gift Cards by Occasion — Birthday & Holidays",
+    description:
+      "Buy gift cards online for every occasion—Holidays, Birthdays, Thank You, and Weddings. Personalize with custom photos and send via instant email delivery.",
+    url: "https://buygiftcards.online/occasions",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 const OCCASIONS = [

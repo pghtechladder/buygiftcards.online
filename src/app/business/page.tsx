@@ -3,9 +3,9 @@ import { BusinessQuoteForm } from "@/components/BusinessQuoteForm";
 import { Icon } from "@/components/Icon";
 
 export const metadata: Metadata = {
-  title: "Corporate Gift Cards & Bulk Employee Rewards Online — Instant B2B Delivery",
+  title: "Corporate Gift Cards & Bulk Employee Rewards",
   description:
-    "Buy corporate gift cards in bulk for employee rewards, client appreciation, and marketing incentives across 165+ top brands. Instant digital delivery and flexible ACH or card billing at buygiftcards.online.",
+    "Buy corporate gift cards in bulk for employee rewards and client appreciation across 165+ brands. Instant digital delivery and flexible invoice or card billing.",
   keywords: [
     "corporate gift cards",
     "buy gift cards in bulk online",
@@ -13,7 +13,16 @@ export const metadata: Metadata = {
     "b2b digital gift cards",
     "bulk egift cards for business",
   ],
-  alternates: { canonical: "/business" },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/business" },
+  openGraph: {
+    title: "BuyGiftCards.online | Corporate Gift Cards & Bulk Employee Rewards",
+    description:
+      "Buy corporate gift cards in bulk for employee rewards and client appreciation across 165+ brands. Instant digital delivery and flexible invoice or card billing.",
+    url: "https://buygiftcards.online/business",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 const BENEFITS = [

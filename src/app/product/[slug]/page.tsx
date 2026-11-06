@@ -22,14 +22,19 @@ export async function generateMetadata({
     };
   }
 
-  const discountLabel = brand.discountPercent ? ` (Save ${brand.discountPercent}% Off)` : "";
-  const title = `Buy ${brand.name} Gift Card Online${discountLabel} — Instant eGift Delivery ($${brand.min}–$${brand.max})`;
-  const description = `Buy ${brand.name} gift cards online ($${brand.min} to $${brand.max}) with instant email delivery at buygiftcards.online. ${brand.description} Pay securely with Credit Card, Debit Card, or PayPal with $0 purchase fees.`;
+  const discountLabel = brand.discountPercent ? ` (${brand.discountPercent}% Off)` : "";
+  const title = `Buy ${brand.name} Gift Card${discountLabel}`;
+  const rawDesc = `Buy ${brand.name} gift cards online ($${brand.min}–$${brand.max}) with instant email delivery at buygiftcards.online. Pay with Card or PayPal with $0 fees.`;
+  const description = rawDesc.length <= 160 ? rawDesc : rawDesc.slice(0, 157) + "...";
   const canonicalUrl = `${SITE_URL}/product/${brand.slug}`;
 
   return {
     title,
     description,
+    robots: {
+      index: true,
+      follow: true,
+    },
     keywords: [
       `buy ${brand.name.toLowerCase()} gift card`,
       `buy ${brand.name.toLowerCase()} gift card online`,
@@ -48,14 +53,14 @@ export async function generateMetadata({
       canonical: canonicalUrl,
     },
     openGraph: {
-      title,
+      title: `BuyGiftCards.online | ${title}`,
       description,
       url: canonicalUrl,
       siteName: "buygiftcards.online",
       type: "website",
       images: [
         {
-          url: "/logo-full.png",
+          url: `${SITE_URL}/logo-full.png`,
           width: 1200,
           height: 630,
           alt: `Buy ${brand.name} Gift Card Online at buygiftcards.online`,
@@ -64,8 +69,9 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `BuyGiftCards.online | ${title}`,
       description,
+      images: [`${SITE_URL}/logo-full.png`],
     },
   };
 }

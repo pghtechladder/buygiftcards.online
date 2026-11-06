@@ -4,10 +4,19 @@ import { SupportForm } from "@/components/SupportForm";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Gift Card Help Center, FAQs & Customer Support Desk",
+  title: "Gift Card Help Center, FAQs & Customer Support",
   description:
-    "Get fast help with your digital gift card order at buygiftcards.online. Read FAQs on instant email delivery, balance checks, and card redemption, or open a support ticket.",
-  alternates: { canonical: "/support" },
+    "Get fast help with your digital gift card order at buygiftcards.online. Read FAQs on instant email delivery, balance checks, and redemption or open a ticket.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/support" },
+  openGraph: {
+    title: "BuyGiftCards.online | Gift Card Help Center & Customer Support",
+    description:
+      "Get fast help with your digital gift card order at buygiftcards.online. Read FAQs on instant email delivery, balance checks, and redemption or open a ticket.",
+    url: "https://buygiftcards.online/support",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 const FAQS = [

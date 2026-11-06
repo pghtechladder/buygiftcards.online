@@ -32,10 +32,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Buy Gift Cards Online — Instant Digital eGift Cards & Deals | buygiftcards.online",
-    template: "%s | buygiftcards.online",
+    default: "BuyGiftCards.online | Buy Gift Cards & eGift Cards Online",
+    template: "%s | BuyGiftCards.online",
   },
-  description: `Buy gift cards online from ${BRANDS.length}+ top brands with instant email delivery. Shop digital eGift cards, prepaid Visa® virtual cards, Amazon, Starbucks, gaming & dining gift cards with $0 purchase fees and instant savings at buygiftcards.online.`,
+  description: `Buy gift cards online from ${BRANDS.length}+ official brands with instant email delivery. Shop digital eGift, Visa & Multi-Brand cards with $0 fees.`,
   keywords: [
     "buy gift cards",
     "buy gift cards online",
@@ -54,10 +54,13 @@ export const metadata: Metadata = {
   applicationName: "buygiftcards.online",
   category: "shopping",
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    google:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+      process.env.GOOGLE_SITE_VERIFICATION ||
+      "buygiftcards-online-gsc-verified",
   },
   alternates: {
-    canonical: "/",
+    canonical: siteUrl,
   },
   robots: {
     index: true,
@@ -78,15 +81,15 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Buy Gift Cards Online — Instant Digital eGift Cards | buygiftcards.online",
-    description: `Buy gift cards online from ${BRANDS.length}+ popular brands including Visa, Amazon, Starbucks, DoorDash, Xbox & Multi-Brand Choice Cards. Instant email delivery & secure Credit/Debit or PayPal checkout.`,
+    title: "BuyGiftCards.online | Buy Gift Cards & eGift Cards Online",
+    description: `Buy gift cards online from ${BRANDS.length}+ official brands with instant email delivery. Shop digital eGift, Visa & Multi-Brand cards with $0 fees.`,
     url: siteUrl,
     siteName: "buygiftcards.online",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/logo-full.png",
+        url: `${siteUrl}/logo-full.png`,
         width: 1200,
         height: 630,
         alt: "Buy Gift Cards Online — Instant Digital eGift Cards at buygiftcards.online",
@@ -95,9 +98,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Buy Gift Cards Online — Instant Digital eGift Cards | buygiftcards.online",
-    description: `Instant digital gift cards from ${BRANDS.length}+ popular brands. $0 purchase fees on brand cards and instant email delivery.`,
-    images: ["/logo-full.png"],
+    title: "BuyGiftCards.online | Buy Gift Cards & eGift Cards Online",
+    description: `Buy gift cards online from ${BRANDS.length}+ official brands with instant email delivery. Shop digital eGift, Visa & Multi-Brand cards with $0 fees.`,
+    images: [`${siteUrl}/logo-full.png`],
   },
 };
 

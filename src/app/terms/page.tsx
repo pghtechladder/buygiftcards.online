@@ -4,7 +4,16 @@ export const metadata: Metadata = {
   title: "Terms of Use & Digital Gift Card Terms",
   description:
     "Read the Terms of Use, digital eGift card fulfillment terms, refund policy, and non-expiration rules for purchases on buygiftcards.online.",
-  alternates: { canonical: "/terms" },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://buygiftcards.online/terms" },
+  openGraph: {
+    title: "BuyGiftCards.online | Terms of Use & Gift Card Terms",
+    description:
+      "Read the Terms of Use, digital eGift card fulfillment terms, refund policy, and non-expiration rules for purchases on buygiftcards.online.",
+    url: "https://buygiftcards.online/terms",
+    type: "website",
+    images: ["https://buygiftcards.online/logo-full.png"],
+  },
 };
 
 export default function TermsPage() {
