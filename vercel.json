@@ -3,19 +3,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.buygiftcards.online"
-        }
-      ],
-      "destination": "https://buygiftcards.online/:path*",
-      "permanent": true
-    }
-  ],
   "crons": [
     {
       "path": "/api/workflows/trustpilot-invites",

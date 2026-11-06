@@ -6,13 +6,12 @@ export function middleware(req: NextRequest) {
   const proto = req.headers.get("x-forwarded-proto") || "https";
   const pathname = req.nextUrl.pathname;
 
-  // Enforce canonical HTTPS apex domain on production requests (excluding webhooks)
+  // Enforce HTTPS on production requests (excluding webhooks), while allowing both
+  // buygiftcards.online and www.buygiftcards.online so Vercel's domain redirect settings never loop
   const isProdDomain = host === "buygiftcards.online" || host === "www.buygiftcards.online";
-  if (isProdDomain && !pathname.startsWith("/api/webhooks")) {
-    if (proto === "http" || host === "www.buygiftcards.online") {
-      const canonicalUrl = new URL(req.nextUrl.pathname + req.nextUrl.search, "https://buygiftcards.online");
-      return NextResponse.redirect(canonicalUrl, 308);
-    }
+  if (isProdDomain && !pathname.startsWith("/api/webhooks") && proto === "http") {
+    const secureUrl = new URL(req.nextUrl.pathname + req.nextUrl.search, `https://${host}`);
+    return NextResponse.redirect(secureUrl, 308);
   }
 
   const ua = req.headers.get("user-agent") || "";
