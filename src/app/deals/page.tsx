@@ -1,7 +1,22 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { BRANDS } from "@/lib/brands";
 import { BrandGrid } from "@/components/BrandGrid";
 import { Icon } from "@/components/Icon";
+
+export const metadata: Metadata = {
+  title: "Buy Discounted Gift Cards Online — Save Up to 15% Instantly",
+  description:
+    "Buy discounted gift cards online and save up to 15% automatically at checkout. Get 100% full face value on dining, fashion, gaming, and multi-brand eGift cards with instant email delivery at buygiftcards.online.",
+  keywords: [
+    "buy discounted gift cards online",
+    "gift card deals online",
+    "discounted egift cards",
+    "cheap gift cards online instant delivery",
+    "buy gift cards on sale",
+  ],
+  alternates: { canonical: "/deals" },
+};
 
 export default function DealsPage() {
   const discountedBrands = BRANDS.filter((b) => b.discountPercent);
@@ -20,12 +35,12 @@ export default function DealsPage() {
             🏷️ Holiday Deals &amp; Promotions
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-3">
-            Pay less, gift the full face value.
+            Buy Discounted Gift Cards Online — Save Instantly
           </h1>
           <p className="text-white/85 text-sm sm:text-base leading-relaxed mb-6">
-            Save up to 10% instantly at checkout on top dining, fashion, gaming, and multi-brand gift cards. No promo
-            code required — the discount is automatically applied in your cart while your recipient receives 100% of
-            the full card amount.
+            Buy discounted gift cards online and save up to 15% instantly at checkout on top dining, fashion, gaming,
+            and multi-brand eGift cards. No promo code required — the discount is automatically applied in your cart
+            while your recipient receives 100% of the full card amount.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link

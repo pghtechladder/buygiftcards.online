@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+
+export const metadata: Metadata = {
+  title: "Gift Safe — Gift Card Scam Prevention & Consumer Fraud Protection",
+  description:
+    "Learn how to buy gift cards online safely, spot common gift card scams, protect your digital claim links and PINs, and report suspected fraud at buygiftcards.online.",
+  alternates: { canonical: "/gift-safe" },
+};
 
 const TIPS = [
   {

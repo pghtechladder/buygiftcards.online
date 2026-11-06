@@ -16,3 +16,4 @@ export default async function DedicatedMobileIndexPage() {
 
   return <MobileHomeIndex deviceInfo={deviceInfo} />;
 }
+

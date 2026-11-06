@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+
+export const metadata: Metadata = {
+  title: "About BuyGiftCards.online — Official Digital eGift Card Marketplace",
+  description:
+    "Learn how buygiftcards.online delivers instant digital eGift cards and physical gift cards from 165+ leading retail, dining, gaming, and prepaid brands with $0 purchase fees.",
+  alternates: { canonical: "/about" },
+};
 
 export default function AboutPage() {
   return (

@@ -100,10 +100,10 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
         </div>
 
         <h1 className="text-2xl font-extrabold leading-tight tracking-tight mb-1.5">
-          Tap, Pay &amp; Send Instant eGift Cards
+          Buy Gift Cards Online — Instant eGift Delivery
         </h1>
         <p className="text-xs text-white/85 mb-4">
-          {BRANDS.length}+ official brands · One-tap PayPal mobile checkout · Instant email delivery
+          Buy gift cards online from {BRANDS.length}+ official brands · One-tap Credit/Debit or PayPal checkout · Instant email delivery
         </p>
 
         {/* Mobile Instant Search Bar */}

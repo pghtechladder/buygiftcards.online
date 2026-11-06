@@ -233,8 +233,11 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
               </span>
             )}
           </div>
-          <h1 className="text-3xl font-extrabold mb-2">{b.name} Gift Card</h1>
-          <p className="text-sm text-ink-600 mb-7 leading-relaxed">{b.description}</p>
+          <h1 className="text-3xl font-extrabold mb-2">Buy {b.name} Gift Card Online</h1>
+          <p className="text-sm text-ink-600 mb-7 leading-relaxed">
+            Buy a <strong>{b.name} gift card online</strong> (${b.min}–${b.max}) with instant digital email delivery.{" "}
+            {b.description}
+          </p>
 
           {/* Step 1: Card Theme / Holiday Occasion */}
           <div className="mb-7">
@@ -596,8 +599,59 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
         </div>
       </div>
 
+      {/* Brand-Specific SEO FAQ & Buyer Confidence Section */}
+      <section className="mt-14 pt-8 border-t border-ink-100">
+        <div className="bg-white border border-ink-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div>
+              <h2 className="text-xl font-extrabold text-ink-950">
+                Frequently Asked Questions About {b.name} Gift Cards
+              </h2>
+              <p className="text-xs text-ink-500 mt-0.5">
+                Everything you need to know before you buy a {b.name} digital gift card online at buygiftcards.online.
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-extrabold">
+              <span>★★★★★</span>
+              <span>4.9 / 5 Verified Buyer Rating</span>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            <div className="p-4 rounded-2xl bg-ink-50/70 border border-ink-100">
+              <h3 className="font-extrabold text-sm text-ink-900 mb-1.5">
+                How fast is a {b.name} digital gift card delivered?
+              </h3>
+              <p className="text-xs text-ink-600 leading-relaxed">
+                Your {b.name} eGift card is generated immediately upon payment confirmation and delivered by email
+                within minutes, complete with your claim code, PIN, and official redemption instructions.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-ink-50/70 border border-ink-100">
+              <h3 className="font-extrabold text-sm text-ink-900 mb-1.5">
+                Can I buy a {b.name} gift card online with PayPal or a credit card?
+              </h3>
+              <p className="text-xs text-ink-600 leading-relaxed">
+                Yes. You can buy a {b.name} gift card online (${b.min}–${b.max}) using any major credit or debit card
+                (Visa, Mastercard, Amex, Discover), PayPal, or Venmo with $0 purchase fees.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-ink-50/70 border border-ink-100">
+              <h3 className="font-extrabold text-sm text-ink-900 mb-1.5">
+                Does a {b.name} gift card expire?
+              </h3>
+              <p className="text-xs text-ink-600 leading-relaxed">
+                No. Underlying {b.name} gift card funds never expire and carry zero dormancy or maintenance fees.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {relatedBrands.length > 0 && (
-        <div className="mt-14 pt-8 border-t border-ink-100">
+        <div className="mt-10 pt-8 border-t border-ink-100">
           <BrandGrid items={relatedBrands} title={`More in ${b.category}`} />
         </div>
       )}

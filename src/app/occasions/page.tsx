@@ -1,7 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { BRANDS } from "@/lib/brands";
 import { BrandGrid } from "@/components/BrandGrid";
 import { Icon } from "@/components/Icon";
+
+export const metadata: Metadata = {
+  title: "Gift Cards by Occasion — Birthday, Holiday, Wedding & Thank You eGift Cards",
+  description:
+    "Buy gift cards online for every occasion—Holidays, Birthdays, Thank You, Weddings, and Graduations. Personalize with custom photos, festive themes, and instant email delivery at buygiftcards.online.",
+  keywords: [
+    "birthday gift cards online",
+    "holiday egift cards",
+    "last minute birthday gift card email delivery",
+    "thank you gift cards",
+    "wedding gift cards online",
+    "graduation gift cards",
+  ],
+  alternates: { canonical: "/occasions" },
+};
 
 const OCCASIONS = [
   {

@@ -174,3 +174,4 @@ export async function GET() {
     recentEvents: events.slice(0, 60),
   });
 }
+

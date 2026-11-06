@@ -28,11 +28,12 @@ export function Hero() {
             <span>🎁</span> Holiday Gifting Season · {brandCount}+ Top Brands
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 leading-[1.08] tracking-tight">
-            The #1 destination for every gift on your list.
+            Buy Gift Cards Online — Instant Digital eGift Delivery
           </h1>
           <p className="text-base text-white/90 mb-7 leading-relaxed">
-            Shop custom-photo Visa® &amp; Mastercard® cards, One4all multi-brand choice cards, and {brandCount}+ top
-            retail &amp; dining brands. Delivered instantly by email or shipped to their door.
+            Buy gift cards online with instant digital delivery from {brandCount}+ official brands. Shop custom-photo
+            Visa® virtual cards, One4all multi-brand choice cards, and top retail, dining &amp; gaming eGift
+            cards—delivered to your inbox in minutes with Credit/Debit Card or PayPal checkout.
           </p>
           <div className="flex flex-wrap items-center gap-3.5">
             <Link

@@ -49,3 +49,4 @@ export function ResponsiveHomeSwitcher({
 
   return <>{desktopView}</>;
 }
+

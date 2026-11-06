@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Use & Digital Gift Card Terms",
+  description:
+    "Read the Terms of Use, digital eGift card fulfillment terms, refund policy, and non-expiration rules for purchases on buygiftcards.online.",
+  alternates: { canonical: "/terms" },
+};
+
 export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">

@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy — Data Security & Checkout Protection",
+  description:
+    "Learn how buygiftcards.online protects your personal information, payment security, and recipient gift card delivery details.",
+  alternates: { canonical: "/privacy" },
+};
+
 export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">

@@ -102,6 +102,50 @@ export default async function HomePage({
           ))}
         </div>
       </section>
+
+      {/* SEO Authority & FAQ Section for "Buy Gift Cards Online" */}
+      <section className="max-w-7xl mx-auto px-6 pb-12">
+        <div className="bg-white border border-ink-100 rounded-3xl p-8 sm:p-10 shadow-sm">
+          <div className="max-w-3xl mb-8">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-brand-600">
+              Instant Digital Delivery • {BRANDS.length}+ Official Brands
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 mb-2">
+              The fastest &amp; safest place to buy gift cards online
+            </h2>
+            <p className="text-sm text-ink-600 leading-relaxed">
+              Whether you need a last-minute birthday gift, corporate employee rewards, or everyday savings at your
+              favorite stores, <strong>buygiftcards.online</strong> lets you buy digital gift cards (eGift cards) and
+              prepaid Visa® virtual accounts with $0 purchase fees on brand cards and instant email fulfillment.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "Where can I buy gift cards online with instant email delivery?",
+                a: "At buygiftcards.online, you can buy digital gift cards from popular retail, dining, gaming, and travel brands—including Amazon, Visa, Starbucks, DoorDash, Uber, Disney, Xbox, and Multi-Brand Choice Cards—delivered to your inbox within minutes of checkout.",
+              },
+              {
+                q: "Can I buy gift cards online with a credit card, debit card, or PayPal?",
+                a: "Yes! Our checkout supports direct Credit & Debit Card payments (Visa, Mastercard, Amex, Discover) on both mobile and desktop browsers, alongside PayPal, Venmo, and Pay Later.",
+              },
+              {
+                q: "Can I buy discounted gift cards for less than face value?",
+                a: "Yes. Dozens of brands in our Instant Deals catalog feature automatic reseller discounts at checkout while your recipient still receives 100% of the full face value.",
+              },
+              {
+                q: "What is the BuyGiftCards.online All-in-One Choice Gift Card?",
+                a: "Our signature Multi-Brand and One4all gift cards allow recipients to redeem their card at buygiftcards.online/redeem and swap or split their balance across our entire brand catalog.",
+              },
+            ].map((faq) => (
+              <div key={faq.q} className="p-5 rounded-2xl bg-ink-50/70 border border-ink-100">
+                <h3 className="font-extrabold text-sm sm:text-base text-ink-950 mb-1.5">{faq.q}</h3>
+                <p className="text-xs sm:text-sm text-ink-600 leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </>
   );
 

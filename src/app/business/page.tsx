@@ -1,5 +1,20 @@
+import type { Metadata } from "next";
 import { BusinessQuoteForm } from "@/components/BusinessQuoteForm";
 import { Icon } from "@/components/Icon";
+
+export const metadata: Metadata = {
+  title: "Corporate Gift Cards & Bulk Employee Rewards Online — Instant B2B Delivery",
+  description:
+    "Buy corporate gift cards in bulk for employee rewards, client appreciation, and marketing incentives across 165+ top brands. Instant digital delivery and flexible ACH or card billing at buygiftcards.online.",
+  keywords: [
+    "corporate gift cards",
+    "buy gift cards in bulk online",
+    "employee reward gift cards",
+    "b2b digital gift cards",
+    "bulk egift cards for business",
+  ],
+  alternates: { canonical: "/business" },
+};
 
 const BENEFITS = [
   {

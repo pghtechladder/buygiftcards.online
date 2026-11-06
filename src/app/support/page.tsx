@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import { Icon } from "@/components/Icon";
 import { SupportForm } from "@/components/SupportForm";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Gift Card Help Center, FAQs & Customer Support Desk",
+  description:
+    "Get fast help with your digital gift card order at buygiftcards.online. Read FAQs on instant email delivery, balance checks, and card redemption, or open a support ticket.",
+  alternates: { canonical: "/support" },
+};
 
 const FAQS = [
   {

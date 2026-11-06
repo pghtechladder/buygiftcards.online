@@ -59,3 +59,4 @@ export function parseDeviceFromUserAgent(uaRaw?: string | null): DeviceInfo {
     userAgent: uaRaw || "",
   };
 }
+
