@@ -13,7 +13,7 @@ const isServerless = Boolean(
 const LOG_DIR = isServerless
   ? path.join(os.tmpdir(), "buygiftcards-logs")
   : path.join(process.cwd(), "logs");
-export const RETAIL_ANALYTICS_JSONL_PATH = path.join(LOG_DIR, "retail-analytics.jsonl");
+const RETAIL_ANALYTICS_JSONL_PATH = path.join(LOG_DIR, "retail-analytics.jsonl");
 
 type StoredAnalyticsEvent = {
   id: string;
