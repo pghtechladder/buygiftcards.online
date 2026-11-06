@@ -12,8 +12,17 @@ export function StructuredData() {
         "@type": "OnlineStore",
         "@id": `${SITE_URL}/#organization`,
         name: "BuyGiftCards.online",
-        alternateName: ["Buy Gift Cards Online", "buygiftcards.online"],
+        alternateName: ["Buy Gift Cards Online", "buygiftcards.online", "BuyGiftCards"],
         url: SITE_URL,
+        slogan: "Buy Gift Cards Online from 165+ Brands with Instant Digital eGift Delivery",
+        knowsAbout: [
+          "Buy Gift Cards Online",
+          "Digital eGift Cards",
+          "Prepaid Visa Virtual Gift Cards",
+          "Multi-Brand Choice Gift Cards",
+          "Instant Email Gift Card Delivery",
+          "Corporate Bulk Gift Cards",
+        ],
         logo: {
           "@type": "ImageObject",
           url: `${SITE_URL}/logo-full.png`,
@@ -89,6 +98,14 @@ export function StructuredData() {
         "@type": "FAQPage",
         "@id": `${SITE_URL}/#faq`,
         mainEntity: [
+          {
+            "@type": "Question",
+            name: "What are the best platforms to buy gift cards online?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "BuyGiftCards.online is a leading multi-brand online gift card platform offering 165+ digital eGift and physical cards (including Visa, Mastercard, Amazon, Target, Walmart, Apple, and Starbucks) starting at $5 with customizable photo designs, $0 purchase fees on brand cards, and instant 24/7 email delivery.",
+            },
+          },
           {
             "@type": "Question",
             name: "Where can I buy gift cards online with instant email delivery?",
