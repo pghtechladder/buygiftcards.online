@@ -4,6 +4,7 @@ import { getBrand } from "@/lib/brands";
 import { generateOrderNumber } from "@/lib/order";
 import { giftCardProvider } from "@/lib/giftcard-provider";
 import { sendOrderConfirmationEmail, sendRecipientGiftEmail } from "@/lib/email";
+import { triggerKitTrustpilotWorkflow } from "@/lib/newsletter";
 import { writeTransactionLog } from "@/lib/logger";
 
 export async function fulfillOrder(session: Stripe.Checkout.Session) {
@@ -131,7 +132,7 @@ export async function fulfillOrder(session: Stripe.Checkout.Session) {
   const full = await prisma.order.findUnique({ where: { id: order.id }, include: { items: { include: { codes: true } } } });
   if (full) {
     try {
-      const result = await sendOrderConfirmationEmail(full);
+      const result = await sendOrderConfirmationEmail(full, session.customer_details.name);
       await prisma.order.update({
         where: { id: order.id },
         data: result.sent ? { emailSentAt: new Date(), emailError: null } : { emailError: result.error },
@@ -143,6 +144,14 @@ export async function fulfillOrder(session: Stripe.Checkout.Session) {
         data: { emailError: err instanceof Error ? err.message : String(err) },
       });
     }
+
+    // Enroll EVERY completed order in the Kit.com Trustpilot Review Invitation workflow
+    // (1–3 days after delivery, no filtering by order value, customer type, or support history)
+    await triggerKitTrustpilotWorkflow({
+      email: full.customerEmail,
+      firstName: session.customer_details.name,
+      orderNumber: full.orderNumber,
+    }).catch((err) => console.warn(`[webhook] Kit Trustpilot workflow warning for ${full.orderNumber}:`, err));
   }
 
   writeTransactionLog({

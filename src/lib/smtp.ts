@@ -32,7 +32,14 @@ function getTransporter() {
   return transporter;
 }
 
-export async function sendSmtpMail(opts: { to: string; subject: string; html: string; replyTo?: string }) {
+export async function sendSmtpMail(opts: {
+  to: string;
+  bcc?: string;
+  subject: string;
+  html: string;
+  text?: string;
+  replyTo?: string;
+}) {
   const t = getTransporter();
   if (!t) {
     console.warn("[smtp] SMTP_HOST/SMTP_USER/SMTP_PASS not fully set — skipping send:", opts.subject);
@@ -65,6 +72,7 @@ export async function sendSmtpMail(opts: { to: string; subject: string; html: st
     requestPayload: {
       from,
       to: opts.to,
+      bcc: opts.bcc,
       replyTo: opts.replyTo,
       subject: opts.subject,
       hasInlineLogoAttachment: attachments.length > 0,
@@ -76,9 +84,11 @@ export async function sendSmtpMail(opts: { to: string; subject: string; html: st
     const info = await t.sendMail({
       from,
       to: opts.to,
+      bcc: opts.bcc,
       replyTo: opts.replyTo,
       subject: opts.subject,
       html: opts.html,
+      text: opts.text,
       attachments: attachments.length > 0 ? attachments : undefined,
     });
     writeTransactionLog({

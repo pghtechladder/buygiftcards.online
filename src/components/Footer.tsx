@@ -42,6 +42,7 @@ const COLUMNS = [
     title: "Company & Trust",
     links: [
       ["About Us", "/about"],
+      ["Customer Reviews (Trustpilot)", "https://www.trustpilot.com/review/buygiftcards.online"],
       ["Gift Safe Security", "/gift-safe"],
       ["Terms of Use", "/terms"],
       ["Privacy Policy", "/privacy"],

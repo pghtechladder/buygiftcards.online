@@ -255,6 +255,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
   const { prisma } = await import("./prisma");
   const { giftCardProvider } = await import("./giftcard-provider");
   const { sendOrderConfirmationEmail, sendRecipientGiftEmail } = await import("./email");
+  const { triggerKitTrustpilotWorkflow } = await import("./newsletter");
 
   const sessionKey = `paypal_${paypalOrderId}`;
 
@@ -416,7 +417,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
   });
 
   try {
-    const emailRes = await sendOrderConfirmationEmail(fulfilledOrder);
+    const emailRes = await sendOrderConfirmationEmail(fulfilledOrder, captured.payerName);
     await prisma.order.update({
       where: { id: order.id },
       data: emailRes.sent
@@ -430,6 +431,14 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
       data: { emailError: err instanceof Error ? err.message : String(err) },
     });
   }
+
+  // Enroll EVERY completed order in the Kit.com Trustpilot Review Invitation workflow
+  // (1–3 days after delivery, no filtering by order value, customer type, or support history)
+  await triggerKitTrustpilotWorkflow({
+    email: fulfilledOrder.customerEmail,
+    firstName: captured.payerName,
+    orderNumber: fulfilledOrder.orderNumber,
+  }).catch((err) => console.warn(`[paypal] Kit Trustpilot workflow warning for ${fulfilledOrder.orderNumber}:`, err));
 
   return {
     orderNumber: fulfilledOrder.orderNumber,

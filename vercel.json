@@ -3,6 +3,12 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
+  "crons": [
+    {
+      "path": "/api/workflows/trustpilot-invites",
+      "schedule": "0 14 * * *"
+    }
+  ],
   "env": {
     "ZENDIT_API_KEY": "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9",
     "ZENDIT_PRODUCTION_API_KEY": "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9",

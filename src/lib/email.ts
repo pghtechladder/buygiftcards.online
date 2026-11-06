@@ -1,5 +1,6 @@
 import type { Order, OrderItem, GiftCardCode } from "@prisma/client";
 import { sendSmtpMail } from "./smtp";
+import { deriveCustomerFirstName, TRUSTPILOT_REVIEW_URL } from "./newsletter";
 
 type FullOrder = Order & { items: (OrderItem & { codes: GiftCardCode[] })[] };
 
@@ -7,12 +8,23 @@ const fmt = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 export type EmailResult = { sent: boolean; error?: string };
 
-async function sendViaSmtp(opts: { to: string; subject: string; html: string; label: string }): Promise<EmailResult> {
+async function sendViaSmtp(opts: {
+  to: string;
+  bcc?: string;
+  subject: string;
+  html: string;
+  text?: string;
+  replyTo?: string;
+  label: string;
+}): Promise<EmailResult> {
   try {
     const res = await sendSmtpMail({
       to: opts.to,
+      bcc: opts.bcc,
       subject: opts.subject,
       html: opts.html,
+      text: opts.text,
+      replyTo: opts.replyTo,
     });
     if (res.skipped) {
       return {
@@ -20,7 +32,7 @@ async function sendViaSmtp(opts: { to: string; subject: string; html: string; la
         error: "SMTP_HOST / SMTP_USER / SMTP_PASS are not fully configured",
       };
     }
-    console.log(`[email] Sent ${opts.label} via Zoho SMTP to ${opts.to}`);
+    console.log(`[email] Sent ${opts.label} via Zoho SMTP to ${opts.to}${opts.bcc ? ` (bcc: ${opts.bcc})` : ""}`);
     return { sent: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -29,9 +41,29 @@ async function sendViaSmtp(opts: { to: string; subject: string; html: string; la
   }
 }
 
-export async function sendOrderConfirmationEmail(order: FullOrder): Promise<EmailResult> {
+export async function sendOrderConfirmationEmail(
+  order: FullOrder,
+  customerName?: string | null
+): Promise<EmailResult> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
   const orderUrl = `${siteUrl}/orders/${order.orderNumber}?email=${encodeURIComponent(order.customerEmail)}`;
+  const trustpilotAfsBcc = process.env.TRUSTPILOT_AFS_EMAIL?.trim() || undefined;
+  const firstName = deriveCustomerFirstName(customerName, order.customerEmail);
+
+  // Trustpilot Automatic Feedback Service (AFS) Structured Data Snippet
+  // When TRUSTPILOT_AFS_EMAIL is BCC'd on order confirmation emails, Trustpilot parses this
+  // JSON-LD block to schedule an official "Verified" review invitation 1–3 days after delivery.
+  const trustpilotStructuredData = JSON.stringify({
+    recipientName: firstName === "there" ? order.customerEmail.split("@")[0] : firstName,
+    recipientEmail: order.customerEmail,
+    referenceId: order.orderNumber,
+    productSkus: order.items.map((i) => `BGC-${i.brandSlug.toUpperCase()}`),
+     products: order.items.map((i) => ({
+      name: `${i.brandName} Gift Card`,
+      sku: `BGC-${i.brandSlug.toUpperCase()}`,
+      productUrl: `${siteUrl}/product/${i.brandSlug}`,
+    })),
+  });
 
   const itemsHtml = order.items
     .map(
@@ -73,11 +105,13 @@ export async function sendOrderConfirmationEmail(order: FullOrder): Promise<Emai
           <a href="${orderUrl}" style="background-color:#0f8c66;color:#ffffff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;display:inline-block;">View Your Gift Card Codes &rarr;</a>
         </div>
       </div>
+      <script type="application/json+trustpilot">${trustpilotStructuredData}</script>
     </div>
   `;
 
   return sendViaSmtp({
     to: order.customerEmail,
+    bcc: trustpilotAfsBcc,
     subject: `Your buygiftcards.online order ${order.orderNumber}`,
     html,
     label: `order ${order.orderNumber} confirmation`,
@@ -245,5 +279,59 @@ export async function sendRedemptionConfirmationEmail(opts: {
     subject: `Your redeemed eGift cards from buygiftcards.online (${opts.orderNumber})`,
     html,
     label: `redemption confirmation for ${opts.orderNumber}`,
+  });
+}
+
+/**
+ * Sends the Trustpilot Review Invitation Email (1–3 days after order delivery)
+ * using the exact neutral, non-gated, non-incentivized template required by Trustpilot.
+ */
+export async function sendTrustpilotReviewInviteEmail(opts: {
+  email: string;
+  firstName?: string | null;
+  orderNumber: string;
+  trustpilotLink?: string;
+}): Promise<EmailResult> {
+  const firstName = deriveCustomerFirstName(opts.firstName, opts.email);
+  const trustpilotLink = opts.trustpilotLink || TRUSTPILOT_REVIEW_URL;
+  const trustpilotAfsBcc = process.env.TRUSTPILOT_AFS_EMAIL?.trim() || undefined;
+  const subject = "How was your order from BuyGiftCards.online?";
+
+  const text = [
+    `Hi ${firstName},`,
+    "",
+    `Thanks for your recent order (${opts.orderNumber}). We'd like to hear about your experience, good or bad. Your review helps other shoppers and shows us what to improve.`,
+    "",
+    `It takes about a minute: ${trustpilotLink}`,
+    "",
+    "If something went wrong with your order, you can also reply to this email and our support team will help.",
+    "",
+    "— The BuyGiftCards.online team",
+  ].join("\n");
+
+  const html = `
+    <div style="font-family:Arial,Helvetica,sans-serif;max-width:540px;margin:0 auto;padding:28px 24px;background:#ffffff;color:#111827;font-size:15px;line-height:1.6;border:1px solid #e5e7eb;border-radius:16px;">
+      <p style="margin:0 0 16px;">Hi ${firstName},</p>
+      <p style="margin:0 0 16px;">
+        Thanks for your recent order (<strong>${opts.orderNumber}</strong>). We'd like to hear about your experience, good or bad. Your review helps other shoppers and shows us what to improve.
+      </p>
+      <p style="margin:0 0 16px;">
+        It takes about a minute: <a href="${trustpilotLink}" style="color:#0c7756;font-weight:bold;text-decoration:underline;">${trustpilotLink}</a>
+      </p>
+      <p style="margin:0 0 16px;">
+        If something went wrong with your order, you can also reply to this email and our support team will help.
+      </p>
+      <p style="margin:0;color:#374151;">— The BuyGiftCards.online team</p>
+    </div>
+  `;
+
+  return sendViaSmtp({
+    to: opts.email,
+    bcc: trustpilotAfsBcc,
+    replyTo: "support@buygiftcards.online",
+    subject,
+    html,
+    text,
+    label: `Trustpilot review invite for order ${opts.orderNumber}`,
   });
 }

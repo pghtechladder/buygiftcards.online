@@ -39,6 +39,9 @@ export function StructuredData() {
           "@type": "Country",
           name: "United States",
         },
+        sameAs: [
+          "https://www.trustpilot.com/review/buygiftcards.online",
+        ],
         aggregateRating: {
           "@type": "AggregateRating",
           ratingValue: "4.9",
