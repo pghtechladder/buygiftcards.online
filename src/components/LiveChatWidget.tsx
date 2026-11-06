@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { VisitorCounter } from "./VisitorCounter";
 
 interface Message {
   id: string;
@@ -150,8 +151,8 @@ export function LiveChatWidget() {
 
   return (
     <>
-      {/* Floating Widget Trigger Button */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2.5">
+      {/* Floating Widget Trigger Button + Bottom-Right Website Visitor Counter */}
+      <div className="fixed bottom-20 md:bottom-5 right-4 sm:right-6 z-50 flex flex-col items-end gap-2">
         {!isOpen && (
           <div className="bg-white border border-ink-100 shadow-xl rounded-2xl p-3 max-w-[260px] text-xs text-ink-700 animate-bounce duration-1000 hidden sm:flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
@@ -168,9 +169,9 @@ export function LiveChatWidget() {
             }}
             aria-label="Create Support Ticket"
             title="Create a support ticket"
-            className="w-12 h-12 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-lg hover:bg-brand-700 hover:scale-105 active:scale-95 transition"
+            className="w-11 h-11 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-lg hover:bg-brand-700 hover:scale-105 active:scale-95 transition"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
             </svg>
           </button>
@@ -179,7 +180,7 @@ export function LiveChatWidget() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Open AI Assistant & Support Chat"
-            className="h-12 px-4 rounded-full bg-ink-900 text-white flex items-center gap-2 shadow-xl hover:bg-ink-800 hover:scale-105 active:scale-95 transition font-semibold text-sm"
+            className="h-11 px-4 rounded-full bg-ink-900 text-white flex items-center gap-2 shadow-xl hover:bg-ink-800 hover:scale-105 active:scale-95 transition font-semibold text-xs sm:text-sm"
           >
             {isOpen ? (
               <>
@@ -203,6 +204,9 @@ export function LiveChatWidget() {
             )}
           </button>
         </div>
+
+        {/* Website Visitor Counter at Bottom-Right */}
+        <VisitorCounter />
       </div>
 
       {/* Slide-out / Modal Chat Window */}

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { VisitorCounter } from "./VisitorCounter";
 
 const COLUMNS = [
   {
@@ -82,10 +83,12 @@ export function Footer() {
         <div>
           © {new Date().getFullYear()} buygiftcards.online. All rights reserved. All merchant trademarks and logos are the property of their respective owners.
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link href="/analytics" className="hover:text-white transition">Retail Analytics</Link>
           <Link href="/gift-safe" className="hover:text-white transition">Gift Safe</Link>
           <Link href="/terms" className="hover:text-white transition">Terms</Link>
           <Link href="/privacy" className="hover:text-white transition">Privacy</Link>
+          <VisitorCounter />
         </div>
       </div>
     </footer>
