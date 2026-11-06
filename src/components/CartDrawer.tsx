@@ -10,7 +10,7 @@ import { getBrand, chargeAmountCents } from "@/lib/brands";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
 import { trackRetailEvent } from "@/lib/analytics";
-import { parseDeviceFromUserAgent, DeviceInfo } from "@/lib/device";
+import { parseDeviceFromUserAgent, DeviceInfo, safeRandomId } from "@/lib/device";
 
 const fmt = (n: number) => `$${n.toFixed(2)}`;
 
@@ -55,6 +55,12 @@ export function CartDrawer() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (typeof window.matchMedia !== "function") {
+      const info = parseDeviceFromUserAgent(navigator.userAgent);
+      setDevice(info);
+      setIsMobileScreen(info.isMobile || window.innerWidth <= 767);
+      return;
+    }
     const mql = window.matchMedia("(max-width: 767px)");
     const updateDevice = (e: MediaQueryListEvent | MediaQueryList) => {
       const info = parseDeviceFromUserAgent(navigator.userAgent);
@@ -62,12 +68,17 @@ export function CartDrawer() {
       setIsMobileScreen(info.isMobile || e.matches);
     };
     updateDevice(mql);
-    mql.addEventListener("change", updateDevice);
-    return () => mql.removeEventListener("change", updateDevice);
+    if (typeof mql.addEventListener === "function") {
+      mql.addEventListener("change", updateDevice);
+      return () => mql.removeEventListener("change", updateDevice);
+    } else if (typeof mql.addListener === "function") {
+      mql.addListener(updateDevice);
+      return () => mql.removeListener(updateDevice);
+    }
   }, []);
 
   const idempotencyKey = useMemo(
-    () => crypto.randomUUID(),
+    () => safeRandomId(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(items.map((i) => [i.key, i.qty]))]
   );

@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import { PromoBanner } from "@/components/PromoBanner";
 import { Hero } from "@/components/Hero";
 import { CategoryStrip } from "@/components/CategoryStrip";
@@ -18,24 +17,9 @@ const travel = BRANDS.filter((b) => b.category === "Travel");
 const bestBrands = BRANDS.slice(0, 16);
 const featured = BRANDS.slice(20, 30);
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ view?: string }>;
-}) {
-  const { view } = await searchParams;
-  const reqHeaders = await headers();
-  const ua = reqHeaders.get("user-agent") || "";
-  const chMobile = reqHeaders.get("sec-ch-ua-mobile");
-  const deviceInfo = parseDeviceFromUserAgent(ua);
-  if (chMobile === "?1") {
-    deviceInfo.isMobile = true;
-    deviceInfo.deviceType = "mobile";
-  }
+const defaultDeviceInfo = parseDeviceFromUserAgent("");
 
-  const forceView =
-    view === "mobile" ? "mobile" : view === "desktop" ? "desktop" : undefined;
-
+export default function HomePage() {
   const desktopHomeContent = (
     <>
       <PromoBanner />
@@ -198,8 +182,7 @@ export default async function HomePage({
 
   return (
     <ResponsiveHomeSwitcher
-      initialDevice={deviceInfo}
-      forceView={forceView}
+      initialDevice={defaultDeviceInfo}
       desktopView={desktopHomeContent}
     />
   );

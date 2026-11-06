@@ -264,7 +264,7 @@ export function logoUrl(domain: string, size = 128) {
     return "/logo-mark-512.png";
   }
   const token = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN;
-  return `https://img.logo.dev/${domain}?token=${token}&size=${size}&retina=true`;
+  return `https://img.logo.dev/${domain}?token=${token}&size=${size}&format=webp&retina=true`;
 }
 
 /** Validates a requested amount is one this brand actually sells, at the server. */

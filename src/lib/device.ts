@@ -13,6 +13,27 @@ export type DeviceInfo = {
 };
 
 /**
+ * Safe UUID generator that works in all browsers, mobile WebViews, and non-secure contexts
+ * without throwing `TypeError: crypto.randomUUID is not a function`.
+ */
+export function safeRandomId(): string {
+  try {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+    if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+  } catch {}
+  return `bgc-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+/**
  * Parses a User-Agent string (from server headers or client `navigator.userAgent`)
  * to detect device type (mobile/tablet/desktop), operating system, and browser.
  */
@@ -20,12 +41,12 @@ export function parseDeviceFromUserAgent(uaRaw?: string | null): DeviceInfo {
   const ua = (uaRaw || "").toLowerCase();
 
   const isTablet =
-    /ipad|tablet|playbook|silk/i.test(ua) ||
+    /ipad|tablet|playbook|silk|kindle/i.test(ua) ||
     (/android/i.test(ua) && !/mobile/i.test(ua));
 
   const isMobilePhone =
     !isTablet &&
-    /iphone|ipod|android.*mobile|windows phone|iemobile|blackberry|bb10|opera mini|mobile/i.test(
+    /iphone|ipod|android.*mobile|windows phone|iemobile|blackberry|bb10|opera mini|opera mobi|mobile|crios|fxios|instagram|fbav|fban|line\/|whatsapp|snapchat|tiktok|wv\)/i.test(
       ua
     );
 
@@ -59,4 +80,3 @@ export function parseDeviceFromUserAgent(uaRaw?: string | null): DeviceInfo {
     userAgent: uaRaw || "",
   };
 }
-

@@ -18,6 +18,7 @@ export function BrandLogo({
   bg?: string;
 }) {
   const [err, setErr] = useState(false);
+  const isLocal = domain === "buygiftcards.online";
   const src = logoUrl(domain, Math.max(size * 2, 96));
 
   if (err) {
@@ -38,6 +39,8 @@ export function BrandLogo({
       width={size}
       height={size}
       sizes={`${size}px`}
+      loading="lazy"
+      unoptimized={!isLocal}
       style={{ borderRadius: radius, background: bg, objectFit: "contain", padding: size > 50 ? 8 : 4 }}
       className="flex-shrink-0"
       onError={() => setErr(true)}

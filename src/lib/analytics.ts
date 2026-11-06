@@ -1,6 +1,6 @@
 "use client";
 
-import { parseDeviceFromUserAgent } from "./device";
+import { parseDeviceFromUserAgent, safeRandomId } from "./device";
 
 export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-BGC2026RETAIL";
@@ -51,7 +51,7 @@ export function getAnalyticsSessionId(): string {
   try {
     let sid = sessionStorage.getItem(SESSION_STORAGE_KEY);
     if (!sid) {
-      sid = crypto.randomUUID();
+      sid = safeRandomId();
       sessionStorage.setItem(SESSION_STORAGE_KEY, sid);
     }
     return sid;
