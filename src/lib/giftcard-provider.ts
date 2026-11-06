@@ -190,10 +190,7 @@ export class TangoCardProvider implements GiftCardProvider {
   private customerIdentifier: string;
 
   constructor() {
-    // Sandbox vs production is just a different base URL in Tango's API —
-    // defaults to sandbox so you can't accidentally hit production by
-    // forgetting to set this.
-    this.baseUrl = (process.env.TANGO_API_BASE_URL || "https://integration-api.tangocard.com/raas/v2").replace(/\/+$/, "");
+    this.baseUrl = (process.env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2").replace(/\/+$/, "");
     this.platformName = requireEnv("TANGO_PLATFORM_NAME");
     this.platformKey = requireEnv("TANGO_PLATFORM_KEY");
     this.accountIdentifier = requireEnv("TANGO_ACCOUNT_IDENTIFIER");
@@ -704,7 +701,7 @@ function buildProvider(): GiftCardProvider {
 
   // If Tango is configured, make Tango the PRIMARY fulfillment provider
   if (tangoProvider) {
-    const tangoBaseUrl = process.env.TANGO_API_BASE_URL || "https://integration-api.tangocard.com/raas/v2";
+    const tangoBaseUrl = process.env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2";
     const mode = tangoBaseUrl.includes("integration-api") ? "SANDBOX" : "PRODUCTION";
     console.log(
       `[giftcard-provider] Using TangoCardProvider [${mode}] as PRIMARY ` +

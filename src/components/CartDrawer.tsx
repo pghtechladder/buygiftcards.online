@@ -13,7 +13,7 @@ const fmt = (n: number) => `$${n.toFixed(2)}`;
 
 const PAYPAL_CLIENT_ID =
   process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
-  "BAAvgWHBMWqWeegN_69dmvEE4L1rO4bxEjWv-51rbfcPdEwdz9J9CxZmYrqIl5L7jZhkSK9LQLhAzTPrYc"; // sandbox
+  "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg"; // live production
 
 declare global {
   interface Window {
@@ -348,7 +348,7 @@ export function CartDrawer() {
 
             <div className="flex items-center justify-center gap-1.5 pt-1 text-xs text-ink-400">
               <Icon name="lock" size={13} />
-              Secure PayPal Sandbox Checkout · Instant Tango eGift Delivery
+              Secure PayPal Checkout · Instant eGift Delivery
             </div>
           </div>
         )}

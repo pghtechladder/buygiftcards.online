@@ -4,18 +4,19 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install",
   "env": {
-    "ZENDIT_API_KEY": "sand_8cfdd5e5-ed55-4402-bce3-3fb10230f9026ae4af6f0273f38d602cb8f9",
+    "ZENDIT_API_KEY": "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9",
+    "ZENDIT_PRODUCTION_API_KEY": "prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9",
     "ZENDIT_API_BASE_URL": "https://api.zendit.io/v1",
     "ZENDIT_USERNAME": "sri@techladder.io",
-    "NEXT_PUBLIC_PAYPAL_CLIENT_ID": "BAAvgWHBMWqWeegN_69dmvEE4L1rO4bxEjWv-51rbfcPdEwdz9J9CxZmYrqIl5L7jZhkSK9LQLhAzTPrYc",
-    "PAYPAL_CLIENT_ID": "BAAvgWHBMWqWeegN_69dmvEE4L1rO4bxEjWv-51rbfcPdEwdz9J9CxZmYrqIl5L7jZhkSK9LQLhAzTPrYc",
-    "PAYPAL_CLIENT_SECRET": "EIwKAMvExy7u7me1y9-uZBB1vdcHUBKOFeGmGbL2XdGE8d0CcSf1K2g07DRWay4NRWe92HKG_lbXZTJ0",
-    "PAYPAL_API_BASE_URL": "https://api-m.sandbox.paypal.com",
+    "NEXT_PUBLIC_PAYPAL_CLIENT_ID": "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg",
+    "PAYPAL_CLIENT_ID": "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg",
+    "PAYPAL_CLIENT_SECRET": "EP_l4rG98V--xxBunuX3F40UyCD9KsQP8QUY34snUH6XrJynonRROoNeA7ONF5whwyuRfXLVrgcgIlfT",
+    "PAYPAL_API_BASE_URL": "https://api-m.paypal.com",
     "TANGO_PLATFORM_NAME": "QAPlatform2",
     "TANGO_PLATFORM_KEY": "apYPfT6HNONpDRUj3CLGWYt7gvIHONpDRUYPfT6Hj",
     "TANGO_ACCOUNT_IDENTIFIER": "testing1234account",
     "TANGO_CUSTOMER_IDENTIFIER": "customer-5554",
-    "TANGO_API_BASE_URL": "https://integration-api.tangocard.com/raas/v2"
+    "TANGO_API_BASE_URL": "https://api.tangocard.com/raas/v2"
   },
   "headers": [
     {
