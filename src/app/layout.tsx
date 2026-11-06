@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
@@ -11,11 +11,20 @@ import { NewsletterModal } from "@/components/NewsletterModal";
 import { AuthModal } from "@/components/AuthModal";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
 import { LiveChatWidget } from "@/components/LiveChatWidget";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#0a4738",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -49,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Nav />
               {children}
               <Footer />
+              <MobileBottomNav />
               <CartDrawer />
               <NewsletterModal />
               <AuthModal />

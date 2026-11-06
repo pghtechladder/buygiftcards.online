@@ -141,7 +141,7 @@ export function Nav() {
               <div className="relative">
                 <button
                   onClick={() => setAccountMenuOpen((v) => !v)}
-                  className="hidden md:block px-3 py-2 text-sm font-semibold text-ink-600 hover:text-ink-900 rounded-lg hover:bg-ink-50 transition"
+                  className="px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold text-ink-600 hover:text-ink-900 rounded-lg hover:bg-ink-50 transition max-w-[110px] sm:max-w-none truncate"
                 >
                   Hi, {authSession.user.firstName ?? authSession.user.email}
                 </button>
@@ -186,7 +186,7 @@ export function Nav() {
             ) : (
               <button
                 onClick={() => openAuthModal("signin")}
-                className="hidden md:block px-3 py-2 text-sm font-semibold text-ink-600 hover:text-ink-900 rounded-lg hover:bg-ink-50 transition"
+                className="px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold text-ink-600 hover:text-ink-900 rounded-lg hover:bg-ink-50 transition"
               >
                 Sign In
               </button>
@@ -194,7 +194,7 @@ export function Nav() {
             <button
               onClick={() => setOpen(true)}
               aria-label="Open cart"
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
+              className={`flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-lg text-sm font-semibold transition ${
                 count > 0 ? "bg-brand-600 text-white hover:bg-brand-700" : "text-ink-600 hover:bg-ink-50"
               }`}
             >

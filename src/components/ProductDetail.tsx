@@ -22,7 +22,7 @@ const OCCASION_DESIGNS = [
 ];
 
 export function ProductDetail({ brand: b }: { brand: Brand }) {
-  const { add } = useCart();
+  const { add, setOpen: setCartOpen } = useCart();
   const [amount, setAmount] = useState<number>(b.denominations[1] ?? b.denominations[0]);
   const [custom, setCustom] = useState("");
   const [isCustom, setIsCustom] = useState(false);
@@ -478,7 +478,7 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
           </div>
 
           {/* Add to Cart Bar */}
-          <div className="flex items-center gap-6 pt-6 border-t border-ink-100">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pt-6 border-t border-ink-100">
             <div>
               <div className="text-xs text-ink-400">Total</div>
               {b.discountPercent ? (
@@ -495,45 +495,78 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
                   : "Card value: full amount, $0 fees"}
               </div>
             </div>
-            <button
-              type="button"
-              disabled={!valid}
-              onClick={() => {
-                add({
-                  brandSlug: b.slug,
-                  brandName: b.name,
-                  domain: b.domain,
-                  color: b.color,
-                  amount: amt,
-                  qty,
-                  deliveryType,
-                  customPhotoUrl: photoUrl ?? undefined,
-                  ...(whoFor === "gift"
-                    ? {
-                        recipientName: recipientName.trim() || undefined,
-                        recipientEmail: recipientEmail.trim() || undefined,
-                        senderName: senderName.trim() || undefined,
-                        giftMessage: giftMessage.trim() || undefined,
-                        occasion: designId !== "standard" ? designId : undefined,
-                        deliveryDate,
-                      }
-                    : {}),
-                });
-                setAdded(true);
-                setTimeout(() => setAdded(false), 2000);
-              }}
-              className={`flex-1 py-4 rounded-2xl font-extrabold text-white transition shadow-lg shadow-brand-600/15 ${
-                added ? "bg-green-600" : "bg-brand-600 hover:bg-brand-700 disabled:opacity-40"
-              }`}
-            >
-              {added ? (
-                <span className="flex items-center justify-center gap-2"><Icon name="checkCircle" size={18} />Added to Cart</span>
-              ) : photoUploading ? (
-                "Uploading photo…"
-              ) : (
-                "Add to Cart"
-              )}
-            </button>
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                disabled={!valid}
+                onClick={() => {
+                  add({
+                    brandSlug: b.slug,
+                    brandName: b.name,
+                    domain: b.domain,
+                    color: b.color,
+                    amount: amt,
+                    qty,
+                    deliveryType,
+                    customPhotoUrl: photoUrl ?? undefined,
+                    ...(whoFor === "gift"
+                      ? {
+                          recipientName: recipientName.trim() || undefined,
+                          recipientEmail: recipientEmail.trim() || undefined,
+                          senderName: senderName.trim() || undefined,
+                          giftMessage: giftMessage.trim() || undefined,
+                          occasion: designId !== "standard" ? designId : undefined,
+                          deliveryDate,
+                        }
+                      : {}),
+                  });
+                  setAdded(true);
+                  setTimeout(() => setAdded(false), 2000);
+                }}
+                className={`py-4 rounded-2xl font-extrabold text-white transition shadow-lg shadow-brand-600/15 ${
+                  added ? "bg-green-600" : "bg-brand-600 hover:bg-brand-700 disabled:opacity-40"
+                }`}
+              >
+                {added ? (
+                  <span className="flex items-center justify-center gap-2"><Icon name="checkCircle" size={18} />Added to Cart</span>
+                ) : photoUploading ? (
+                  "Uploading photo…"
+                ) : (
+                  "Add to Cart"
+                )}
+              </button>
+              <button
+                type="button"
+                disabled={!valid}
+                onClick={() => {
+                  add({
+                    brandSlug: b.slug,
+                    brandName: b.name,
+                    domain: b.domain,
+                    color: b.color,
+                    amount: amt,
+                    qty,
+                    deliveryType,
+                    customPhotoUrl: photoUrl ?? undefined,
+                    ...(whoFor === "gift"
+                      ? {
+                          recipientName: recipientName.trim() || undefined,
+                          recipientEmail: recipientEmail.trim() || undefined,
+                          senderName: senderName.trim() || undefined,
+                          giftMessage: giftMessage.trim() || undefined,
+                          occasion: designId !== "standard" ? designId : undefined,
+                          deliveryDate,
+                        }
+                      : {}),
+                  });
+                  setCartOpen(true);
+                }}
+                className="py-4 rounded-2xl font-extrabold bg-[#FFC439] hover:bg-[#f2b829] text-[#003087] transition shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-40"
+              >
+                <Icon name="zap" size={17} />
+                Buy Now · PayPal
+              </button>
+            </div>
           </div>
         </div>
       </div>

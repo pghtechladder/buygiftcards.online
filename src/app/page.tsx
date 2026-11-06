@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { PromoBanner } from "@/components/PromoBanner";
 import { Hero } from "@/components/Hero";
 import { CategoryStrip } from "@/components/CategoryStrip";
@@ -5,6 +6,8 @@ import { HolidayGiftGuide } from "@/components/HolidayGiftGuide";
 import { BrandGrid } from "@/components/BrandGrid";
 import { BrandLogoStrip } from "@/components/BrandLogoStrip";
 import { PromoTiles } from "@/components/PromoTiles";
+import { ResponsiveHomeSwitcher } from "@/components/ResponsiveHomeSwitcher";
+import { parseDeviceFromUserAgent } from "@/lib/device";
 import { BRANDS } from "@/lib/brands";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
@@ -15,8 +18,25 @@ const travel = BRANDS.filter((b) => b.category === "Travel");
 const bestBrands = BRANDS.slice(0, 16);
 const featured = BRANDS.slice(20, 30);
 
-export default function HomePage() {
-  return (
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
+  const { view } = await searchParams;
+  const reqHeaders = await headers();
+  const ua = reqHeaders.get("user-agent") || "";
+  const chMobile = reqHeaders.get("sec-ch-ua-mobile");
+  const deviceInfo = parseDeviceFromUserAgent(ua);
+  if (chMobile === "?1") {
+    deviceInfo.isMobile = true;
+    deviceInfo.deviceType = "mobile";
+  }
+
+  const forceView =
+    view === "mobile" ? "mobile" : view === "desktop" ? "desktop" : undefined;
+
+  const desktopHomeContent = (
     <>
       <PromoBanner />
       <Hero />
@@ -27,7 +47,7 @@ export default function HomePage() {
       <BrandGrid items={discountBrands} title="Holiday deals & instant savings" />
       <BrandGrid items={dining} title="Dining & restaurant gift cards" />
       <BrandGrid items={travel} title="Travel & experience gift cards" />
-      <BrandLogoStrip items={bestBrands} title="Shop 165+ top brands" />
+      <BrandLogoStrip items={bestBrands} title="Shop top gift card brands" />
       <BrandGrid items={featured} title="Featured gift cards" />
 
       {/* Giftcards.com-style Self-Service Quick Bar */}
@@ -83,5 +103,13 @@ export default function HomePage() {
         </div>
       </section>
     </>
+  );
+
+  return (
+    <ResponsiveHomeSwitcher
+      initialDevice={deviceInfo}
+      forceView={forceView}
+      desktopView={desktopHomeContent}
+    />
   );
 }
