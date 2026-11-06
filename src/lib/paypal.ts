@@ -93,6 +93,7 @@ export async function createPayPalOrder(opts: {
   returnUrl: string;
   cancelUrl: string;
   customId?: string;
+  landingPage?: "LOGIN" | "GUEST_CHECKOUT" | "NO_PREFERENCE";
 }): Promise<{ id: string; status: string; approveUrl?: string }> {
   const { accessToken, baseUrl } = await getPayPalAccessToken();
   const totalStr = (opts.totalCents / 100).toFixed(2);
@@ -132,7 +133,7 @@ export async function createPayPalOrder(opts: {
           brand_name: "BuyGiftCards.online",
           shipping_preference: "NO_SHIPPING",
           user_action: "PAY_NOW",
-          landing_page: "LOGIN",
+          landing_page: opts.landingPage || "NO_PREFERENCE",
           return_url: opts.returnUrl,
           cancel_url: opts.cancelUrl,
         },

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Brand, BRANDS, HOUSE_BRAND_SLUGS } from "@/lib/brands";
 import { BrandLogo } from "./BrandLogo";
 import { BrandGrid } from "./BrandGrid";
@@ -23,6 +24,7 @@ const OCCASION_DESIGNS = [
 ];
 
 export function ProductDetail({ brand: b }: { brand: Brand }) {
+  const router = useRouter();
   const { add, setOpen: setCartOpen } = useCart();
   const [amount, setAmount] = useState<number>(b.denominations[1] ?? b.denominations[0]);
   const [custom, setCustom] = useState("");
@@ -577,12 +579,17 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
                         }
                       : {}),
                   });
-                  setCartOpen(true);
+                  if (typeof window !== "undefined" && window.innerWidth < 768) {
+                    setCartOpen(false);
+                    router.push("/checkout");
+                  } else {
+                    setCartOpen(true);
+                  }
                 }}
                 className="py-4 rounded-2xl font-extrabold bg-[#FFC439] hover:bg-[#f2b829] text-[#003087] transition shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-40"
               >
                 <Icon name="zap" size={17} />
-                Buy Now · PayPal
+                Buy Now · Card / PayPal
               </button>
             </div>
           </div>

@@ -15,6 +15,7 @@ export function MobileBottomNav() {
 
   const isHome = pathname === "/" || pathname === "/m";
   const isCatalog = pathname.startsWith("/catalog") || pathname.startsWith("/product");
+  const isCheckout = pathname.startsWith("/checkout");
   const isRedeem = pathname.startsWith("/redeem");
   const isAccount = pathname.startsWith("/account") || pathname.startsWith("/orders");
 
@@ -44,10 +45,11 @@ export function MobileBottomNav() {
           <span>Brands</span>
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setCartOpen(true)}
-          className="flex flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-extrabold text-brand-700 relative"
+        <Link
+          href="/checkout"
+          className={`flex flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-extrabold relative ${
+            isCheckout ? "text-brand-600" : "text-brand-700"
+          }`}
         >
           <div className="w-10 h-10 -mt-4 rounded-2xl bg-brand-600 text-white shadow-md flex items-center justify-center relative">
             <Icon name="cart" size={19} />
@@ -58,7 +60,7 @@ export function MobileBottomNav() {
             )}
           </div>
           <span>Checkout</span>
-        </button>
+        </Link>
 
         <Link
           href="/redeem"
@@ -94,3 +96,4 @@ export function MobileBottomNav() {
     </nav>
   );
 }
+

@@ -61,7 +61,7 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
     setTimeout(() => setJustAddedSlug(null), 1500);
     setQuickBuyBrand(null);
     if (openCheckoutImmediately) {
-      setCartOpen(true);
+      router.push("/checkout");
     }
   };
 
@@ -150,8 +150,8 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
       {/* Sticky Floating Cart Checkout Bar if items in cart */}
       {count > 0 && (
         <div className="px-4 mt-4">
-          <button
-            onClick={() => setCartOpen(true)}
+          <Link
+            href="/checkout"
             className="w-full py-3.5 px-4 rounded-2xl bg-[#FFC439] text-[#003087] font-extrabold text-sm shadow-md flex items-center justify-between"
           >
             <span className="flex items-center gap-2">
@@ -161,9 +161,9 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
               </span>
             </span>
             <span className="bg-[#003087] text-white text-xs font-extrabold px-3 py-1.5 rounded-xl">
-              PayPal Checkout &rarr;
+              Card / PayPal Checkout &rarr;
             </span>
-          </button>
+          </Link>
         </div>
       )}
 
@@ -466,3 +466,4 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
     </div>
   );
 }
+

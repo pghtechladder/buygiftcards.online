@@ -27,6 +27,7 @@ const ActionSchema = z.discriminatedUnion("action", [
     action: z.literal("create"),
     items: z.array(CartItemSchema).min(1).max(20),
     idempotencyKey: z.string().optional(),
+    landingPage: z.enum(["LOGIN", "GUEST_CHECKOUT", "NO_PREFERENCE"]).optional(),
   }),
   z.object({
     action: z.literal("capture"),
@@ -127,7 +128,8 @@ export async function POST(req: NextRequest) {
         totalCents: subtotalCents,
         customId: orderNumber,
         returnUrl: `${siteUrl}/checkout/success?provider=paypal`,
-        cancelUrl: `${siteUrl}/catalog`,
+        cancelUrl: `${siteUrl}/checkout`,
+        landingPage: parsed.data.landingPage,
         items: validatedLines.map((line) => ({
           name: `${line.brandName} ${line.item.deliveryType === "egift" ? "eGift" : "Physical"} Card ($${line.item.amount})`,
           description: line.item.recipientEmail
