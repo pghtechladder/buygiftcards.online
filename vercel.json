@@ -18,7 +18,8 @@
     "TANGO_CUSTOMER_IDENTIFIER": "customer-5554",
     "TANGO_API_BASE_URL": "https://api.tangocard.com/raas/v2",
     "NEXT_PUBLIC_GA_MEASUREMENT_ID": "G-BGC2026RETAIL",
-    "NEXT_PUBLIC_SITE_URL": "https://buygiftcards.online"
+    "NEXT_PUBLIC_SITE_URL": "https://buygiftcards.online",
+    "NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION": "m9t6x_k_nCeYtg6lwj--5JFMkP8HieXqjbgELxIOl9I"
   },
   "headers": [
     {

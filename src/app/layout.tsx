@@ -54,10 +54,7 @@ export const metadata: Metadata = {
   applicationName: "buygiftcards.online",
   category: "shopping",
   verification: {
-    google:
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
-      process.env.GOOGLE_SITE_VERIFICATION ||
-      "buygiftcards-online-gsc-verified",
+    google: "m9t6x_k_nCeYtg6lwj--5JFMkP8HieXqjbgELxIOl9I",
   },
   alternates: {
     canonical: siteUrl,
