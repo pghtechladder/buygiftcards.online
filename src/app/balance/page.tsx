@@ -101,10 +101,11 @@ export default function BalancePage() {
         <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
           <Icon name="wallet" size={26} className="text-brand-600" />
         </div>
-        <h1 className="text-3xl font-extrabold mb-2">Check Gift Card Balance</h1>
+        <h1 className="text-3xl font-extrabold mb-2">Check Gift Card Balance Online</h1>
         <p className="text-sm text-ink-600">
-          Look up cards issued on your buygiftcards.online order, verify a card number or claim link, or jump directly
-          to a merchant&apos;s balance checker.
+          Check your gift card balance online by looking up cards issued on your <strong>buygiftcards.online</strong>{" "}
+          order, verifying a 16-digit card number or digital claim link, or connecting directly to an official merchant
+          balance checker.
         </p>
       </div>
 

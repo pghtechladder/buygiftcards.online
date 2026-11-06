@@ -5,20 +5,63 @@ import { Icon } from "@/components/Icon";
 export const metadata: Metadata = {
   title: "About BuyGiftCards.online — Official Digital eGift Card Marketplace",
   description:
-    "Learn how buygiftcards.online delivers instant digital eGift cards and physical gift cards from 165+ leading retail, dining, gaming, and prepaid brands with $0 purchase fees.",
-  alternates: { canonical: "/about" },
+    "BuyGiftCards.online is a trusted online gift card platform offering 165+ digital eGift cards and physical gift cards with instant email delivery, $0 purchase fees on brand cards, and secure Credit/Debit Card or PayPal checkout.",
+  keywords: [
+    "about buygiftcards.online",
+    "buy gift cards online platform",
+    "official digital gift card store",
+    "instant egift card delivery",
+    "multi-brand choice gift card",
+  ],
+  alternates: { canonical: "https://buygiftcards.online/about" },
+  openGraph: {
+    title: "About BuyGiftCards.online — Official Digital eGift Card Marketplace",
+    description:
+      "Shop 165+ digital eGift cards and physical gift cards with instant email delivery, $0 purchase fees on brand cards, and secure Credit/Debit Card or PayPal checkout.",
+    url: "https://buygiftcards.online/about",
+    type: "website",
+  },
 };
 
 export default function AboutPage() {
+  const aboutSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "AboutPage",
+        "@id": "https://buygiftcards.online/about#webpage",
+        url: "https://buygiftcards.online/about",
+        name: "About BuyGiftCards.online — Official Digital eGift Card Marketplace",
+        description:
+          "Learn how BuyGiftCards.online delivers instant digital eGift cards and physical gift cards from 165+ leading retail, dining, gaming, and prepaid brands.",
+        isPartOf: { "@id": "https://buygiftcards.online/#website" },
+        about: { "@id": "https://buygiftcards.online/#organization" },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Buy Gift Cards Online", item: "https://buygiftcards.online" },
+          { "@type": "ListItem", position: 2, name: "About BuyGiftCards.online", item: "https://buygiftcards.online/about" },
+        ],
+      },
+    ],
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-12 space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}
+      />
       <div className="rounded-3xl bg-gradient-to-br from-brand-900 via-brand-700 to-ink-950 text-white p-8 sm:p-12 shadow-xl">
         <div className="text-xs font-extrabold uppercase tracking-widest text-amber-300 mb-3">About buygiftcards.online</div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold mb-3">Instant digital &amp; physical gifting, simplified.</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold mb-3">
+          Buy Gift Cards Online — Instant Digital &amp; Physical Gifting, Simplified
+        </h1>
         <p className="text-white/85 text-sm sm:text-base leading-relaxed max-w-2xl">
-          buygiftcards.online combines a curated catalog of 165+ leading retail, dining, travel, and entertainment
-          brands with enterprise-grade Stripe Checkout, real-time Giftbit reward fulfillment, and Zoho SMTP
-          transactional delivery.
+          <strong>BuyGiftCards.online</strong> is an official online gift card marketplace offering 165+ leading retail,
+          dining, travel, gaming, and prepaid Visa®/Mastercard® brands with instant digital email delivery, $0 purchase
+          fees on brand cards, and secure Credit/Debit Card or PayPal checkout.
         </p>
       </div>
 
@@ -27,10 +70,10 @@ export default function AboutPage() {
           <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-3">
             <Icon name="zap" size={18} />
           </div>
-          <h3 className="font-extrabold text-sm mb-1.5">Giftbit API Fulfillment</h3>
+          <h2 className="font-extrabold text-sm mb-1.5">Instant Digital eGift Fulfillment</h2>
           <p className="text-xs text-ink-600 leading-relaxed">
-            Integrated with Giftbit&apos;s REST API v1 (`/papi/v1/direct_links`) to generate instant, single-use reward
-            claim URLs and Multi-Brand choice links upon checkout.
+            Connected directly to enterprise digital gift card issuers (Tango Card &amp; Zendit) to generate live,
+            single-use reward claim links, PINs, and Multi-Brand choice cards immediately upon checkout.
           </p>
         </div>
 
@@ -38,10 +81,10 @@ export default function AboutPage() {
           <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-3">
             <Icon name="lock" size={18} />
           </div>
-          <h3 className="font-extrabold text-sm mb-1.5">Stripe Payments &amp; Tax</h3>
+          <h2 className="font-extrabold text-sm mb-1.5">Credit, Debit &amp; PayPal Checkout</h2>
           <p className="text-xs text-ink-600 leading-relaxed">
-            Every cart item is re-validated against server-side pricing rules before creating a Stripe Checkout
-            Session or corporate Stripe Invoice.
+            Pay securely on desktop or mobile using Visa, Mastercard, American Express, Discover, PayPal, or Venmo—with
+            $0 purchase fees on retail brand gift cards and up to 15% instant savings on featured deals.
           </p>
         </div>
 
@@ -49,10 +92,13 @@ export default function AboutPage() {
           <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-3">
             <Icon name="mail" size={18} />
           </div>
-          <h3 className="font-extrabold text-sm mb-1.5">Zoho Mail Delivery</h3>
+          <h2 className="font-extrabold text-sm mb-1.5">24/7 Email Delivery &amp; Balance Tools</h2>
           <p className="text-xs text-ink-600 leading-relaxed">
-            Order confirmations, recipient gift notifications, password resets, and support tickets are delivered
-            reliably via authenticated Zoho SMTP.
+            Order confirmations, recipient gift notifications, balance checks, and multi-brand redemptions at{" "}
+            <Link href="/redeem" className="text-brand-600 font-bold underline">
+              buygiftcards.online/redeem
+            </Link>{" "}
+            are available 24/7.
           </p>
         </div>
       </div>
