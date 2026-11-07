@@ -131,6 +131,46 @@ const out = src.split(/\r?\n/).map(l => {
     n = n.replace(/denominations: \[[^\]]*\]/, `denominations: [${ds.join(', ')}]`)
          .replace(/min: [\d.]+/, `min: ${min}`).replace(/max: [\d.]+/, `max: ${max}`);
   }
+
+  // Compute live wholesale discount across mapped offers for this brand and apply 2% application margin
+  const APP_MARGIN_PCT = 2.0;
+  const brandOfferIds = [
+    ...(spec.rangeOfferId ? [spec.rangeOfferId] : []),
+    ...(spec.fixedOffers ? Object.values(spec.fixedOffers) : []),
+  ];
+  const discountPcts = brandOfferIds
+    .map(id => offers.find(x => x.offerId === id))
+    .filter(Boolean)
+    .map(o => {
+      if (typeof o.cost?.discount === 'number') return o.cost.discount * 100;
+      if (typeof o.price?.margin === 'number') return o.price.margin * 100;
+      const sendFixed = o.send?.fixed ?? o.price?.fixed;
+      const costFixed = o.cost?.fixed;
+      if (sendFixed && costFixed && sendFixed > costFixed) {
+        return ((sendFixed - costFixed) / sendFixed) * 100;
+      }
+      return 0;
+    })
+    .filter(d => d > 0);
+
+  if (discountPcts.length > 0) {
+    // Use the maximum wholesale discount across the brand's offers minus 2.0% application margin
+    const maxWholesalePct = Math.max(...discountPcts);
+    const customerDiscountPct = Math.round((maxWholesalePct - APP_MARGIN_PCT) * 10) / 10;
+    // Strip any existing discountPercent first
+    n = n.replace(/, discountPercent: [\d.]+/, '');
+    if (customerDiscountPct > 0) {
+      n = n.replace(/ \},?$/, m => `, discountPercent: ${customerDiscountPct}${m}`);
+      // If badge currently says X% OFF, sync it to customerDiscountPct% OFF
+      n = n.replace(/badge: "[\d.]+% OFF"/, `badge: "${customerDiscountPct}% OFF"`);
+    } else {
+      // Remove stale "% OFF" badge if customer discount is now 0
+      n = n.replace(/, badge: "[\d.]+% OFF"/, '');
+    }
+  } else {
+    n = n.replace(/, discountPercent: [\d.]+/, '').replace(/, badge: "[\d.]+% OFF"/, '');
+  }
+
   if (n !== l) synced++;
   return n;
 });

@@ -1,14 +1,16 @@
 import Link from "next/link";
-import { BRANDS } from "@/lib/brands";
+import { BRANDS, chargeAmountCents } from "@/lib/brands";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
 import { CountrySelector } from "./CountrySelector";
 
+const fmt = (n: number) => `$${n.toFixed(2)}`;
+
 const FEATURED = [
   BRANDS.find((b) => b.slug === "buygiftcards")!,
   BRANDS.find((b) => b.slug === "visa")!,
-  BRANDS.find((b) => b.slug === "amazon")!,
-  BRANDS.find((b) => b.slug === "starbucks")!,
+  BRANDS.find((b) => b.slug === "doordash") ?? BRANDS.find((b) => b.slug === "amazon")!,
+  BRANDS.find((b) => b.slug === "adidas") ?? BRANDS.find((b) => b.slug === "starbucks")!,
 ];
 const brandCount = BRANDS.length;
 
@@ -68,23 +70,39 @@ export function Hero() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {FEATURED.map((b, i) => (
-            <Link
-              key={b.slug}
-              href={`/product/${b.slug}`}
-              className="w-36 sm:w-40 h-40 rounded-2xl bg-white/12 hover:bg-white/20 backdrop-blur border border-white/25 flex flex-col items-center justify-center gap-2.5 shadow-xl hover:-translate-y-1 transition relative"
-              style={{ marginTop: i % 2 === 1 ? 14 : 0 }}
-            >
-              {b.badge && !b.badge.includes("%") && (
-                <span className="absolute top-2.5 right-2.5 text-[9px] font-extrabold uppercase bg-amber-400 text-ink-950 px-2 py-0.5 rounded-full">
-                  {b.badge}
-                </span>
-              )}
-              <BrandLogo domain={b.domain} name={b.name} size={50} radius={12} bg="rgba(255,255,255,0.96)" />
-              <span className="text-xs font-bold text-white text-center px-3 line-clamp-1">{b.name}</span>
-              <span className="text-[11px] text-white/85">${b.min} – ${b.max}</span>
-            </Link>
-          ))}
+          {FEATURED.map((b, i) => {
+            const minCharge = chargeAmountCents(b, b.min) / 100;
+            return (
+              <Link
+                key={b.slug}
+                href={`/product/${b.slug}`}
+                className="w-36 sm:w-40 h-44 rounded-2xl bg-white/12 hover:bg-white/20 backdrop-blur border border-white/25 flex flex-col items-center justify-center gap-2 shadow-xl hover:-translate-y-1 transition relative px-2"
+                style={{ marginTop: i % 2 === 1 ? 14 : 0 }}
+              >
+                {!!b.discountPercent ? (
+                  <span className="absolute top-2.5 right-2.5 text-[10px] font-extrabold uppercase bg-accent-500 text-ink-950 px-2.5 py-0.5 rounded-full shadow">
+                    {b.discountPercent}% OFF
+                  </span>
+                ) : b.badge && !b.badge.includes("%") ? (
+                  <span className="absolute top-2.5 right-2.5 text-[9px] font-extrabold uppercase bg-amber-400 text-ink-950 px-2 py-0.5 rounded-full">
+                    {b.badge}
+                  </span>
+                ) : null}
+                <div className="relative mt-2">
+                  <BrandLogo domain={b.domain} name={b.name} size={52} radius={12} bg="rgba(255,255,255,0.96)" />
+                </div>
+                <span className="text-xs font-bold text-white text-center px-2 line-clamp-1">{b.name}</span>
+                {b.discountPercent ? (
+                  <span className="text-[11px] font-bold text-amber-300">
+                    <span className="line-through text-white/60 mr-1">${b.min}</span>
+                    From {fmt(minCharge)}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-white/85">${b.min} – ${b.max}</span>
+                )}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>

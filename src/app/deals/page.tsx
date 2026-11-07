@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BRANDS } from "@/lib/brands";
+import { BRANDS, chargeAmountCents } from "@/lib/brands";
 import { BrandGrid } from "@/components/BrandGrid";
 import { Icon } from "@/components/Icon";
+
+const fmt = (n: number) => `$${n.toFixed(2)}`;
 
 export const metadata: Metadata = {
   title: "Discounted Gift Cards & Instant eGift Deals",
@@ -28,8 +30,16 @@ export const metadata: Metadata = {
 };
 
 export default function DealsPage() {
-  const discountedBrands = BRANDS.filter((b) => b.discountPercent);
+  const discountedBrands = BRANDS.filter((b) => b.discountPercent).sort(
+    (a, b) => (b.discountPercent || 0) - (a.discountPercent || 0)
+  );
   const multiBrandCards = BRANDS.filter((b) => b.category === "Multi-Brand");
+  const maxDiscount = Math.max(...BRANDS.map((b) => b.discountPercent || 0), 5);
+  const topBrand1 = discountedBrands.find((b) => b.category !== "Multi-Brand") ?? discountedBrands[0];
+  const topBrand2 =
+    discountedBrands.find((b) => b.category !== "Multi-Brand" && b.slug !== topBrand1?.slug) ?? discountedBrands[1];
+  const sampleDenom = 50;
+  const samplePrice = topBrand1 ? chargeAmountCents(topBrand1, sampleDenom) / 100 : 47.5;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
@@ -47,7 +57,7 @@ export default function DealsPage() {
             Buy Discounted Gift Cards Online — Save Instantly
           </h1>
           <p className="text-white/85 text-sm sm:text-base leading-relaxed mb-6">
-            Buy discounted gift cards online and save up to 15% instantly at checkout on top dining, fashion, gaming,
+            Buy discounted gift cards online and save up to {maxDiscount}% instantly at checkout on top dining, fashion, gaming,
             and multi-brand eGift cards. No promo code required — the discount is automatically applied in your cart
             while your recipient receives 100% of the full card amount.
           </p>
@@ -73,19 +83,25 @@ export default function DealsPage() {
       <div className="grid md:grid-cols-3 gap-5 mb-6">
         <div className="bg-white border border-ink-100 rounded-2xl p-6 shadow-sm">
           <div className="text-xs font-extrabold uppercase text-red-700 bg-red-50 inline-block px-2.5 py-1 rounded-full mb-3">
-            Instant 10% Off
+            Up to {topBrand1?.discountPercent ?? maxDiscount}% Off
           </div>
-          <h3 className="text-lg font-extrabold mb-1">Panera Bread &amp; Adidas</h3>
+          <h3 className="text-lg font-extrabold mb-1">
+            {topBrand1?.name ?? "Krispy Kreme"} &amp; {topBrand2?.name ?? "Belk"}
+          </h3>
           <p className="text-xs text-ink-500 leading-relaxed mb-4">
-            Buy a $50 gift card for just $45.00. Instant eGift claim link delivered immediately after checkout.
+            Buy a ${sampleDenom} gift card for just {fmt(samplePrice)}. Instant eGift claim link delivered immediately after checkout.
           </p>
           <div className="flex gap-3">
-            <Link href="/product/panera" className="text-xs font-extrabold text-brand-600 hover:underline">
-              Shop Panera &rarr;
-            </Link>
-            <Link href="/product/adidas" className="text-xs font-extrabold text-brand-600 hover:underline">
-              Shop Adidas &rarr;
-            </Link>
+            {topBrand1 && (
+              <Link href={`/product/${topBrand1.slug}`} className="text-xs font-extrabold text-brand-600 hover:underline">
+                Shop {topBrand1.name} ({topBrand1.discountPercent}% Off) &rarr;
+              </Link>
+            )}
+            {topBrand2 && (
+              <Link href={`/product/${topBrand2.slug}`} className="text-xs font-extrabold text-brand-600 hover:underline">
+                Shop {topBrand2.name} ({topBrand2.discountPercent}% Off) &rarr;
+              </Link>
+            )}
           </div>
         </div>
 

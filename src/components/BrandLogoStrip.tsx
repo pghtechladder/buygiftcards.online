@@ -16,11 +16,16 @@ export function BrandLogoStrip({ items, title }: { items: Brand[]; title?: strin
           <Link
             key={b.slug}
             href={`/product/${b.slug}`}
-            aria-label={`Buy ${b.name} Gift Card`}
-            title={b.name}
-            className="w-20 h-20 rounded-2xl border border-ink-100 bg-white flex items-center justify-center hover:border-brand-300 hover:shadow-md hover:-translate-y-0.5 transition"
+            aria-label={`Buy ${b.name} Gift Card${b.discountPercent ? ` (${b.discountPercent}% OFF)` : ""}`}
+            title={b.discountPercent ? `${b.name} (${b.discountPercent}% OFF)` : b.name}
+            className="w-20 h-20 rounded-2xl border border-ink-100 bg-white flex items-center justify-center hover:border-brand-300 hover:shadow-md hover:-translate-y-0.5 transition relative"
           >
             <BrandLogo domain={b.domain} name={b.name} size={44} radius={10} />
+            {!!b.discountPercent && (
+              <span className="absolute -top-2 -right-1.5 bg-accent-500 text-ink-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow-sm whitespace-nowrap">
+                {b.discountPercent}% OFF
+              </span>
+            )}
           </Link>
         ))}
       </div>

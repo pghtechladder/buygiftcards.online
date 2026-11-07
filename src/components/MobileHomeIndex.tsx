@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BRANDS, CATEGORIES, Brand } from "@/lib/brands";
+import { BRANDS, CATEGORIES, Brand, chargeAmountCents } from "@/lib/brands";
 import { useCart } from "@/context/CartContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { useSession } from "next-auth/react";
@@ -209,55 +209,67 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
             <span className="text-[11px] font-semibold text-ink-400">Swipe &rarr;</span>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none px-4">
-            {popularBrands.map((b) => (
-              <div
-                key={b.slug}
-                className="w-40 flex-shrink-0 bg-white border border-ink-100 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
-              >
-                <Link
-                  href={`/product/${b.slug}`}
-                  aria-label={`View ${b.name} Gift Card details`}
-                  className="h-24 flex items-center justify-center relative"
-                  style={{ background: `linear-gradient(145deg, ${b.color}, ${b.color}cc)` }}
+            {popularBrands.map((b) => {
+              const minCharge = chargeAmountCents(b, b.min) / 100;
+              return (
+                <div
+                  key={b.slug}
+                  className="w-40 flex-shrink-0 bg-white border border-ink-100 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
                 >
-                  <BrandLogo domain={b.domain} name={b.name} size={52} radius={12} bg="rgba(255,255,255,0.96)" />
-                  {!!b.discountPercent && (
-                    <span className="absolute top-2 right-2 bg-accent-500 text-ink-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
-                      {b.discountPercent}% OFF
-                    </span>
-                  )}
-                </Link>
-                <div className="p-3 flex-1 flex flex-col justify-between">
-                  <div>
-                    <Link href={`/product/${b.slug}`} className="font-extrabold text-xs text-ink-950 line-clamp-1">
-                      {b.name}
-                    </Link>
-                    <div className="text-[11px] text-ink-500 font-semibold mt-0.5">
-                      ${b.min} – ${b.max}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => openQuickBuy(b)}
-                    className={`mt-2.5 w-full py-2 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-1 ${
-                      justAddedSlug === b.slug
-                        ? "bg-green-600 text-white"
-                        : "bg-brand-600 active:bg-brand-700 text-white"
-                    }`}
+                  <Link
+                    href={`/product/${b.slug}`}
+                    aria-label={`View ${b.name} Gift Card details`}
+                    className="h-24 flex items-center justify-center relative"
+                    style={{ background: `linear-gradient(145deg, ${b.color}, ${b.color}cc)` }}
                   >
-                    {justAddedSlug === b.slug ? (
-                      <>
-                        <Icon name="checkCircle" size={13} /> Added
-                      </>
-                    ) : (
-                      <>
-                        <Icon name="zap" size={13} /> Quick Buy
-                      </>
+                    <BrandLogo domain={b.domain} name={b.name} size={52} radius={12} bg="rgba(255,255,255,0.96)" />
+                    {!!b.discountPercent && (
+                      <span className="absolute top-2 right-2 bg-accent-500 text-ink-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow">
+                        {b.discountPercent}% OFF
+                      </span>
                     )}
-                  </button>
+                  </Link>
+                  <div className="p-3 flex-1 flex flex-col justify-between">
+                    <div>
+                      <Link href={`/product/${b.slug}`} className="font-extrabold text-xs text-ink-950 line-clamp-1">
+                        {b.name}
+                      </Link>
+                      <div className="text-[11px] text-ink-500 font-semibold mt-0.5">
+                        {b.discountPercent ? (
+                          <>
+                            <span className="line-through text-ink-400 mr-1">${b.min}</span>
+                            <span className="text-emerald-700 font-extrabold">From {fmt(minCharge)}</span>
+                          </>
+                        ) : (
+                          <>
+                            ${b.min} – ${b.max}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => openQuickBuy(b)}
+                      className={`mt-2.5 w-full py-2 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-1 ${
+                        justAddedSlug === b.slug
+                          ? "bg-green-600 text-white"
+                          : "bg-brand-600 active:bg-brand-700 text-white"
+                      }`}
+                    >
+                      {justAddedSlug === b.slug ? (
+                        <>
+                          <Icon name="checkCircle" size={13} /> Added
+                        </>
+                      ) : (
+                        <>
+                          <Icon name="zap" size={13} /> Quick Buy
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
@@ -272,27 +284,38 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
             </Link>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none px-4">
-            {dealBrands.map((b) => (
-              <button
-                key={b.slug}
-                type="button"
-                onClick={() => openQuickBuy(b)}
-                className="flex items-center gap-3 bg-white border border-ink-100 rounded-2xl p-3 flex-shrink-0 w-64 text-left shadow-sm active:scale-[0.99] transition"
-              >
-                <BrandLogo domain={b.domain} name={b.name} size={46} radius={10} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-extrabold text-xs text-ink-950 truncate">{b.name}</span>
-                    <span className="bg-accent-500 text-ink-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded">
-                      {b.discountPercent}% OFF
-                    </span>
+            {dealBrands.map((b) => {
+              const minCharge = chargeAmountCents(b, b.min) / 100;
+              return (
+                <button
+                  key={b.slug}
+                  type="button"
+                  onClick={() => openQuickBuy(b)}
+                  className="flex items-center gap-3 bg-white border border-ink-100 rounded-2xl p-3 flex-shrink-0 w-64 text-left shadow-sm active:scale-[0.99] transition"
+                >
+                  <div className="relative flex-shrink-0">
+                    <BrandLogo domain={b.domain} name={b.name} size={46} radius={10} />
+                    {!!b.discountPercent && (
+                      <span className="absolute -top-1.5 -right-1.5 bg-accent-500 text-ink-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow">
+                        -{b.discountPercent}%
+                      </span>
+                    )}
                   </div>
-                  <div className="text-[11px] text-ink-500 mt-0.5">
-                    Tap to buy · ${b.min}–${b.max}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-extrabold text-xs text-ink-950 truncate">{b.name}</span>
+                      <span className="bg-accent-500 text-ink-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded">
+                        {b.discountPercent}% OFF
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-ink-500 mt-0.5">
+                      <span className="line-through text-ink-400 mr-1">${b.min}</span>
+                      <span className="text-emerald-700 font-bold">From {fmt(minCharge)}</span> · Tap to buy
+                    </div>
                   </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </section>
       )}
@@ -313,55 +336,67 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          {filteredBrands.map((b) => (
-            <div
-              key={b.slug}
-              className="bg-white border border-ink-100 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
-            >
-              <Link
-                href={`/product/${b.slug}`}
-                aria-label={`View ${b.name} Gift Card details`}
-                className="h-24 flex items-center justify-center relative"
-                style={{ background: `linear-gradient(150deg, ${b.color}, ${b.color}cc)` }}
+          {filteredBrands.map((b) => {
+            const minCharge = chargeAmountCents(b, b.min) / 100;
+            return (
+              <div
+                key={b.slug}
+                className="bg-white border border-ink-100 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
               >
-                <BrandLogo domain={b.domain} name={b.name} size={52} radius={12} bg="rgba(255,255,255,0.96)" />
-                {!!b.discountPercent && (
-                  <span className="absolute top-2 right-2 bg-accent-500 text-ink-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow">
-                    {b.discountPercent}% OFF
-                  </span>
-                )}
-              </Link>
+                <Link
+                  href={`/product/${b.slug}`}
+                  aria-label={`View ${b.name} Gift Card details`}
+                  className="h-24 flex items-center justify-center relative"
+                  style={{ background: `linear-gradient(150deg, ${b.color}, ${b.color}cc)` }}
+                >
+                  <BrandLogo domain={b.domain} name={b.name} size={52} radius={12} bg="rgba(255,255,255,0.96)" />
+                  {!!b.discountPercent && (
+                    <span className="absolute top-2 right-2 bg-accent-500 text-ink-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow">
+                      {b.discountPercent}% OFF
+                    </span>
+                  )}
+                </Link>
 
-              <div className="p-3 flex-1 flex flex-col justify-between">
-                <div>
-                  <Link href={`/product/${b.slug}`} className="font-bold text-xs text-ink-950 line-clamp-1">
-                    {b.name}
-                  </Link>
-                  <div className="text-[11px] text-ink-500 font-medium mt-0.5">
-                    ${b.min} – ${b.max} · eGift
+                <div className="p-3 flex-1 flex flex-col justify-between">
+                  <div>
+                    <Link href={`/product/${b.slug}`} className="font-bold text-xs text-ink-950 line-clamp-1">
+                      {b.name}
+                    </Link>
+                    <div className="text-[11px] text-ink-500 font-medium mt-0.5">
+                      {b.discountPercent ? (
+                        <>
+                          <span className="line-through text-ink-400 mr-1">${b.min}</span>
+                          <span className="text-emerald-700 font-extrabold">From {fmt(minCharge)}</span>
+                        </>
+                      ) : (
+                        <>
+                          ${b.min} – ${b.max} · eGift
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => openQuickBuy(b)}
+                      className="flex-1 py-2 rounded-xl bg-brand-600 active:bg-brand-700 text-white text-xs font-extrabold transition flex items-center justify-center gap-1"
+                    >
+                      <Icon name="zap" size={12} />
+                      Buy Now
+                    </button>
+                    <Link
+                      href={`/product/${b.slug}`}
+                      aria-label={`Customize ${b.name}`}
+                      className="px-2.5 py-2 rounded-xl border border-ink-200 text-ink-700 text-xs font-bold flex items-center justify-center"
+                    >
+                      Gift
+                    </Link>
                   </div>
                 </div>
-
-                <div className="mt-2.5 flex gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => openQuickBuy(b)}
-                    className="flex-1 py-2 rounded-xl bg-brand-600 active:bg-brand-700 text-white text-xs font-extrabold transition flex items-center justify-center gap-1"
-                  >
-                    <Icon name="zap" size={12} />
-                    Buy Now
-                  </button>
-                  <Link
-                    href={`/product/${b.slug}`}
-                    aria-label={`Customize ${b.name}`}
-                    className="px-2.5 py-2 rounded-xl border border-ink-200 text-ink-700 text-xs font-bold flex items-center justify-center"
-                  >
-                    Gift
-                  </Link>
-                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {filteredBrands.length === 0 && (
@@ -401,10 +436,28 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
           <div className="relative w-full max-w-md bg-white rounded-t-3xl p-6 shadow-2xl animate-slide-in space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <BrandLogo domain={quickBuyBrand.domain} name={quickBuyBrand.name} size={48} radius={12} />
+                <div className="relative flex-shrink-0">
+                  <BrandLogo domain={quickBuyBrand.domain} name={quickBuyBrand.name} size={48} radius={12} />
+                  {!!quickBuyBrand.discountPercent && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-accent-500 text-ink-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow">
+                      -{quickBuyBrand.discountPercent}%
+                    </span>
+                  )}
+                </div>
                 <div>
-                  <h3 id="quick-buy-title" className="font-extrabold text-base text-ink-950">{quickBuyBrand.name} eGift Card</h3>
-                  <p className="text-xs text-ink-500">Instant digital delivery · $0 fees</p>
+                  <div className="flex items-center gap-2">
+                    <h3 id="quick-buy-title" className="font-extrabold text-base text-ink-950">{quickBuyBrand.name} eGift Card</h3>
+                    {!!quickBuyBrand.discountPercent && (
+                      <span className="bg-accent-500 text-ink-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                        {quickBuyBrand.discountPercent}% OFF
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-ink-500">
+                    {quickBuyBrand.discountPercent
+                      ? `Instant ${quickBuyBrand.discountPercent}% discount · Full face value issued`
+                      : "Instant digital delivery · $0 fees"}
+                  </p>
                 </div>
               </div>
               <button
@@ -425,41 +478,56 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
                 {(quickBuyBrand.denominations.length > 0
                   ? quickBuyBrand.denominations.slice(0, 8)
                   : QUICK_AMOUNTS.filter((a) => a >= quickBuyBrand.min && a <= quickBuyBrand.max)
-                ).map((amt) => (
-                  <button
-                    key={amt}
-                    type="button"
-                    onClick={() => setQuickBuyAmount(amt)}
-                    className={`py-3 rounded-xl font-extrabold text-sm border-2 transition ${
-                      quickBuyAmount === amt
-                        ? "border-brand-600 bg-brand-50 text-brand-700"
-                        : "border-ink-100 text-ink-800"
-                    }`}
-                  >
-                    ${amt}
-                  </button>
-                ))}
+                ).map((amt) => {
+                  const discountedAmt = chargeAmountCents(quickBuyBrand, amt) / 100;
+                  return (
+                    <button
+                      key={amt}
+                      type="button"
+                      onClick={() => setQuickBuyAmount(amt)}
+                      className={`py-2.5 rounded-xl font-extrabold text-sm border-2 transition flex flex-col items-center justify-center ${
+                        quickBuyAmount === amt
+                          ? "border-brand-600 bg-brand-50 text-brand-700"
+                          : "border-ink-100 text-ink-800"
+                      }`}
+                    >
+                      {quickBuyBrand.discountPercent ? (
+                        <>
+                          <span className="text-[10px] font-semibold line-through opacity-50 leading-none">${amt}</span>
+                          <span className="leading-tight">{fmt(discountedAmt)}</span>
+                        </>
+                      ) : (
+                        <>${amt}</>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5 pt-2">
-              <button
-                type="button"
-                onClick={() => handleQuickAdd(quickBuyBrand, quickBuyAmount, false)}
-                className="py-3.5 rounded-xl border-2 border-brand-600 text-brand-700 font-extrabold text-sm flex items-center justify-center gap-1.5"
-              >
-                <Icon name="cart" size={16} />
-                Add ${quickBuyAmount}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickAdd(quickBuyBrand, quickBuyAmount, true)}
-                className="py-3.5 rounded-xl bg-[#FFC439] text-[#003087] font-extrabold text-sm flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                <Icon name="zap" size={16} />
-                Buy Now · ${quickBuyAmount}
-              </button>
-            </div>
+            {(() => {
+              const quickBuyCharge = chargeAmountCents(quickBuyBrand, quickBuyAmount) / 100;
+              return (
+                <div className="grid grid-cols-2 gap-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickAdd(quickBuyBrand, quickBuyAmount, false)}
+                    className="py-3.5 rounded-xl border-2 border-brand-600 text-brand-700 font-extrabold text-sm flex items-center justify-center gap-1.5"
+                  >
+                    <Icon name="cart" size={16} />
+                    Add {quickBuyBrand.discountPercent ? fmt(quickBuyCharge) : `$${quickBuyAmount}`}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickAdd(quickBuyBrand, quickBuyAmount, true)}
+                    className="py-3.5 rounded-xl bg-[#FFC439] text-[#003087] font-extrabold text-sm flex items-center justify-center gap-1.5 shadow-sm"
+                  >
+                    <Icon name="zap" size={16} />
+                    Buy Now · {quickBuyBrand.discountPercent ? fmt(quickBuyCharge) : `$${quickBuyAmount}`}
+                  </button>
+                </div>
+              );
+            })()}
 
             <Link
               href={`/product/${quickBuyBrand.slug}`}

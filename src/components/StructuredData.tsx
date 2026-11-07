@@ -1,4 +1,4 @@
-import { BRANDS } from "@/lib/brands";
+import { BRANDS, chargeAmountCents } from "@/lib/brands";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
 
@@ -68,7 +68,7 @@ export function StructuredData() {
               offers: {
                 "@type": "AggregateOffer",
                 priceCurrency: "USD",
-                lowPrice: b.min.toFixed(2),
+                lowPrice: (chargeAmountCents(b, b.min) / 100).toFixed(2),
                 highPrice: b.max.toFixed(2),
                 offerCount: b.denominations.length,
                 availability: "https://schema.org/InStock",

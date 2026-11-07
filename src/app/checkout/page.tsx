@@ -104,7 +104,14 @@ export default function DedicatedCheckoutPage() {
                 return (
                   <div key={item.key} className="pt-3 first:pt-0 flex flex-col gap-2">
                     <div className="flex items-start gap-3">
-                      <BrandLogo domain={item.domain} name={item.brandName} size={40} radius={10} />
+                      <div className="relative flex-shrink-0">
+                        <BrandLogo domain={item.domain} name={item.brandName} size={40} radius={10} />
+                        {hasDiscount && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-accent-500 text-ink-950 text-[8px] font-extrabold px-1 py-0.5 rounded-full shadow leading-none">
+                            -{brand?.discountPercent}%
+                          </span>
+                        )}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-bold text-sm text-ink-950 truncate">

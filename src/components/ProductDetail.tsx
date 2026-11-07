@@ -161,10 +161,22 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
                 <span className="text-[10px] font-extrabold tracking-wider text-white/90 bg-black/25 backdrop-blur-sm px-2.5 py-1 rounded-full">
                   {activeDesign.badge || (deliveryType === "egift" ? "eGIFT CARD" : "GIFT CARD")}
                 </span>
+                {cardImage && !!b.discountPercent && (
+                  <span className="bg-accent-500 text-ink-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full shadow-md">
+                    {b.discountPercent}% OFF
+                  </span>
+                )}
               </div>
               {amt > 0 && (
                 <div className="absolute bottom-4 left-5">
-                  <div className="text-2xl font-extrabold text-white drop-shadow">{fmt(amt)}</div>
+                  <div className="flex items-baseline gap-2">
+                    <div className="text-2xl font-extrabold text-white drop-shadow">{fmt(amt)}</div>
+                    {!!b.discountPercent && (
+                      <span className="text-[11px] font-extrabold text-ink-950 bg-accent-500 px-2 py-0.5 rounded-md shadow">
+                        Pay {fmt(chargeAmt)}
+                      </span>
+                    )}
+                  </div>
                   {whoFor === "gift" && recipientName && (
                     <div className="text-[11px] font-medium text-white/85 truncate max-w-[180px]">
                       For {recipientName}
@@ -175,7 +187,7 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
               <div className="absolute bottom-4 right-5 text-[11px] font-bold text-white/85 truncate max-w-[120px]">
                 {b.name}
               </div>
-              {!!b.discountPercent && (
+              {!cardImage && !!b.discountPercent && (
                 <span className="absolute top-4 right-5 bg-accent-500 text-ink-950 text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-md">
                   {b.discountPercent}% OFF
                 </span>
@@ -232,10 +244,16 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
                 {b.badge}
               </span>
             )}
+            {!!b.discountPercent && (
+              <span className="text-xs font-extrabold uppercase tracking-wider text-ink-950 bg-accent-500 px-3 py-1 rounded-full shadow-xs">
+                {b.discountPercent}% OFF — Instant Discount
+              </span>
+            )}
           </div>
           <h1 className="text-3xl font-extrabold mb-2">Buy {b.name} Gift Card Online</h1>
           <p className="text-sm text-ink-600 mb-7 leading-relaxed">
-            Buy a <strong>{b.name} gift card online</strong> (${b.min}–${b.max}) with instant digital email delivery.{" "}
+            Buy a <strong>{b.name} gift card online</strong> (${b.min}–${b.max}) with instant digital email delivery
+            {b.discountPercent ? ` and save ${b.discountPercent}% automatically at checkout` : ""}.{" "}
             {b.description}
           </p>
 

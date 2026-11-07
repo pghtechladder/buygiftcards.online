@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { BRANDS } from "@/lib/brands";
 import { Icon } from "./Icon";
+
+const maxDiscount = Math.max(...BRANDS.map((b) => b.discountPercent || 0), 5);
+const topDiscountBrandNames = BRANDS.filter((b) => b.discountPercent)
+  .sort((a, b) => (b.discountPercent || 0) - (a.discountPercent || 0))
+  .slice(0, 6)
+  .map((b) => `${b.name} (${b.discountPercent}% off)`)
+  .join(", ");
 
 type Slide = {
   eyebrow: string;
@@ -25,9 +33,9 @@ const SLIDES: Slide[] = [
     holiday: true,
   },
   {
-    eyebrow: "✨ Holiday Deals",
-    title: "Save up to 10% on top brands this season",
-    copy: "Instant discounts on Starbucks, DoorDash, Nike, Panera Bread, Sephora, Adidas, and Multi-Brand cards.",
+    eyebrow: "✨ Instant Discount Deals",
+    title: `Save up to ${maxDiscount}% on top brands automatically at checkout`,
+    copy: `Instant discounts on ${topDiscountBrandNames}, and more.`,
     ctaLabel: "View All Deals",
     ctaHref: "/deals",
     icon: "zap",

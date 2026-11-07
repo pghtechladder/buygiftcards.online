@@ -11,7 +11,7 @@ const HOLIDAY_COLLECTIONS = [
     subtitle: "Coffee, music, gaming & treats under $25",
     href: "/occasions?occasion=holidays#stocking-stuffers",
     gradient: "from-red-900 via-red-800 to-rose-700",
-    brands: ["starbucks", "spotify", "xbox", "chipotle"],
+    brands: ["starbucks", "chipotle", "dominos", "coldstonecreamery"],
   },
   {
     id: "crowd-pleasers",
@@ -20,7 +20,7 @@ const HOLIDAY_COLLECTIONS = [
     subtitle: "The universal favorites everyone has on their list",
     href: "/occasions?occasion=holidays#crowd-pleasers",
     gradient: "from-emerald-950 via-brand-800 to-emerald-700",
-    brands: ["visa", "amazon", "apple", "target"],
+    brands: ["buygiftcards", "visa", "amazon", "target"],
   },
   {
     id: "cozy-nights",
@@ -38,9 +38,11 @@ const HOLIDAY_COLLECTIONS = [
     subtitle: "Flights, stays & rides home for the holidays",
     href: "/catalog?category=Travel",
     gradient: "from-slate-900 via-indigo-950 to-slate-800",
-    brands: ["airbnb", "southwest", "marriott", "uber"],
+    brands: ["airbnb", "southwest", "goldennugget", "uber"],
   },
 ];
+
+const maxDiscount = Math.max(...BRANDS.map((b) => b.discountPercent || 0), 5);
 
 export function HolidayGiftGuide() {
   return (
@@ -85,7 +87,7 @@ export function HolidayGiftGuide() {
               href="/deals"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold text-sm transition"
             >
-              Holiday Deals (Up to 10% Off)
+              Holiday Deals (Up to {maxDiscount}% Off)
             </Link>
           </div>
         </div>
@@ -112,15 +114,20 @@ export function HolidayGiftGuide() {
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2.5 mb-4">
                     {resolvedBrands.map((b) =>
                       b ? (
                         <div
                           key={b.slug}
-                          className="w-10 h-10 rounded-xl bg-white/95 p-1 flex items-center justify-center shadow"
-                          title={b.name}
+                          className="w-10 h-10 rounded-xl bg-white/95 p-1 flex items-center justify-center shadow relative"
+                          title={b.discountPercent ? `${b.name} (${b.discountPercent}% OFF)` : b.name}
                         >
                           <BrandLogo domain={b.domain} name={b.name} size={32} radius={8} />
+                          {!!b.discountPercent && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-accent-500 text-ink-950 text-[8px] font-extrabold px-1 py-0.5 rounded-full shadow leading-none">
+                              -{b.discountPercent}%
+                            </span>
+                          )}
                         </div>
                       ) : null
                     )}
