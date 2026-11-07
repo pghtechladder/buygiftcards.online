@@ -53,7 +53,6 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [enteredEmail, setEnteredEmail] = useState(email);
   const [loading, setLoading] = useState(false);
-  const [now, setNow] = useState(Date.now());
 
   // Post-payment account creation / sign-in state (locked to order.customerEmail)
   const [authTab, setAuthTab] = useState<"register" | "signin">("register");
@@ -65,11 +64,6 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
   const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const lookup = async (e?: React.FormEvent, overrideEmail?: string) => {
     e?.preventDefault();
@@ -492,41 +486,8 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
           </div>
           <div className="border-t border-ink-50 pt-3">
             {(() => {
-              const orderCreatedAt = order ? new Date(order.createdAt).getTime() : 0;
-              const unlockAt = orderCreatedAt + 5 * 60 * 1000;
-              const remainingSecs = Math.max(0, Math.ceil((unlockAt - now) / 1000));
-              const isLocked = remainingSecs > 0;
-              const mins = Math.floor(remainingSecs / 60);
-              const secs = remainingSecs % 60;
-              const timeDisplay = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
-
               return item.codes.map((c) => {
                 const isClaimUrl = /^https?:\/\//i.test(c.code);
-
-                if (isLocked) {
-                  return (
-                    <div key={c.id} className="py-3 border-b border-dashed border-ink-100 last:border-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 flex-shrink-0">
-                            <Icon name="lock" size={16} />
-                          </div>
-                          <div>
-                            <div className="text-xs font-bold text-amber-950">
-                              Security & Fraud Verification Window
-                            </div>
-                            <div className="text-[11px] text-amber-800">
-                              Redemption link activates in <span className="font-mono font-extrabold text-amber-950">{timeDisplay}</span> (5 mins from order time)
-                            </div>
-                          </div>
-                        </div>
-                        <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-200/70 text-amber-900 font-mono text-xs font-bold">
-                          <span>Unlocks in {timeDisplay}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
 
                 return (
                   <div key={c.id} className="py-3 border-b border-dashed border-ink-100 last:border-0">

@@ -211,22 +211,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Enforce 5-minute post-order activation security window
-    const orderCreatedMs = new Date(match.orderItem.order.createdAt).getTime();
-    const unlockAtMs = orderCreatedMs + 5 * 60 * 1000;
-    if (Date.now() < unlockAtMs) {
-      const remainingSecs = Math.ceil((unlockAtMs - Date.now()) / 1000);
-      const mins = Math.floor(remainingSecs / 60);
-      const secs = remainingSecs % 60;
-      return NextResponse.json(
-        {
-          error: `For security and fraud verification, this card activates 5 minutes after purchase. Please try again in ${mins}:${String(secs).padStart(2, "0")}.`,
-          lockedUntil: new Date(unlockAtMs).toISOString(),
-        },
-        { status: 403 }
-      );
-    }
-
     const alreadyRedeemed = match.pin.startsWith("REDEEMED");
     if (alreadyRedeemed) {
       writeTransactionLog({

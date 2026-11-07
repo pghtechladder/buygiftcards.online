@@ -81,26 +81,10 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const unlockAtMs = new Date(order.createdAt).getTime() + 5 * 60 * 1000;
-  const isLocked = Date.now() < unlockAtMs;
-  const responseOrder = isLocked
-    ? {
-        ...order,
-        hasAccount: Boolean(existingUser),
-        lockedUntil: new Date(unlockAtMs).toISOString(),
-        items: order.items.map((it) => ({
-          ...it,
-          codes: it.codes.map((c) => ({
-            ...c,
-            code: "LOCKED_FOR_5_MINUTES",
-            pin: "",
-          })),
-        })),
-      }
-    : {
-        ...order,
-        hasAccount: Boolean(existingUser),
-      };
+  const responseOrder = {
+    ...order,
+    hasAccount: Boolean(existingUser),
+  };
 
   writeTransactionLog({
     phase: "PROCESS_COMPLETE",
@@ -113,7 +97,6 @@ export async function POST(req: NextRequest) {
       status: order.status,
       itemCount: order.items.length,
       emailSentAt: order.emailSentAt,
-      isLocked,
       hasAccount: Boolean(existingUser),
     },
   });
