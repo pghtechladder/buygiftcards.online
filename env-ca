@@ -18,7 +18,7 @@ ZENDIT_USERNAME="sri@techladder.io"
 ZENDIT_COUNTRY="CA"
 
 # Tango Configuration for Canada (used when GIFTCARD_PROVIDER="tango")
-TANGO_API_BASE_URL="https://api.tangocard.com/raas/v2"
+TANGO_API_BASE_URL="https://integration-api.tangocard.com/raas/v2"
 TANGO_PLATFORM_NAME="QAPlatform2"
 TANGO_PLATFORM_KEY="apYPfT6HNONpDRUj3CLGWYt7gvIHONpDRUYPfT6Hj"
 TANGO_ACCOUNT_IDENTIFIER="testing1234account"

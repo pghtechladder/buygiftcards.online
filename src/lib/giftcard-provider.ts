@@ -191,15 +191,21 @@ export class TangoCardProvider implements GiftCardProvider {
   private customerIdentifier: string;
 
   constructor(country: CountryCode = resolveCountryFromHostOrEnv()) {
-    this.baseUrl = getCountryEnv(
-      "TANGO_API_BASE_URL",
-      country,
-      "https://api.tangocard.com/raas/v2"
-    ).replace(/\/+$/, "");
     this.platformName = requireEnv("TANGO_PLATFORM_NAME", country);
     this.platformKey = requireEnv("TANGO_PLATFORM_KEY", country);
     this.accountIdentifier = requireEnv("TANGO_ACCOUNT_IDENTIFIER", country);
     this.customerIdentifier = requireEnv("TANGO_CUSTOMER_IDENTIFIER", country);
+
+    // QAPlatform2 / testing1234account is Tango's public sandbox test platform and only
+    // authenticates against https://integration-api.tangocard.com/raas/v2 (returns 401 on live api.tangocard.com).
+    const isSandboxCreds =
+      this.platformName === "QAPlatform2" || this.accountIdentifier === "testing1234account";
+    const configuredBaseUrl = getCountryEnv("TANGO_API_BASE_URL", country);
+    if (isSandboxCreds && (!configuredBaseUrl || configuredBaseUrl.includes("://api.tangocard.com"))) {
+      this.baseUrl = "https://integration-api.tangocard.com/raas/v2";
+    } else {
+      this.baseUrl = (configuredBaseUrl || "https://api.tangocard.com/raas/v2").replace(/\/+$/, "");
+    }
   }
 
   async issue(params: IssueCardParams): Promise<IssuedCard> {
@@ -695,13 +701,14 @@ class HybridZenditProvider implements GiftCardProvider {
     try {
       return await this.zendit.issue(params);
     } catch (err) {
-      // Never swap in placeholder codes for a brand we can't supply.
+      // Never swap in placeholder codes or silently fall back to Tango when Zendit is the active primary provider.
+      // Surface the exact Zendit error so the caller/logs see why Zendit failed instead of a confusing Tango error.
       if (err instanceof ZenditUnfulfillableError) throw err;
       const msg = err instanceof Error ? err.message : String(err);
       console.warn(
-        `[giftcard-provider] Zendit issue failed for "${params.brandSlug}" (${msg}) — falling back to secondary provider.`
+        `[giftcard-provider] Zendit issue failed for "${params.brandSlug}": ${msg}`
       );
-      return this.fallback.issue(params);
+      throw err;
     }
   }
 }
@@ -724,17 +731,15 @@ export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv
   // 1. If Tango is explicitly selected as primary:
   if (selected === "tango") {
     if (tangoProvider) {
-      const tangoBaseUrl = getCountryEnv("TANGO_API_BASE_URL", country, "https://api.tangocard.com/raas/v2");
-      const mode = tangoBaseUrl.includes("integration-api") ? "SANDBOX" : "PRODUCTION";
+      const tangoBaseUrl = getCountryEnv("TANGO_API_BASE_URL", country, "https://integration-api.tangocard.com/raas/v2");
+      const isSandboxCreds =
+        getCountryEnv("TANGO_PLATFORM_NAME", country) === "QAPlatform2" ||
+        tangoBaseUrl.includes("integration-api");
+      const mode = isSandboxCreds ? "SANDBOX" : "PRODUCTION";
       console.log(
         `[giftcard-provider:${country}] Using TangoCardProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=tango) ` +
           `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped, account: ${getCountryEnv("TANGO_ACCOUNT_IDENTIFIER", country)})`
       );
-
-      // If Zendit is available as fallback:
-      if (zenditProvider) {
-        return new HybridGiftCardProvider(tangoProvider, zenditProvider);
-      }
       return new HybridGiftCardProvider(tangoProvider, demo);
     } else {
       console.warn(`[giftcard-provider:${country}] GIFTCARD_PROVIDER=tango requested, but Tango credentials are not fully configured.`);
@@ -749,12 +754,7 @@ export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv
       `[giftcard-provider:${country}] Using ZenditProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=${selected}) ` +
         `(${mappedCount} brands mapped, account: ${getCountryEnv("ZENDIT_USERNAME", country, "sri@techladder.io")})`
     );
-
-    // If Tango is configured, provide Tango as secondary fallback
-    if (tangoProvider) {
-      return new HybridZenditProvider(zenditProvider, tangoProvider);
-    }
-    return new HybridZenditProvider(zenditProvider, demo);
+    return zenditProvider;
   }
 
   // 3. Fall back to Tango if Zendit is not set up

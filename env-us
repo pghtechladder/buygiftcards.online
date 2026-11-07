@@ -1,4 +1,4 @@
-# ===========================================================================
+    # ===========================================================================
 # United States Storefront Configuration (www.buygiftcards.online)
 # Loaded automatically when Country = US (or via US_* environment overrides)
 # ===========================================================================
@@ -18,7 +18,7 @@ ZENDIT_USERNAME="sri@techladder.io"
 ZENDIT_COUNTRY="US"
 
 # Tango Configuration for United States (used when GIFTCARD_PROVIDER="tango")
-TANGO_API_BASE_URL="https://api.tangocard.com/raas/v2"
+TANGO_API_BASE_URL="https://integration-api.tangocard.com/raas/v2"
 TANGO_PLATFORM_NAME="QAPlatform2"
 TANGO_PLATFORM_KEY="apYPfT6HNONpDRUj3CLGWYt7gvIHONpDRUYPfT6Hj"
 TANGO_ACCOUNT_IDENTIFIER="testing1234account"
@@ -30,3 +30,4 @@ PAYPAL_CLIENT_ID="BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-
 PAYPAL_CLIENT_SECRET="EP_l4rG98V--xxBunuX3F40UyCD9KsQP8QUY34snUH6XrJynonRROoNeA7ONF5whwyuRfXLVrgcgIlfT"
 PAYPAL_API_BASE_URL="https://api-m.paypal.com"
 PAYPAL_CURRENCY="USD"
+

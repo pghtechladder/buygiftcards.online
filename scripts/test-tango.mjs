@@ -24,7 +24,13 @@ const platformName = process.env.TANGO_PLATFORM_NAME || env.TANGO_PLATFORM_NAME;
 const platformKey = process.env.TANGO_PLATFORM_KEY || env.TANGO_PLATFORM_KEY;
 const accountId = process.env.TANGO_ACCOUNT_IDENTIFIER || env.TANGO_ACCOUNT_IDENTIFIER;
 const customerId = process.env.TANGO_CUSTOMER_IDENTIFIER || env.TANGO_CUSTOMER_IDENTIFIER;
-const baseUrl = (process.env.TANGO_API_BASE_URL || env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2").replace(/\/+$/, "");
+const isSandboxCreds = platformName === "QAPlatform2" || accountId === "testing1234account";
+const rawBaseUrl = process.env.TANGO_API_BASE_URL || env.TANGO_API_BASE_URL;
+const baseUrl = (
+  isSandboxCreds && (!rawBaseUrl || rawBaseUrl.includes("://api.tangocard.com"))
+    ? "https://integration-api.tangocard.com/raas/v2"
+    : rawBaseUrl || "https://api.tangocard.com/raas/v2"
+).replace(/\/+$/, "");
 
 console.log("==================================================");
 console.log("             TANGO TEST SUITE                    ");
