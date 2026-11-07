@@ -447,13 +447,25 @@ const ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
   ...BRAND_TO_ZENDIT_OFFER,
 };
 
-/** True if the brand can actually be fulfilled (house card or has a Tango/Zendit offer). */
+/**
+ * Returns which primary provider is chosen via environment variables:
+ * GIFTCARD_PROVIDER="zendit" | "tango" (defaults to "zendit").
+ */
+export function getSelectedProviderName(): "zendit" | "tango" {
+  const chosen = (process.env.GIFTCARD_PROVIDER || "zendit").toLowerCase().trim();
+  if (chosen === "tango") return "tango";
+  return "zendit";
+}
+
+/** True if the brand can actually be fulfilled (house card or has an offer in the active provider). */
 export function isFulfillableBrand(slug: string): boolean {
   if (HOUSE_BRAND_SLUGS.includes(slug)) return true;
-  // When Tango is active, strictly verify Tango UTID mapping (Zendit is kept aside)
-  if (isTangoActive()) {
+  
+  const provider = getSelectedProviderName();
+  if (provider === "tango" && isTangoActive()) {
     return Boolean(BRAND_TO_TANGO_UTID[slug]);
   }
+
   const spec = ZENDIT_OFFERS[slug];
   return Boolean(spec && (spec.fixedOffers || (spec.rangeOfferId && spec.rangeOfferId !== "HOUSE_SWAP")));
 }
@@ -690,44 +702,67 @@ class HybridZenditProvider implements GiftCardProvider {
 }
 
 // ---------------------------------------------------------------------------
-// Factory — priority: Zendit > Tango > Demo
+// Factory — switchable via GIFTCARD_PROVIDER="zendit" | "tango"
 // ---------------------------------------------------------------------------
 
 function buildProvider(): GiftCardProvider {
   const demo = new DemoGiftCardProvider();
+  const selected = getSelectedProviderName();
 
   const hasTangoConfig = isTangoActive();
   const tangoProvider = hasTangoConfig ? new TangoCardProvider() : null;
 
-  // If Tango is configured, make Tango the PRIMARY fulfillment provider
+  const hasZenditConfig = Boolean(process.env.ZENDIT_API_KEY);
+  const zenditProvider = hasZenditConfig ? new ZenditProvider() : null;
+
+  // 1. If Tango is explicitly selected as primary:
+  if (selected === "tango") {
+    if (tangoProvider) {
+      const tangoBaseUrl = process.env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2";
+      const mode = tangoBaseUrl.includes("integration-api") ? "SANDBOX" : "PRODUCTION";
+      console.log(
+        `[giftcard-provider] Using TangoCardProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=tango) ` +
+          `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped, account: ${process.env.TANGO_ACCOUNT_IDENTIFIER})`
+      );
+
+      // If Zendit is available as fallback:
+      if (zenditProvider) {
+        return new HybridGiftCardProvider(tangoProvider, zenditProvider);
+      }
+      return new HybridGiftCardProvider(tangoProvider, demo);
+    } else {
+      console.warn("[giftcard-provider] GIFTCARD_PROVIDER=tango requested, but Tango credentials are not fully configured.");
+    }
+  }
+
+  // 2. Default or explicitly chosen: Zendit as primary
+  if (zenditProvider) {
+    const mappedCount = Object.keys(ZENDIT_OFFERS).length;
+    const mode = process.env.ZENDIT_API_KEY?.startsWith("prod_") ? "LIVE" : "SANDBOX";
+    console.log(
+      `[giftcard-provider] Using ZenditProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=${selected}) ` +
+        `(${mappedCount} brands mapped, account: ${process.env.ZENDIT_USERNAME || "sri@techladder.io"})`
+    );
+
+    // If Tango is configured, provide Tango as secondary fallback
+    if (tangoProvider) {
+      return new HybridZenditProvider(zenditProvider, tangoProvider);
+    }
+    return new HybridZenditProvider(zenditProvider, demo);
+  }
+
+  // 3. Fall back to Tango if Zendit is not set up
   if (tangoProvider) {
     const tangoBaseUrl = process.env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2";
     const mode = tangoBaseUrl.includes("integration-api") ? "SANDBOX" : "PRODUCTION";
     console.log(
-      `[giftcard-provider] Using TangoCardProvider [${mode}] as PRIMARY ` +
-        `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped, account: ${process.env.TANGO_ACCOUNT_IDENTIFIER})`
+      `[giftcard-provider] Falling back to TangoCardProvider [${mode}] ` +
+        `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped)`
     );
-
-    // If Zendit is also available as fallback:
-    if (process.env.ZENDIT_API_KEY) {
-      return new HybridGiftCardProvider(tangoProvider, new ZenditProvider());
-    }
-
     return new HybridGiftCardProvider(tangoProvider, demo);
   }
 
-  // 2. Fallback to Zendit if Tango is not active:
-  if (process.env.ZENDIT_API_KEY) {
-    const mappedCount = Object.keys(ZENDIT_OFFERS).length;
-    const mode = process.env.ZENDIT_API_KEY.startsWith("prod_") ? "LIVE" : "SANDBOX";
-    console.log(
-      `[giftcard-provider] Using ZenditProvider [${mode}] ` +
-        `(${mappedCount} brands mapped, account: ${process.env.ZENDIT_USERNAME || "sri@techladder.io"})`
-    );
-    return new HybridZenditProvider(new ZenditProvider(), demo);
-  }
-
-  // 3. Demo fallback — non-redeemable codes only.
+  // 4. Demo fallback — non-redeemable codes only.
   console.warn("[giftcard-provider] No live provider configured — using DemoGiftCardProvider (non-redeemable codes)");
   return demo;
 }

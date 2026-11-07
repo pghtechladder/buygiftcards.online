@@ -14,7 +14,10 @@
     "tango:catalog": "node scripts/fetch-tango-catalog.mjs",
     "tango:match": "node scripts/match-tango-catalog.mjs",
     "zendit:catalog": "node scripts/match-zendit-catalog.mjs",
-    "test:zendit": "node --test tests/zendit.test.mjs",
+    "test:zendit": "node scripts/test-zendit.mjs",
+    "test:tango": "node scripts/test-tango.mjs",
+    "test:gateways": "node scripts/test-gateways.mjs",
+    "audit:catalog": "node scripts/audit-catalog.mjs",
     "env:sync": "node scripts/sync-env-to-vercel.mjs"
   },
   "dependencies": {

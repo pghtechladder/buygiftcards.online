@@ -4,6 +4,13 @@
 import type { ZenditOfferSpec } from "./giftcard-provider";
 
 export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
+  "visa": {
+    "rangeOfferId": "VISA_AWARDS_USD_OPEN_6M",
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
   "amazon": {
     "rangeOfferId": "AMAZON_US_OPEN",
     "requiredFields": [
@@ -27,6 +34,29 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
     "fixedOffers": {
       "25": "GT_DOORDASH_US_25_EGIFT",
       "50": "GT_DOORDASH_US_50_EGIFT"
+    },
+    "requiredFields": [
+      "recipient.firstName",
+      "recipient.lastName"
+    ]
+  },
+  "netflix": {
+    "fixedOffers": {
+      "20": "NETFLIX_US_20_WHS",
+      "30": "NETFLIX_US_30_WHS",
+      "50": "NETFLIX_US_50_WHS",
+      "60": "NETFLIX_US_60_WHS",
+      "75": "NETFLIX_US_75_WHS",
+      "100": "NETFLIX_US_100_WHS"
+    }
+  },
+  "target": {
+    "fixedOffers": {
+      "10": "TARGET_US_10_WHS",
+      "25": "TARGET_US_25_WHS",
+      "50": "TARGET_US_50_WHS",
+      "75": "TARGET_US_75_WHS",
+      "100": "TARGET_US_100_WHS"
     },
     "requiredFields": [
       "recipient.firstName",
@@ -69,15 +99,6 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
       "recipient.lastName"
     ]
   },
-  "sephora": {
-    "fixedOffers": {
-      "10": "SEPHORA_US_001_EGIFT",
-      "25": "SEPHORA_US_002_EGIFT",
-      "50": "SEPHORA_US_003_EGIFT",
-      "75": "SEPHORA_US_004_EGIFT",
-      "100": "SEPHORA_US_005_EGIFT"
-    }
-  },
   "panera": {
     "fixedOffers": {
       "25": "PANERA_US_001",
@@ -88,14 +109,6 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
       "recipient.firstName",
       "recipient.lastName"
     ]
-  },
-  "xbox": {
-    "fixedOffers": {
-      "15": "XBOX_US_15_EGIFT_WHS",
-      "25": "XBOX_US_25_EGIFT_WHS",
-      "50": "XBOX_US_50_EGIFT_WHS",
-      "100": "XBOX_US_100_EGIFT_WHS"
-    }
   },
   "ubereats": {
     "fixedOffers": {
@@ -110,50 +123,16 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
       "recipient.lastName"
     ]
   },
-  "googleplay": {
-    "fixedOffers": {
-      "10": "GOOGLEPLAY_US_001",
-      "25": "GOOGLEPLAY_US_002",
-      "50": "GOOGLEPLAY_US_003",
-      "75": "GOOGLEPLAY_US_004",
-      "100": "GOOGLEPLAY_US_005"
-    }
-  },
   "adidas": {
     "fixedOffers": {
+      "25": "ADIDAS_US_002_EGIFT",
       "50": "ADIDAS_US_003_EGIFT",
+      "75": "ADIDAS_US_004_EGIFT",
       "100": "ADIDAS_US_005_EGIFT"
     },
     "requiredFields": [
       "recipient.firstName",
       "recipient.lastName"
-    ]
-  },
-  "shell": {
-    "fixedOffers": {
-      "10": "SHELL_US_10_WHS",
-      "15": "SHELL_US_15_WHS",
-      "25": "SHELL_US_25_WHS",
-      "50": "SHELL_US_50_WHS",
-      "100": "SHELL_US_100_WHS"
-    }
-  },
-  "chevron": {
-    "fixedOffers": {
-      "25": "GT_CHEVRONTEXACO_US_25_EGIFT",
-      "50": "GT_CHEVRONTEXACO_US_50_EGIFT"
-    },
-    "requiredFields": [
-      "recipient.firstName"
-    ]
-  },
-  "autozone": {
-    "fixedOffers": {
-      "20": "AUTOZONE_US_20_EGIFT",
-      "50": "AUTOZONE_US_50_EGIFT"
-    },
-    "requiredFields": [
-      "recipient.firstName"
     ]
   },
   "jiffylube": {
@@ -267,16 +246,6 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
       "recipient.firstName",
       "recipient.lastName"
     ]
-  },
-  "gamestop": {
-    "fixedOffers": {
-      "5": "GAMESTOP_US_001_EGIFT",
-      "10": "GAMESTOP_US_002_EGIFT",
-      "25": "GAMESTOP_US_25_WHS",
-      "50": "GAMESTOP_US_50_WHS",
-      "75": "GAMESTOP_US_003_EGIFT",
-      "100": "GAMESTOP_US_004_EGIFT"
-    }
   },
   "llbean": {
     "fixedOffers": {
@@ -692,15 +661,6 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
       "recipient.lastName"
     ]
   },
-  "playstation": {
-    "fixedOffers": {
-      "10": "PLAYSTATION_US_001",
-      "25": "PLAYSTATION_US_002",
-      "50": "PLAYSTATION_US_003",
-      "75": "PLAYSTATION_US_004",
-      "100": "PLAYSTATION_US_005"
-    }
-  },
   "buildabear": {
     "fixedOffers": {
       "5": "GT_BUILDABEAR_US_5_EGIFT",
@@ -823,25 +783,6 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
   "disney": {
     "rangeOfferId": "DISNEY_US_OPEN"
   },
-  "dunkin": {
-    "fixedOffers": {
-      "5": "DUNKIN_US_5_WHS",
-      "10": "DUNKIN_US_10_WHS",
-      "25": "DUNKIN_US_25_WHS",
-      "50": "DUNKIN_US_50_WHS"
-    }
-  },
-  "oldnavy": {
-    "fixedOffers": {
-      "25": "OLDNAVY_US_001",
-      "50": "OLDNAVY_US_002",
-      "75": "OLDNAVY_US_003",
-      "100": "OLDNAVY_US_004"
-    },
-    "requiredFields": [
-      "recipient.firstName"
-    ]
-  },
   "burlington": {
     "fixedOffers": {
       "25": "BURLINGTON_US_001_EGIFT",
@@ -853,57 +794,6 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
       "recipient.firstName",
       "recipient.lastName"
     ]
-  },
-  "albertsons": {
-    "fixedOffers": {
-      "5": "ALBERTSONS_US_5_EGIFT",
-      "10": "ALBERTSONS_US_10_EGIFT",
-      "25": "ALBERTSONS_US_25_EGIFT",
-      "50": "ALBERTSONS_US_50_EGIFT"
-    },
-    "requiredFields": [
-      "recipient.firstName"
-    ]
-  },
-  "conoco": {
-    "fixedOffers": {
-      "5": "GT_CONOCO_US_5_EGIFT",
-      "10": "GT_CONOCO_US_10_EGIFT",
-      "25": "GT_CONOCO_US_25_EGIFT",
-      "50": "GT_CONOCO_US_50_EGIFT"
-    },
-    "requiredFields": [
-      "recipient.firstName"
-    ]
-  },
-  "fortnite": {
-    "fixedOffers": {
-      "25": "FORTNITE_US_25_WHS",
-      "50": "FORTNITE_US_50_WHS",
-      "75": "FORTNITE_US_75_WHS",
-      "100": "FORTNITE_US_100_WHS",
-      "150": "FORTNITE_US_150_WHS"
-    }
-  },
-  "eaplay": {
-    "fixedOffers": {
-      "15": "EAPLAY_US_001",
-      "25": "EAPLAY_US_002"
-    },
-    "requiredFields": [
-      "recipient.firstName"
-    ]
-  },
-  "razergold": {
-    "fixedOffers": {
-      "10": "RAZERGOLD_US_10",
-      "25": "RAZERGOLD_US_25",
-      "50": "RAZERGOLD_US_50",
-      "75": "RAZERGOLD_US_75",
-      "100": "RAZERGOLD_US_100",
-      "150": "RAZERGOLD_US_150",
-      "200": "RAZERGOLD_US_200"
-    }
   },
   "pubg": {
     "fixedOffers": {
@@ -948,23 +838,6 @@ export const GENERATED_ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
     "requiredFields": [
       "recipient.firstName"
     ]
-  },
-  "gatorade": {
-    "fixedOffers": {
-      "25": "GATORADE_US_25_WHS",
-      "50": "GATORADE_US_50_WHS",
-      "100": "GATORADE_US_100_WHS"
-    }
-  },
-  "zwilling": {
-    "fixedOffers": {
-      "25": "ZWILLING_US_25",
-      "50": "ZWILLING_US_50",
-      "75": "ZWILLING_US_75",
-      "100": "ZWILLING_US_100",
-      "150": "ZWILLING_US_150",
-      "200": "ZWILLING_US_200"
-    }
   },
   "integralcare": {
     "fixedOffers": {
