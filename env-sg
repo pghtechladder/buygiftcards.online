@@ -1,0 +1,32 @@
+# ===========================================================================
+# Singapore Storefront Configuration (sg.buygiftcards.online)
+# Loaded automatically when Country = SG (or via SG_* environment overrides)
+# ===========================================================================
+APP_COUNTRY="SG"
+NEXT_PUBLIC_COUNTRY="SG"
+NEXT_PUBLIC_SITE_URL="https://sg.buygiftcards.online"
+COUNTRY_CURRENCY="SGD"
+
+# Gift Card Provider for Singapore: "zendit" or "tango"
+GIFTCARD_PROVIDER="zendit"
+SG_GIFTCARD_PROVIDER="zendit"
+
+# Zendit Configuration for Singapore
+ZENDIT_API_KEY="prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9"
+ZENDIT_API_BASE_URL="https://api.zendit.io/v1"
+ZENDIT_USERNAME="sri@techladder.io"
+ZENDIT_COUNTRY="SG"
+
+# Tango Configuration for Singapore (used when GIFTCARD_PROVIDER="tango")
+TANGO_API_BASE_URL="https://api.tangocard.com/raas/v2"
+TANGO_PLATFORM_NAME="QAPlatform2"
+TANGO_PLATFORM_KEY="apYPfT6HNONpDRUj3CLGWYt7gvIHONpDRUYPfT6Hj"
+TANGO_ACCOUNT_IDENTIFIER="testing1234account"
+TANGO_CUSTOMER_IDENTIFIER="customer-5554"
+
+# PayPal Provider Configuration for Singapore
+NEXT_PUBLIC_PAYPAL_CLIENT_ID="BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg"
+PAYPAL_CLIENT_ID="BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg"
+PAYPAL_CLIENT_SECRET="EP_l4rG98V--xxBunuX3F40UyCD9KsQP8QUY34snUH6XrJynonRROoNeA7ONF5whwyuRfXLVrgcgIlfT"
+PAYPAL_API_BASE_URL="https://api-m.paypal.com"
+PAYPAL_CURRENCY="SGD"
