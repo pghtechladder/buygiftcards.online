@@ -6,9 +6,16 @@ export function middleware(req: NextRequest) {
   const proto = req.headers.get("x-forwarded-proto") || "https";
   const pathname = req.nextUrl.pathname;
 
+  // Detect active storefront country from subdomain (`ca.buygiftcards.online`, `sg.buygiftcards.online`, etc.)
+  let country = "US";
+  if (host.startsWith("ca.")) country = "CA";
+  else if (host.startsWith("sg.")) country = "SG";
+  else if (host.startsWith("uk.") || host.startsWith("gb.")) country = "UK";
+  else if (host.startsWith("au.")) country = "AU";
+
   // Enforce HTTPS on production requests (excluding webhooks), while allowing both
-  // buygiftcards.online and www.buygiftcards.online so Vercel's domain redirect settings never loop
-  const isProdDomain = host === "buygiftcards.online" || host === "www.buygiftcards.online";
+  // buygiftcards.online, www.buygiftcards.online, and country subdomains (ca., sg., uk., au.)
+  const isProdDomain = host === "buygiftcards.online" || host.endsWith(".buygiftcards.online");
   if (isProdDomain && !pathname.startsWith("/api/webhooks") && proto === "http") {
     const secureUrl = new URL(req.nextUrl.pathname + req.nextUrl.search, `https://${host}`);
     return NextResponse.redirect(secureUrl, 308);
@@ -26,6 +33,7 @@ export function middleware(req: NextRequest) {
   requestHeaders.set("x-device-type", deviceType);
   requestHeaders.set("x-device-os", info.os);
   requestHeaders.set("x-device-browser", info.browser);
+  requestHeaders.set("x-country-code", country);
 
   const res = NextResponse.next({
     request: {
@@ -38,10 +46,11 @@ export function middleware(req: NextRequest) {
 
   const isSecure = process.env.NODE_ENV === "production";
 
-  // Persist cookies so client components & server routes can read device context
+  // Persist cookies so client components & server routes can read device and country context
   res.cookies.set("bgc-device-type", deviceType, { path: "/", sameSite: "lax", secure: isSecure });
   res.cookies.set("bgc-device-os", info.os, { path: "/", sameSite: "lax", secure: isSecure });
   res.cookies.set("bgc-device-browser", info.browser, { path: "/", sameSite: "lax", secure: isSecure });
+  res.cookies.set("bgc-country", country, { path: "/", sameSite: "lax", secure: isSecure });
 
   return res;
 }

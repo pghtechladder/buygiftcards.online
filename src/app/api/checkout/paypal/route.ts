@@ -7,6 +7,7 @@ import { isFulfillableBrand } from "@/lib/giftcard-provider";
 import { createPayPalOrder, fulfillPayPalOrderById } from "@/lib/paypal";
 import { auth } from "@/lib/auth";
 import { writeTransactionLog } from "@/lib/logger";
+import { resolveCountryFromHostOrEnv, getCountryEnv } from "@/lib/country-config";
 
 const CartItemSchema = z.object({
   brandSlug: z.string(),
@@ -63,11 +64,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid PayPal checkout payload" }, { status: 400 });
     }
 
+    const host = req.headers.get("host");
+    const activeCountry = resolveCountryFromHostOrEnv(host);
     const reqOrigin = req.nextUrl.origin;
     const siteUrl =
       reqOrigin && reqOrigin.includes("localhost")
         ? reqOrigin
-        : process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
+        : getCountryEnv("NEXT_PUBLIC_SITE_URL", activeCountry, "https://buygiftcards.online");
 
     // 1. CREATE PAYPAL ORDER
     if (parsed.data.action === "create") {
@@ -87,7 +90,7 @@ export async function POST(req: NextRequest) {
         if (!brand) {
           return NextResponse.json({ error: `Unknown brand: ${item.brandSlug}` }, { status: 400 });
         }
-        if (!isFulfillableBrand(brand.slug)) {
+        if (!isFulfillableBrand(brand.slug, activeCountry)) {
           return NextResponse.json(
             { error: `${brand.name} is temporarily unavailable. Please choose another brand.` },
             { status: 400 }
@@ -125,6 +128,7 @@ export async function POST(req: NextRequest) {
       const orderNumber = generateOrderNumber();
 
       const paypalOrder = await createPayPalOrder({
+        country: activeCountry,
         totalCents: subtotalCents,
         customId: orderNumber,
         returnUrl: `${siteUrl}/checkout/success?provider=paypal`,
@@ -209,7 +213,7 @@ export async function POST(req: NextRequest) {
 
     // 2. CAPTURE PAYPAL ORDER & FULFILL GIFT CARDS
     const { paypalOrderId } = parsed.data;
-    const result = await fulfillPayPalOrderById(paypalOrderId);
+    const result = await fulfillPayPalOrderById(paypalOrderId, activeCountry);
 
     writeTransactionLog({
       phase: "PROCESS_COMPLETE",

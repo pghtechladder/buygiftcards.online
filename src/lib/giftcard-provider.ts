@@ -2,6 +2,7 @@ import { generateDemoCode, generateDemoPin } from "./order";
 import { HOUSE_BRAND_SLUGS } from "./brands";
 import { loggedFetch, writeTransactionLog } from "./logger";
 import { GENERATED_ZENDIT_OFFERS } from "./zendit-offers.generated";
+import { CountryCode, getCountryEnv, resolveCountryFromHostOrEnv } from "./country-config";
 
 /**
  * Fulfillment is intentionally behind an interface. DemoGiftCardProvider
@@ -173,9 +174,9 @@ export const BRAND_TO_TANGO_UTID: Record<string, string | Record<number, string>
   razergold: { 10: "U804708", 20: "U092970", 50: "U841792" },
 };
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} is not set — required for TangoCardProvider`);
+function requireEnv(name: string, country: CountryCode = resolveCountryFromHostOrEnv()): string {
+  const value = getCountryEnv(name, country);
+  if (!value) throw new Error(`${name} is not set — required for TangoCardProvider (${country})`);
   return value;
 }
 
@@ -189,12 +190,16 @@ export class TangoCardProvider implements GiftCardProvider {
   private accountIdentifier: string;
   private customerIdentifier: string;
 
-  constructor() {
-    this.baseUrl = (process.env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2").replace(/\/+$/, "");
-    this.platformName = requireEnv("TANGO_PLATFORM_NAME");
-    this.platformKey = requireEnv("TANGO_PLATFORM_KEY");
-    this.accountIdentifier = requireEnv("TANGO_ACCOUNT_IDENTIFIER");
-    this.customerIdentifier = requireEnv("TANGO_CUSTOMER_IDENTIFIER");
+  constructor(country: CountryCode = resolveCountryFromHostOrEnv()) {
+    this.baseUrl = getCountryEnv(
+      "TANGO_API_BASE_URL",
+      country,
+      "https://api.tangocard.com/raas/v2"
+    ).replace(/\/+$/, "");
+    this.platformName = requireEnv("TANGO_PLATFORM_NAME", country);
+    this.platformKey = requireEnv("TANGO_PLATFORM_KEY", country);
+    this.accountIdentifier = requireEnv("TANGO_ACCOUNT_IDENTIFIER", country);
+    this.customerIdentifier = requireEnv("TANGO_CUSTOMER_IDENTIFIER", country);
   }
 
   async issue(params: IssueCardParams): Promise<IssuedCard> {
@@ -448,21 +453,21 @@ const ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
 };
 
 /**
- * Returns which primary provider is chosen via environment variables:
- * GIFTCARD_PROVIDER="zendit" | "tango" (defaults to "zendit").
+ * Returns which primary provider is chosen via country-aware environment properties:
+ * GIFTCARD_PROVIDER="zendit" | "tango" (or CA_GIFTCARD_PROVIDER / env-ca, SG_GIFTCARD_PROVIDER / env-sg).
  */
-export function getSelectedProviderName(): "zendit" | "tango" {
-  const chosen = (process.env.GIFTCARD_PROVIDER || "zendit").toLowerCase().trim();
+export function getSelectedProviderName(country: CountryCode = resolveCountryFromHostOrEnv()): "zendit" | "tango" {
+  const chosen = getCountryEnv("GIFTCARD_PROVIDER", country, "zendit").toLowerCase().trim();
   if (chosen === "tango") return "tango";
   return "zendit";
 }
 
 /** True if the brand can actually be fulfilled (house card or has an offer in the active provider). */
-export function isFulfillableBrand(slug: string): boolean {
+export function isFulfillableBrand(slug: string, country: CountryCode = resolveCountryFromHostOrEnv()): boolean {
   if (HOUSE_BRAND_SLUGS.includes(slug)) return true;
   
-  const provider = getSelectedProviderName();
-  if (provider === "tango" && isTangoActive()) {
+  const provider = getSelectedProviderName(country);
+  if (provider === "tango" && isTangoActive(country)) {
     return Boolean(BRAND_TO_TANGO_UTID[slug]);
   }
 
@@ -470,12 +475,12 @@ export function isFulfillableBrand(slug: string): boolean {
   return Boolean(spec && (spec.fixedOffers || (spec.rangeOfferId && spec.rangeOfferId !== "HOUSE_SWAP")));
 }
 
-export function isTangoActive(): boolean {
+export function isTangoActive(country: CountryCode = resolveCountryFromHostOrEnv()): boolean {
   return Boolean(
-    process.env.TANGO_PLATFORM_NAME &&
-      process.env.TANGO_PLATFORM_KEY &&
-      process.env.TANGO_ACCOUNT_IDENTIFIER &&
-      process.env.TANGO_CUSTOMER_IDENTIFIER
+    getCountryEnv("TANGO_PLATFORM_NAME", country) &&
+      getCountryEnv("TANGO_PLATFORM_KEY", country) &&
+      getCountryEnv("TANGO_ACCOUNT_IDENTIFIER", country) &&
+      getCountryEnv("TANGO_CUSTOMER_IDENTIFIER", country)
   );
 }
 
@@ -487,13 +492,13 @@ export class ZenditProvider implements GiftCardProvider {
   private apiKey: string;
   private baseUrl: string;
 
-  constructor() {
+  constructor(country: CountryCode = resolveCountryFromHostOrEnv()) {
     // Environment is chosen purely by the key: `sand_...` = Zendit sandbox, `prod_...` = live.
     // Nothing is hard-coded, so a missing key can never silently fall through to live purchases.
-    const key = process.env.ZENDIT_API_KEY;
-    if (!key) throw new Error("ZENDIT_API_KEY is not set — required for ZenditProvider");
+    const key = getCountryEnv("ZENDIT_API_KEY", country);
+    if (!key) throw new Error(`ZENDIT_API_KEY is not set — required for ZenditProvider (${country})`);
     this.apiKey = key;
-    this.baseUrl = (process.env.ZENDIT_API_BASE_URL || ZENDIT_API_URL).replace(/\/+$/, "");
+    this.baseUrl = getCountryEnv("ZENDIT_API_BASE_URL", country, ZENDIT_API_URL).replace(/\/+$/, "");
   }
 
   async issue({
@@ -702,27 +707,28 @@ class HybridZenditProvider implements GiftCardProvider {
 }
 
 // ---------------------------------------------------------------------------
-// Factory — switchable via GIFTCARD_PROVIDER="zendit" | "tango"
+// Factory — switchable via GIFTCARD_PROVIDER="zendit" | "tango" per country
 // ---------------------------------------------------------------------------
 
-function buildProvider(): GiftCardProvider {
+export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv()): GiftCardProvider {
   const demo = new DemoGiftCardProvider();
-  const selected = getSelectedProviderName();
+  const selected = getSelectedProviderName(country);
 
-  const hasTangoConfig = isTangoActive();
-  const tangoProvider = hasTangoConfig ? new TangoCardProvider() : null;
+  const hasTangoConfig = isTangoActive(country);
+  const tangoProvider = hasTangoConfig ? new TangoCardProvider(country) : null;
 
-  const hasZenditConfig = Boolean(process.env.ZENDIT_API_KEY);
-  const zenditProvider = hasZenditConfig ? new ZenditProvider() : null;
+  const zenditKey = getCountryEnv("ZENDIT_API_KEY", country);
+  const hasZenditConfig = Boolean(zenditKey);
+  const zenditProvider = hasZenditConfig ? new ZenditProvider(country) : null;
 
   // 1. If Tango is explicitly selected as primary:
   if (selected === "tango") {
     if (tangoProvider) {
-      const tangoBaseUrl = process.env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2";
+      const tangoBaseUrl = getCountryEnv("TANGO_API_BASE_URL", country, "https://api.tangocard.com/raas/v2");
       const mode = tangoBaseUrl.includes("integration-api") ? "SANDBOX" : "PRODUCTION";
       console.log(
-        `[giftcard-provider] Using TangoCardProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=tango) ` +
-          `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped, account: ${process.env.TANGO_ACCOUNT_IDENTIFIER})`
+        `[giftcard-provider:${country}] Using TangoCardProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=tango) ` +
+          `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped, account: ${getCountryEnv("TANGO_ACCOUNT_IDENTIFIER", country)})`
       );
 
       // If Zendit is available as fallback:
@@ -731,17 +737,17 @@ function buildProvider(): GiftCardProvider {
       }
       return new HybridGiftCardProvider(tangoProvider, demo);
     } else {
-      console.warn("[giftcard-provider] GIFTCARD_PROVIDER=tango requested, but Tango credentials are not fully configured.");
+      console.warn(`[giftcard-provider:${country}] GIFTCARD_PROVIDER=tango requested, but Tango credentials are not fully configured.`);
     }
   }
 
   // 2. Default or explicitly chosen: Zendit as primary
   if (zenditProvider) {
     const mappedCount = Object.keys(ZENDIT_OFFERS).length;
-    const mode = process.env.ZENDIT_API_KEY?.startsWith("prod_") ? "LIVE" : "SANDBOX";
+    const mode = zenditKey.startsWith("prod_") ? "LIVE" : "SANDBOX";
     console.log(
-      `[giftcard-provider] Using ZenditProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=${selected}) ` +
-        `(${mappedCount} brands mapped, account: ${process.env.ZENDIT_USERNAME || "sri@techladder.io"})`
+      `[giftcard-provider:${country}] Using ZenditProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=${selected}) ` +
+        `(${mappedCount} brands mapped, account: ${getCountryEnv("ZENDIT_USERNAME", country, "sri@techladder.io")})`
     );
 
     // If Tango is configured, provide Tango as secondary fallback
@@ -753,17 +759,17 @@ function buildProvider(): GiftCardProvider {
 
   // 3. Fall back to Tango if Zendit is not set up
   if (tangoProvider) {
-    const tangoBaseUrl = process.env.TANGO_API_BASE_URL || "https://api.tangocard.com/raas/v2";
+    const tangoBaseUrl = getCountryEnv("TANGO_API_BASE_URL", country, "https://api.tangocard.com/raas/v2");
     const mode = tangoBaseUrl.includes("integration-api") ? "SANDBOX" : "PRODUCTION";
     console.log(
-      `[giftcard-provider] Falling back to TangoCardProvider [${mode}] ` +
+      `[giftcard-provider:${country}] Falling back to TangoCardProvider [${mode}] ` +
         `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped)`
     );
     return new HybridGiftCardProvider(tangoProvider, demo);
   }
 
   // 4. Demo fallback — non-redeemable codes only.
-  console.warn("[giftcard-provider] No live provider configured — using DemoGiftCardProvider (non-redeemable codes)");
+  console.warn(`[giftcard-provider:${country}] No live provider configured — using DemoGiftCardProvider (non-redeemable codes)`);
   return demo;
 }
 

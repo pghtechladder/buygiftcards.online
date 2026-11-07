@@ -3,10 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { fulfillOrder } from "@/lib/fulfill-order";
 import { fulfillPayPalOrderById } from "@/lib/paypal";
+import { resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { writeTransactionLog } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   const apiUrl = req.nextUrl.toString();
+  const hostHeader = req.headers.get("x-forwarded-host") || req.headers.get("host") || req.nextUrl.host;
+  const activeCountry = resolveCountryFromHostOrEnv(hostHeader);
   const paypalToken = req.nextUrl.searchParams.get("token");
   const rawSessionId = req.nextUrl.searchParams.get("session_id");
   const sessionId = rawSessionId || (paypalToken ? `paypal_${paypalToken}` : null);
@@ -23,7 +26,7 @@ export async function GET(req: NextRequest) {
   if (sessionId.startsWith("paypal_")) {
     const paypalOrderId = sessionId.replace(/^paypal_/, "");
     try {
-      const fulfilled = await fulfillPayPalOrderById(paypalOrderId);
+      const fulfilled = await fulfillPayPalOrderById(paypalOrderId, activeCountry);
       writeTransactionLog({
         phase: "PROCESS_COMPLETE",
         process: "Checkout.SessionCheck",

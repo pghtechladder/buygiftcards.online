@@ -8,6 +8,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { Icon } from "./Icon";
+import { CountrySelector } from "./CountrySelector";
 
 const TOP_UTILITY_LINKS = [
   { label: "Redeem Gift Card", href: "/redeem" },
@@ -131,7 +132,8 @@ export function Nav() {
             <Icon name="search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400" />
           </form>
 
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <CountrySelector variant="header" />
             <Link
               href="/orders"
               className="hidden md:block px-3 py-2 text-sm font-semibold text-ink-600 hover:text-ink-900 rounded-lg hover:bg-ink-50 transition"

@@ -1,4 +1,5 @@
 import { loggedFetch, writeTransactionLog } from "./logger";
+import { CountryCode, getCountryEnv, resolveCountryFromHostOrEnv } from "./country-config";
 
 export const PRODUCTION_PAYPAL_API_BASE_URL = "https://api-m.paypal.com";
 export const SANDBOX_PAYPAL_API_BASE_URL = "https://api-m.sandbox.paypal.com";
@@ -7,23 +8,27 @@ export const DEFAULT_PAYPAL_CLIENT_ID =
 export const DEFAULT_PAYPAL_CLIENT_SECRET =
   "EP_l4rG98V--xxBunuX3F40UyCD9KsQP8QUY34snUH6XrJynonRROoNeA7ONF5whwyuRfXLVrgcgIlfT";
 
-export function getPayPalCredentials() {
+export function getPayPalCredentials(country: CountryCode = resolveCountryFromHostOrEnv()) {
   const clientId =
-    process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
-    process.env.PAYPAL_CLIENT_ID ||
+    getCountryEnv("NEXT_PUBLIC_PAYPAL_CLIENT_ID", country) ||
+    getCountryEnv("PAYPAL_CLIENT_ID", country) ||
     DEFAULT_PAYPAL_CLIENT_ID;
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET || DEFAULT_PAYPAL_CLIENT_SECRET;
-  const configuredBaseUrl = process.env.PAYPAL_API_BASE_URL || PRODUCTION_PAYPAL_API_BASE_URL;
-  return { clientId, clientSecret, configuredBaseUrl };
+  const clientSecret =
+    getCountryEnv("PAYPAL_CLIENT_SECRET", country) || DEFAULT_PAYPAL_CLIENT_SECRET;
+  const configuredBaseUrl =
+    getCountryEnv("PAYPAL_API_BASE_URL", country) || PRODUCTION_PAYPAL_API_BASE_URL;
+  const currency = getCountryEnv("PAYPAL_CURRENCY", country, "USD") || "USD";
+  return { clientId, clientSecret, configuredBaseUrl, currency };
 }
 
 /**
- * Obtains a PayPal OAuth2 Bearer access token from exactly ONE environment — the configured
- * PAYPAL_API_BASE_URL (sandbox by default). There is deliberately no cross-environment fallback:
- * a sandbox misconfiguration must never silently charge on live, or vice versa.
+ * Obtains a PayPal OAuth2 Bearer access token from the country-configured
+ * PAYPAL_API_BASE_URL (`env-ca`, `env-sg`, or `US` `.env.local`).
  */
-export async function getPayPalAccessToken(): Promise<{ accessToken: string; baseUrl: string }> {
-  const { clientId, clientSecret, configuredBaseUrl } = getPayPalCredentials();
+export async function getPayPalAccessToken(
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): Promise<{ accessToken: string; baseUrl: string }> {
+  const { clientId, clientSecret, configuredBaseUrl } = getPayPalCredentials(country);
   const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
   const candidateUrls = [configuredBaseUrl.replace(/\/+$/, "")];
@@ -82,6 +87,7 @@ export async function getPayPalAccessToken(): Promise<{ accessToken: string; bas
 }
 
 export async function createPayPalOrder(opts: {
+  country?: CountryCode;
   items: Array<{
     name: string;
     description?: string;
@@ -95,7 +101,10 @@ export async function createPayPalOrder(opts: {
   customId?: string;
   landingPage?: "LOGIN" | "GUEST_CHECKOUT" | "NO_PREFERENCE";
 }): Promise<{ id: string; status: string; approveUrl?: string }> {
-  const { accessToken, baseUrl } = await getPayPalAccessToken();
+  const activeCountry = opts.country || resolveCountryFromHostOrEnv();
+  const { accessToken, baseUrl } = await getPayPalAccessToken(activeCountry);
+  const { currency } = getPayPalCredentials(activeCountry);
+  const currencyCode = currency || "USD";
   const totalStr = (opts.totalCents / 100).toFixed(2);
 
   const payload = {
@@ -105,11 +114,11 @@ export async function createPayPalOrder(opts: {
         custom_id: opts.customId,
         description: "buygiftcards.online Digital Gift Cards",
         amount: {
-          currency_code: "USD",
+          currency_code: currencyCode,
           value: totalStr,
           breakdown: {
             item_total: {
-              currency_code: "USD",
+              currency_code: currencyCode,
               value: totalStr,
             },
           },
@@ -119,7 +128,7 @@ export async function createPayPalOrder(opts: {
           description: (item.description || "Digital Gift Card").slice(0, 120),
           sku: item.sku.slice(0, 60),
           unit_amount: {
-            currency_code: "USD",
+            currency_code: currencyCode,
             value: (item.unitAmountCents / 100).toFixed(2),
           },
           quantity: String(item.quantity),
@@ -169,7 +178,10 @@ export async function createPayPalOrder(opts: {
   };
 }
 
-export async function capturePayPalOrder(paypalOrderId: string): Promise<{
+export async function capturePayPalOrder(
+  paypalOrderId: string,
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): Promise<{
   id: string;
   status: string;
   captureId?: string;
@@ -184,7 +196,7 @@ export async function capturePayPalOrder(paypalOrderId: string): Promise<{
     country?: string;
   };
 }> {
-  const { accessToken, baseUrl } = await getPayPalAccessToken();
+  const { accessToken, baseUrl } = await getPayPalAccessToken(country);
 
   const { res, data, rawText } = await loggedFetch({
     process: "PayPal.CaptureOrder",
@@ -246,14 +258,18 @@ export async function capturePayPalOrder(paypalOrderId: string): Promise<{
   };
 }
 
-export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
+export async function fulfillPayPalOrderById(
+  paypalOrderId: string,
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): Promise<{
   orderNumber: string;
   customerEmail: string;
   status: string;
   hasExistingAccount?: boolean;
 }> {
   const { prisma } = await import("./prisma");
-  const { giftCardProvider } = await import("./giftcard-provider");
+  const { buildProvider } = await import("./giftcard-provider");
+  const activeGiftCardProvider = buildProvider(country);
   const { sendOrderConfirmationEmail, sendRecipientGiftEmail } = await import("./email");
   const { triggerKitTrustpilotWorkflow } = await import("./newsletter");
 
@@ -278,7 +294,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
   }
 
   // Capture via PayPal Orders V2 API
-  const captured = await capturePayPalOrder(paypalOrderId);
+  const captured = await capturePayPalOrder(paypalOrderId, country);
   if (captured.status !== "COMPLETED") {
     throw new Error(`PayPal payment status is ${captured.status} (expected COMPLETED)`);
   }
@@ -360,7 +376,7 @@ export async function fulfillPayPalOrderById(paypalOrderId: string): Promise<{
         },
       });
 
-      const issued = await giftCardProvider.issue({
+      const issued = await activeGiftCardProvider.issue({
         brandSlug: item.brandSlug,
         amountCents: item.denomCents,
         deliveryType: item.deliveryType === "EGIFT" ? "egift" : "physical",

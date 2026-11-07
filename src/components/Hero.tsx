@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BRANDS } from "@/lib/brands";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
+import { CountrySelector } from "./CountrySelector";
 
 const FEATURED = [
   BRANDS.find((b) => b.slug === "buygiftcards")!,
@@ -24,8 +25,11 @@ export function Hero() {
       />
       <div className="relative max-w-7xl mx-auto px-6 py-16 sm:py-20 flex flex-wrap items-center gap-12 justify-between">
         <div className="flex-1 min-w-[300px] max-w-xl text-white">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-amber-300 text-xs font-extrabold uppercase tracking-widest mb-4">
-            <span>🎁</span> Holiday Gifting Season · {brandCount}+ Top Brands
+          <div className="flex flex-wrap items-center gap-2.5 mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-amber-300 text-xs font-extrabold uppercase tracking-widest">
+              <span>🎁</span> Holiday Gifting Season · {brandCount}+ Top Brands
+            </div>
+            <CountrySelector variant="hero" />
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 leading-[1.08] tracking-tight">
             Buy Gift Cards Online — Instant Digital eGift Delivery

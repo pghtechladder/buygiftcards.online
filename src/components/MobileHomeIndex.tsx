@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
 import { DeviceInfo } from "@/lib/device";
+import { CountrySelector } from "./CountrySelector";
 
 const fmt = (n: number) => `$${n.toFixed(2)}`;
 
@@ -76,27 +77,30 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
     <div className="pb-24 bg-ink-50 min-h-screen">
       {/* Mobile Express Hero Header */}
       <div className="bg-gradient-to-br from-[#0a4738] via-brand-700 to-[#7f1d1d] text-white px-4 pt-5 pb-6 rounded-b-3xl shadow-lg">
-        <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-amber-300 text-[11px] font-extrabold uppercase tracking-wider">
             <Icon name="zap" size={12} />
             Mobile Express Store
             {deviceInfo?.os && deviceInfo.os !== "other" ? ` · ${deviceInfo.os.toUpperCase()}` : ""}
           </div>
-          {!session?.user ? (
-            <button
-              onClick={() => openAuthModal("signin")}
-              className="px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition"
-            >
-              Sign In / Join
-            </button>
-          ) : (
-            <Link
-              href="/account"
-              className="px-3 py-1 rounded-full bg-white/15 text-white text-xs font-bold truncate max-w-[140px]"
-            >
-              Hi, {session.user.firstName || session.user.email}
-            </Link>
-          )}
+          <div className="flex items-center gap-2">
+            <CountrySelector variant="hero" />
+            {!session?.user ? (
+              <button
+                onClick={() => openAuthModal("signin")}
+                className="px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition"
+              >
+                Sign In / Join
+              </button>
+            ) : (
+              <Link
+                href="/account"
+                className="px-3 py-1 rounded-full bg-white/15 text-white text-xs font-bold truncate max-w-[140px]"
+              >
+                Hi, {session.user.firstName || session.user.email}
+              </Link>
+            )}
+          </div>
         </div>
 
         <h1 className="text-2xl font-extrabold leading-tight tracking-tight mb-1.5">
