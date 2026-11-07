@@ -4,7 +4,7 @@
 
 export type IconName =
   | "search" | "cart" | "x" | "lock" | "package" | "mail" | "zap" | "shield"
-  | "checkCircle" | "messageCircle" | "wallet" | "chevronRight" | "gift"
+  | "checkCircle" | "messageCircle" | "wallet" | "chevronRight" | "chevronDown" | "gift"
   | "undo" | "loader" | "inbox" | "copy";
 
 const paths: Record<IconName, React.ReactNode> = {
@@ -63,6 +63,7 @@ const paths: Record<IconName, React.ReactNode> = {
     </>
   ),
   chevronRight: <polyline points="9 6 15 12 9 18" />,
+  chevronDown: <polyline points="6 9 12 15 18 9" />,
   gift: (
     <>
       <rect x="3" y="8.5" width="18" height="4" />

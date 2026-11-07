@@ -29,6 +29,17 @@ const ActionSchema = z.discriminatedUnion("action", [
     items: z.array(CartItemSchema).min(1).max(20),
     idempotencyKey: z.string().optional(),
     landingPage: z.enum(["LOGIN", "GUEST_CHECKOUT", "NO_PREFERENCE"]).optional(),
+    paymentMethod: z
+      .enum(["paypal", "card", "crypto", "applepay", "googlepay"])
+      .optional(),
+    payer: z
+      .object({
+        givenName: z.string().max(80).optional(),
+        surname: z.string().max(80).optional(),
+        email: z.string().email().max(120).optional().or(z.literal("")),
+        countryCode: z.string().max(4).optional(),
+      })
+      .optional(),
   }),
   z.object({
     action: z.literal("capture"),
@@ -126,14 +137,26 @@ export async function POST(req: NextRequest) {
       }
 
       const orderNumber = generateOrderNumber();
+      const userFullName = authSession?.user?.name || "";
+      const [defaultFirst, ...restName] = userFullName.trim().split(/\s+/);
+      const defaultLast = restName.join(" ");
 
       const paypalOrder = await createPayPalOrder({
         country: activeCountry,
         totalCents: subtotalCents,
         customId: orderNumber,
-        returnUrl: `${siteUrl}/checkout/success?provider=paypal`,
+        returnUrl: `${siteUrl}/checkout/success?provider=paypal&method=${encodeURIComponent(
+          parsed.data.paymentMethod || "paypal"
+        )}`,
         cancelUrl: `${siteUrl}/checkout`,
         landingPage: parsed.data.landingPage,
+        paymentMethod: parsed.data.paymentMethod,
+        payer: {
+          givenName: parsed.data.payer?.givenName || defaultFirst || "Valued",
+          surname: parsed.data.payer?.surname || defaultLast || "Customer",
+          email: parsed.data.payer?.email || authSession?.user?.email || undefined,
+          countryCode: parsed.data.payer?.countryCode || activeCountry,
+        },
         items: validatedLines.map((line) => ({
           name: `${line.brandName} ${line.item.deliveryType === "egift" ? "eGift" : "Physical"} Card ($${line.item.amount})`,
           description: line.item.recipientEmail
@@ -147,6 +170,7 @@ export async function POST(req: NextRequest) {
 
       const sessionKey = `paypal_${paypalOrder.id}`;
       const initialEmail =
+        parsed.data.payer?.email ||
         authSession?.user?.email ||
         items.find((i) => i.recipientEmail)?.recipientEmail ||
         "pending@buygiftcards.online";

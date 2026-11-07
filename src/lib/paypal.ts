@@ -86,6 +86,13 @@ export async function getPayPalAccessToken(
   throw new Error(`PayPal OAuth failed: ${lastError}`);
 }
 
+export type PayPalPaymentMethodType =
+  | "paypal"
+  | "card"
+  | "crypto"
+  | "applepay"
+  | "googlepay";
+
 export async function createPayPalOrder(opts: {
   country?: CountryCode;
   items: Array<{
@@ -100,67 +107,139 @@ export async function createPayPalOrder(opts: {
   cancelUrl: string;
   customId?: string;
   landingPage?: "LOGIN" | "GUEST_CHECKOUT" | "NO_PREFERENCE";
-}): Promise<{ id: string; status: string; approveUrl?: string }> {
+  paymentMethod?: PayPalPaymentMethodType;
+  payer?: {
+    givenName?: string;
+    surname?: string;
+    email?: string;
+    countryCode?: string;
+  };
+}): Promise<{
+  id: string;
+  status: string;
+  approveUrl?: string;
+  paymentMethod?: PayPalPaymentMethodType;
+}> {
   const activeCountry = opts.country || resolveCountryFromHostOrEnv();
   const { accessToken, baseUrl } = await getPayPalAccessToken(activeCountry);
   const { currency } = getPayPalCredentials(activeCountry);
-  const currencyCode = currency || "USD";
+  const method: PayPalPaymentMethodType = opts.paymentMethod || "paypal";
+
+  // Per https://developer.paypal.com/platforms/checkout/apm/crypto/orders-api:
+  // Pay with Crypto requires currency_code="USD", country_code="US", and
+  // processing_instruction="ORDER_COMPLETE_ON_PAYMENT_APPROVAL".
+  const currencyCode = method === "crypto" ? "USD" : currency || "USD";
   const totalStr = (opts.totalCents / 100).toFixed(2);
 
-  const payload = {
-    intent: "CAPTURE",
-    purchase_units: [
-      {
-        custom_id: opts.customId,
-        description: "buygiftcards.online Digital Gift Cards",
-        amount: {
-          currency_code: currencyCode,
-          value: totalStr,
-          breakdown: {
-            item_total: {
-              currency_code: currencyCode,
-              value: totalStr,
+  const buildPayload = (useCryptoSource: boolean) => {
+    const givenName = (opts.payer?.givenName || "Valued").trim() || "Valued";
+    const surname = (opts.payer?.surname || "Customer").trim() || "Customer";
+
+    const paymentSource = useCryptoSource
+      ? {
+          crypto: {
+            country_code: "US",
+            name: {
+              given_name: givenName,
+              surname: surname,
+            },
+            experience_context: {
+              brand_name: "BuyGiftCards.online",
+              locale: "en-US",
+              return_url: opts.returnUrl,
+              cancel_url: opts.cancelUrl,
             },
           },
-        },
-        items: opts.items.map((item) => ({
-          name: item.name.slice(0, 120),
-          description: (item.description || "Digital Gift Card").slice(0, 120),
-          sku: item.sku.slice(0, 60),
-          unit_amount: {
-            currency_code: currencyCode,
-            value: (item.unitAmountCents / 100).toFixed(2),
+        }
+      : {
+          paypal: {
+            experience_context: {
+              brand_name: "BuyGiftCards.online",
+              shipping_preference: "NO_SHIPPING",
+              user_action: "PAY_NOW",
+              landing_page:
+                opts.landingPage ||
+                (method === "card" || method === "applepay" || method === "googlepay"
+                  ? "GUEST_CHECKOUT"
+                  : "NO_PREFERENCE"),
+              return_url: opts.returnUrl,
+              cancel_url: opts.cancelUrl,
+            },
           },
-          quantity: String(item.quantity),
-          category: "DIGITAL_GOODS",
-        })),
-      },
-    ],
-    payment_source: {
-      paypal: {
-        experience_context: {
-          brand_name: "BuyGiftCards.online",
-          shipping_preference: "NO_SHIPPING",
-          user_action: "PAY_NOW",
-          landing_page: opts.landingPage || "NO_PREFERENCE",
-          return_url: opts.returnUrl,
-          cancel_url: opts.cancelUrl,
+        };
+
+    return {
+      intent: "CAPTURE",
+      ...(useCryptoSource
+        ? { processing_instruction: "ORDER_COMPLETE_ON_PAYMENT_APPROVAL" }
+        : {}),
+      purchase_units: [
+        {
+          custom_id: opts.customId,
+          description: "buygiftcards.online Digital Gift Cards",
+          amount: {
+            currency_code: currencyCode,
+            value: totalStr,
+            breakdown: {
+              item_total: {
+                currency_code: currencyCode,
+                value: totalStr,
+              },
+            },
+          },
+          items: opts.items.map((item) => ({
+            name: item.name.slice(0, 120),
+            description: (item.description || "Digital Gift Card").slice(0, 120),
+            sku: item.sku.slice(0, 60),
+            unit_amount: {
+              currency_code: currencyCode,
+              value: (item.unitAmountCents / 100).toFixed(2),
+            },
+            quantity: String(item.quantity),
+            category: "DIGITAL_GOODS",
+          })),
         },
-      },
-    },
+      ],
+      payment_source: paymentSource,
+    };
   };
 
-  const { res, data, rawText } = await loggedFetch({
-    process: "PayPal.CreateOrder",
+  const requestHeaders: Record<string, string> = {
+    Authorization: `Bearer ${accessToken}`,
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    ...(opts.customId ? { "PayPal-Request-Id": `${opts.customId}-${method}` } : {}),
+  };
+
+  let { res, data, rawText } = await loggedFetch({
+    process: method === "crypto" ? "PayPal.CreateCryptoOrder" : "PayPal.CreateOrder",
     url: `${baseUrl}/v2/checkout/orders`,
     method: "POST",
-    headers: {
+    headers: requestHeaders,
+    bodyObj: buildPayload(method === "crypto"),
+  });
+
+  // If the merchant account hasn't completed PayPal Crypto APM onboarding yet,
+  // gracefully fall back to standard PayPal Checkout (which supports Pay with Crypto
+  // inside the PayPal wallet for US accounts) so the customer is never blocked.
+  if (!res.ok && method === "crypto") {
+    const fallbackHeaders: Record<string, string> = {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
       Accept: "application/json",
-    },
-    bodyObj: payload,
-  });
+      ...(opts.customId ? { "PayPal-Request-Id": `${opts.customId}-crypto-fallback` } : {}),
+    };
+    const fallbackRes = await loggedFetch({
+      process: "PayPal.CreateCryptoOrderFallback",
+      url: `${baseUrl}/v2/checkout/orders`,
+      method: "POST",
+      headers: fallbackHeaders,
+      bodyObj: buildPayload(false),
+    });
+    res = fallbackRes.res;
+    data = fallbackRes.data;
+    rawText = fallbackRes.rawText;
+  }
 
   if (!res.ok) {
     throw new Error(`PayPal createOrder failed (${res.status}): ${rawText}`);
@@ -175,6 +254,7 @@ export async function createPayPalOrder(opts: {
     id: data.id,
     status: data.status,
     approveUrl: approveLink,
+    paymentMethod: method,
   };
 }
 
@@ -232,9 +312,10 @@ export async function capturePayPalOrder(
   }
 
   const payer = orderData.payer || {};
-  const payerEmail = payer.email_address;
-  const givenName = payer.name?.given_name || "";
-  const surname = payer.name?.surname || "";
+  const cryptoSource = orderData.payment_source?.crypto || {};
+  const payerEmail = payer.email_address || cryptoSource.email_address;
+  const givenName = payer.name?.given_name || cryptoSource.name?.given_name || "";
+  const surname = payer.name?.surname || cryptoSource.name?.surname || "";
   const payerName = `${givenName} ${surname}`.trim() || undefined;
   const addr = payer.address || orderData.purchase_units?.[0]?.shipping?.address;
   const captureId = orderData.purchase_units?.[0]?.payments?.captures?.[0]?.id;
