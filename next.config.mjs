@@ -46,7 +46,7 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://www.googletagmanager.com https://*.google-analytics.com",
-              "connect-src 'self' https://*.paypal.com https://challenges.cloudflare.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.public.blob.vercel-storage.com https://api.zendit.io https://api.tangocard.com",
+              "connect-src 'self' https://*.paypal.com https://challenges.cloudflare.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.public.blob.vercel-storage.com https://api.zendit.io https://api.tangocard.com https://*.cj.com https://*.awin1.com https://*.impact.com",
               "frame-src 'self' https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com",
               "img-src 'self' data: blob: https: http:",
               "style-src 'self' 'unsafe-inline'",

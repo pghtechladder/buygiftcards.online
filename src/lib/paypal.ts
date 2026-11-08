@@ -357,6 +357,9 @@ export async function fulfillPayPalOrderById(
   orderNumber: string;
   customerEmail: string;
   status: string;
+  subtotalCents?: number;
+  totalCents?: number;
+  currency?: string;
   hasExistingAccount?: boolean;
 }> {
   const { prisma } = await import("./prisma");
@@ -393,6 +396,9 @@ export async function fulfillPayPalOrderById(
       orderNumber: existing.orderNumber,
       customerEmail: existing.customerEmail,
       status: existing.status,
+      subtotalCents: existing.subtotalCents,
+      totalCents: existing.totalCents,
+      currency: existing.currency,
       hasExistingAccount: Boolean(existingAccount),
     };
   }
@@ -566,6 +572,9 @@ export async function fulfillPayPalOrderById(
     orderNumber: fulfilledOrder.orderNumber,
     customerEmail: fulfilledOrder.customerEmail,
     status: "FULFILLED",
+    subtotalCents: fulfilledOrder.subtotalCents,
+    totalCents: fulfilledOrder.totalCents,
+    currency: fulfilledOrder.currency,
     hasExistingAccount: Boolean(matchedUser),
   };
 }

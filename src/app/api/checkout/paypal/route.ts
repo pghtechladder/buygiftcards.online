@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { writeTransactionLog } from "@/lib/logger";
 import { verifyTurnstile, TURNSTILE_HEADER } from "@/lib/turnstile";
 import { getClientIp } from "@/lib/rate-limit";
+import { getStoredAffiliateData, sendAffiliateConversionPostback } from "@/lib/affiliate";
 import {
   resolveCountryFromHostOrEnv,
   getCountryEnv,
@@ -270,6 +271,23 @@ export async function POST(req: NextRequest) {
     // 2. CAPTURE PAYPAL ORDER & FULFILL GIFT CARDS
     const { paypalOrderId } = parsed.data;
     const result = await fulfillPayPalOrderById(paypalOrderId, activeCountry);
+
+    // Asynchronously dispatch affiliate network conversion (CJ / Awin / Impact)
+    // for cashback attribution (e.g. TopCashback) without delaying user response.
+    try {
+      const affiliateData = await getStoredAffiliateData();
+      if (affiliateData && result.subtotalCents) {
+        sendAffiliateConversionPostback({
+          orderNumber: result.orderNumber,
+          subtotalCents: result.subtotalCents,
+          currency: result.currency || currencyCode,
+          customerEmail: result.customerEmail,
+          affiliateData,
+        }).catch((err) => console.error("[Affiliate Postback Background Error]", err));
+      }
+    } catch (e) {
+      console.warn("[Affiliate Data Read Warn]", e);
+    }
 
     writeTransactionLog({
       phase: "PROCESS_COMPLETE",

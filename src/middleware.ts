@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseDeviceFromUserAgent } from "@/lib/device";
 import { checkRateLimit, findRule, getClientIp } from "@/lib/rate-limit";
+import { extractAffiliateParams } from "@/lib/affiliate";
 
 // Obvious automation clients hitting payment/auth APIs directly (not browsers).
 const BOT_UA = /(curl|wget|python-requests|python-urllib|aiohttp|httpx|go-http-client|okhttp|java\/|libwww|scrapy|headlesschrome|phantomjs|puppeteer|playwright|selenium)/i;
@@ -99,6 +100,19 @@ export function middleware(req: NextRequest) {
   res.cookies.set("bgc-device-os", info.os, { path: "/", sameSite: "lax", secure: isSecure });
   res.cookies.set("bgc-device-browser", info.browser, { path: "/", sameSite: "lax", secure: isSecure });
   res.cookies.set("bgc-country", country, { path: "/", sameSite: "lax", secure: isSecure });
+
+  // Capture & persist affiliate click tokens (TopCashback / CJ 'cjevent', Awin 'awc', Impact 'irclickid')
+  // Stored for 30 days to match standard affiliate conversion attribution windows.
+  const affiliateCookies = extractAffiliateParams(req.nextUrl.searchParams);
+  const thirtyDaysSec = 30 * 24 * 60 * 60;
+  for (const [cookieName, cookieVal] of Object.entries(affiliateCookies)) {
+    res.cookies.set(cookieName, cookieVal, {
+      path: "/",
+      maxAge: thirtyDaysSec,
+      sameSite: "lax",
+      secure: isSecure,
+    });
+  }
 
   return res;
 }

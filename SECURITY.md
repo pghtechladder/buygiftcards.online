@@ -91,3 +91,4 @@ Additional defense headers:
 ### 4.2 Strict TLS 1.3 Enforcement & HSTS Preloading
 - Web traffic served strictly over TLS 1.3 (with modern TLS 1.2 cipher fallbacks on the edge).
 - HSTS preload header enabled with 2-year duration (`max-age=63072000; includeSubDomains; preload`), qualifying the domain for the HSTS Preload list (Chrome, Firefox, Safari).
+
