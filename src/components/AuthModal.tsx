@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { Icon } from "./Icon";
 import { PASSWORD_RULE_TEXT, isValidPassword } from "@/lib/passwordRules";
+import { getTurnstileToken } from "@/lib/turnstile-client";
 
 type OAuthProviderId = "google" | "facebook" | "apple";
 
@@ -99,9 +100,13 @@ export function AuthModal() {
     }
     setRegLoading(true);
     try {
+      const turnstileToken = await getTurnstileToken("register");
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(turnstileToken ? { "x-turnstile-token": turnstileToken } : {}),
+        },
         body: JSON.stringify({
           firstName,
           lastName,

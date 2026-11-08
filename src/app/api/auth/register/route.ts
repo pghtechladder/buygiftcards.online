@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { isValidPassword, PASSWORD_RULE_TEXT } from "@/lib/passwordRules";
 import { subscribeToKit } from "@/lib/newsletter";
+import { verifyTurnstile, TURNSTILE_HEADER } from "@/lib/turnstile";
+import { getClientIp } from "@/lib/rate-limit";
 
 const BodySchema = z
   .object({
@@ -22,6 +24,10 @@ const BodySchema = z
 
 export async function POST(req: NextRequest) {
   try {
+    const captcha = await verifyTurnstile(req.headers.get(TURNSTILE_HEADER), getClientIp(req.headers));
+    if (!captcha.ok) {
+      return NextResponse.json({ error: "Security verification failed. Please refresh and try again." }, { status: 403 });
+    }
     const parsed = BodySchema.safeParse(await req.json());
     if (!parsed.success) {
       const message = parsed.error.issues[0]?.message || "Invalid registration details";

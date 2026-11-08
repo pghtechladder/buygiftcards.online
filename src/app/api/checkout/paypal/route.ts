@@ -7,6 +7,8 @@ import { isFulfillableBrand } from "@/lib/giftcard-provider";
 import { createPayPalOrder, fulfillPayPalOrderById } from "@/lib/paypal";
 import { auth } from "@/lib/auth";
 import { writeTransactionLog } from "@/lib/logger";
+import { verifyTurnstile, TURNSTILE_HEADER } from "@/lib/turnstile";
+import { getClientIp } from "@/lib/rate-limit";
 import {
   resolveCountryFromHostOrEnv,
   getCountryEnv,
@@ -98,6 +100,23 @@ export async function POST(req: NextRequest) {
 
     // 1. CREATE PAYPAL ORDER
     if (parsed.data.action === "create") {
+      // Behavioral bot check (Cloudflare Turnstile) before any payment order is created
+      const captcha = await verifyTurnstile(req.headers.get(TURNSTILE_HEADER), getClientIp(req.headers));
+      if (!captcha.ok) {
+        writeTransactionLog({
+          phase: "PROCESS_ERROR",
+          process: "PayPal.CreateCheckoutOrder.BotCheck",
+          method: "POST",
+          apiUrl,
+          statusCode: 403,
+          error: `Turnstile rejected: ${captcha.reason}`,
+        });
+        return NextResponse.json(
+          { error: "Security verification failed. Please refresh the page and try again." },
+          { status: 403 }
+        );
+      }
+
       const { items } = parsed.data;
       let subtotalCents = 0;
 

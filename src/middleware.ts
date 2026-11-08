@@ -1,10 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseDeviceFromUserAgent } from "@/lib/device";
+import { checkRateLimit, findRule, getClientIp } from "@/lib/rate-limit";
+
+// Obvious automation clients hitting payment/auth APIs directly (not browsers).
+const BOT_UA = /(curl|wget|python-requests|python-urllib|aiohttp|httpx|go-http-client|okhttp|java\/|libwww|scrapy|headlesschrome|phantomjs|puppeteer|playwright|selenium)/i;
+const SENSITIVE_API = /^\/api\/(checkout|auth|redeem|orders\/lookup)/;
 
 export function middleware(req: NextRequest) {
   const host = (req.headers.get("host") || "").toLowerCase().split(":")[0];
   const proto = req.headers.get("x-forwarded-proto") || "https";
   const pathname = req.nextUrl.pathname;
+
+  // --- Anti-automation: block scripted clients & rate-limit abuse-prone endpoints ---
+  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/webhooks/")) {
+    const ua = req.headers.get("user-agent") || "";
+    if (SENSITIVE_API.test(pathname) && req.method !== "GET" && (!ua || BOT_UA.test(ua))) {
+      return NextResponse.json({ error: "Automated requests are not allowed." }, { status: 403 });
+    }
+
+    const rule = findRule(pathname, req.method);
+    if (rule) {
+      const ip = getClientIp(req.headers);
+      const rl = checkRateLimit(ip, rule);
+      if (!rl.allowed) {
+        return NextResponse.json(
+          { error: "Too many requests. Please wait and try again." },
+          {
+            status: 429,
+            headers: {
+              "Retry-After": String(rl.retryAfterSec),
+              "X-RateLimit-Limit": String(rule.limit),
+              "X-RateLimit-Remaining": "0",
+            },
+          }
+        );
+      }
+    }
+  }
 
   // Detect active storefront country from:
   //   1. Subdomain (`ca.buygiftcards.online`, `sg.buygiftcards.online`, etc.)

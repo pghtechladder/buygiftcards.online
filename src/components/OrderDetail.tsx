@@ -6,6 +6,7 @@ import { signIn, useSession } from "next-auth/react";
 import { Icon } from "./Icon";
 import { PASSWORD_RULE_TEXT, isValidPassword } from "@/lib/passwordRules";
 import { trackRetailEvent } from "@/lib/analytics";
+import { getTurnstileToken } from "@/lib/turnstile-client";
 import { CountryCode, formatCurrency, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -148,9 +149,13 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
 
     setAuthLoading(true);
     try {
+      const turnstileToken = await getTurnstileToken("register");
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(turnstileToken ? { "x-turnstile-token": turnstileToken } : {}),
+        },
         body: JSON.stringify({
           firstName: firstName.trim(),
           lastName: lastName.trim(),

@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { Icon } from "@/components/Icon";
 import { trackRetailEvent } from "@/lib/analytics";
+import { getTurnstileToken } from "@/lib/turnstile-client";
 import { safeRandomId } from "@/lib/device";
 import { CountryCode, formatCurrency, getCurrencyCode, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 
@@ -160,9 +161,13 @@ export function PaymentMethodSelector({
             quantity: i.qty,
           })),
         });
+        const turnstileToken = await getTurnstileToken("checkout");
         const res = await fetch("/api/checkout/paypal", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(turnstileToken ? { "x-turnstile-token": turnstileToken } : {}),
+          },
           body: JSON.stringify({
             action: "create",
             idempotencyKey,
@@ -271,9 +276,13 @@ export function PaymentMethodSelector({
     });
 
     try {
+      const turnstileToken = await getTurnstileToken("checkout");
       const res = await fetch("/api/checkout/paypal", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(turnstileToken ? { "x-turnstile-token": turnstileToken } : {}),
+        },
         body: JSON.stringify({
           action: "create",
           idempotencyKey,

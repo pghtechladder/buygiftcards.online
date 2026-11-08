@@ -3,6 +3,8 @@ import { z } from "zod";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { verifyTurnstile, TURNSTILE_HEADER } from "@/lib/turnstile";
+import { getClientIp } from "@/lib/rate-limit";
 
 const BodySchema = z.object({ email: z.string().email() });
 
@@ -10,6 +12,10 @@ const GENERIC_MESSAGE = "If an account with that email exists, we've sent a pass
 
 export async function POST(req: NextRequest) {
   try {
+    const captcha = await verifyTurnstile(req.headers.get(TURNSTILE_HEADER), getClientIp(req.headers));
+    if (!captcha.ok) {
+      return NextResponse.json({ error: "Security verification failed. Please refresh and try again." }, { status: 403 });
+    }
     const parsed = BodySchema.safeParse(await req.json());
     if (!parsed.success) {
       return NextResponse.json({ error: "Enter a valid email address" }, { status: 400 });

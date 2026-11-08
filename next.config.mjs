@@ -26,12 +26,35 @@ const nextConfig = {
             value: "nosniff",
           },
           {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
+          },
+          {
             key: "Referrer-Policy",
             value: "strict-origin-when-cross-origin",
           },
           {
             key: "Cross-Origin-Opener-Policy",
             value: "same-origin-allow-popups",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://www.googletagmanager.com https://*.google-analytics.com",
+              "connect-src 'self' https://*.paypal.com https://challenges.cloudflare.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.public.blob.vercel-storage.com https://api.zendit.io https://api.tangocard.com",
+              "frame-src 'self' https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com",
+              "img-src 'self' data: blob: https: http:",
+              "style-src 'self' 'unsafe-inline'",
+              "font-src 'self' data:",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self' https://*.paypal.com",
+            ].join("; "),
           },
         ],
       },
