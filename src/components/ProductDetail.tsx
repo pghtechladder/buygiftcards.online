@@ -318,7 +318,15 @@ export function ProductDetail({
                       {v === "egift" ? "eGift Card (Digital)" : "Physical Plastic Card"}
                     </span>
                     <span className="text-[11px] font-normal opacity-75">
-                      {v === "egift" ? "Instant delivery via email" : "Ships via USPS in 5–7 business days"}
+                      {v === "egift"
+                        ? "Instant delivery via email"
+                        : activeCountry === "CA"
+                        ? "Ships via Canada Post in 5–7 business days"
+                        : activeCountry === "SG"
+                        ? "Ships via SingPost in 3–5 business days"
+                        : activeCountry === "AU"
+                        ? "Ships via Australia Post in 5–7 business days"
+                        : "Ships via USPS in 5–7 business days"}
                     </span>
                   </button>
                 ))}

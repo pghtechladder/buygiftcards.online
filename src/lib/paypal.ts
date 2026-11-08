@@ -487,6 +487,8 @@ export async function fulfillPayPalOrderById(
         recipientEmail: meta?.re || finalEmail,
         recipientName: meta?.rn || captured.payerName,
         senderName: meta?.sn || captured.payerName || finalEmail,
+        giftMessage: meta?.gm,
+        poNumber: `${order.orderNumber}-${idx + 1}-${i + 1}`,
       });
 
       writeTransactionLog({

@@ -24,6 +24,12 @@ TANGO_PLATFORM_KEY="apYPfT6HNONpDRUj3CLGWYt7gvIHONpDRUYPfT6Hj"
 TANGO_ACCOUNT_IDENTIFIER="testing1234account"
 TANGO_CUSTOMER_IDENTIFIER="customer-5554"
 
+# eGifter Merchandise Return API Configuration (Physical Gift Cards)
+EGIFTER_API_BASE_URL="https://merchreturns-api.egifter.com"
+EGIFTER_EMAIL="sri@techladder.io"
+EGIFTER_ACCESS_TOKEN=""
+EGIFTER_WEBHOOK_URL="https://sg.buygiftcards.online/api/webhooks/egifter"
+
 # PayPal Provider Configuration for Singapore
 NEXT_PUBLIC_PAYPAL_CLIENT_ID="BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg"
 PAYPAL_CLIENT_ID="BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg"
