@@ -1,13 +1,15 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/brands";
+import { getCategoriesForCountry } from "@/lib/brands";
+import { CountryCode, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { CategoryIcon } from "./CategoryIcon";
 
-export function CategoryStrip() {
+export function CategoryStrip({ country = resolveCountryFromHostOrEnv() }: { country?: CountryCode }) {
+  const categories = getCategoriesForCountry(country);
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       <h2 className="text-2xl font-extrabold mb-5">Shop by category</h2>
       <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1">
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <Link
             key={c}
             href={`/catalog?category=${encodeURIComponent(c)}`}

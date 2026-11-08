@@ -7,32 +7,44 @@ import { BrandLogoStrip } from "@/components/BrandLogoStrip";
 import { PromoTiles } from "@/components/PromoTiles";
 import { ResponsiveHomeSwitcher } from "@/components/ResponsiveHomeSwitcher";
 import { parseDeviceFromUserAgent } from "@/lib/device";
-import { BRANDS } from "@/lib/brands";
+import { getBrandsForCountry } from "@/lib/brands";
+import { getServerCountry } from "@/lib/server-country";
+import { getCurrencySymbol } from "@/lib/country-config";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 
-const discountBrands = BRANDS.filter((b) => b.discountPercent).slice(0, 10);
-const dining = BRANDS.filter((b) => b.category === "Food & Drink").slice(0, 10);
-const travel = BRANDS.filter((b) => b.category === "Travel");
-const bestBrands = BRANDS.slice(0, 16);
-const featured = BRANDS.slice(20, 30);
-
 const defaultDeviceInfo = parseDeviceFromUserAgent("");
 
-export default function HomePage() {
+export default async function HomePage() {
+  const country = await getServerCountry();
+  const activeBrands = getBrandsForCountry(country);
+  const currencySym = getCurrencySymbol(country);
+
+  const discountBrands = activeBrands.filter((b) => b.discountPercent).slice(0, 10);
+  const dining = activeBrands.filter((b) => b.category === "Food & Drink").slice(0, 10);
+  const travel = activeBrands.filter((b) => b.category === "Travel" || b.category === "Sports & Outdoors");
+  const bestBrands = activeBrands.slice(0, 16);
+  const featured = activeBrands.slice(10, 20).length > 0 ? activeBrands.slice(10, 20) : activeBrands.slice(0, 10);
+
   const desktopHomeContent = (
     <>
       <PromoBanner />
-      <Hero />
-      <CategoryStrip />
-      <HolidayGiftGuide />
-      <BrandGrid items={BRANDS.slice(0, 10)} title="Most popular gift cards" />
+      <Hero country={country} />
+      <CategoryStrip country={country} />
+      <HolidayGiftGuide country={country} />
+      <BrandGrid items={activeBrands.slice(0, 10)} title="Most popular gift cards" country={country} />
       <PromoTiles />
-      <BrandGrid items={discountBrands} title="Holiday deals & instant savings" />
-      <BrandGrid items={dining} title="Dining & restaurant gift cards" />
-      <BrandGrid items={travel} title="Travel & experience gift cards" />
+      <BrandGrid items={discountBrands} title="Holiday deals & instant savings" country={country} />
+      <BrandGrid items={dining} title="Dining & restaurant gift cards" country={country} />
+      {travel.length > 0 && (
+        <BrandGrid
+          items={travel}
+          title={country === "CA" ? "Outdoor, sports & experience gift cards" : "Travel & experience gift cards"}
+          country={country}
+        />
+      )}
       <BrandLogoStrip items={bestBrands} title="Shop top gift card brands" />
-      <BrandGrid items={featured} title="Featured gift cards" />
+      <BrandGrid items={featured} title="Featured gift cards" country={country} />
 
       {/* Giftcards.com-style Self-Service Quick Bar */}
       <section aria-labelledby="self-service-heading" className="max-w-7xl mx-auto px-6 py-10">
@@ -93,7 +105,7 @@ export default function HomePage() {
         <div className="bg-white border border-ink-100 rounded-3xl p-8 sm:p-10 shadow-sm space-y-8">
           <div className="max-w-3xl">
             <span className="text-xs font-extrabold uppercase tracking-widest text-brand-600">
-              Instant Digital Delivery • {BRANDS.length}+ Official Brands
+              Instant Digital Delivery • {activeBrands.length}+ Official Brands ({country})
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 mb-2">
               Where to Buy Gift Cards Online — Popular Online Gift Card Platform
@@ -101,9 +113,8 @@ export default function HomePage() {
             <p className="text-sm text-ink-600 leading-relaxed">
               You can buy gift cards online through major multi-brand marketplaces and direct retailer platforms with
               instant digital delivery by email. <strong>BuyGiftCards.online</strong> is a premier online gift card
-              marketplace offering <strong>{BRANDS.length}+ digital eGift and physical gift cards</strong> (including
-              Visa®, Mastercard®, Amazon, Starbucks, Target, Walmart, Apple, DoorDash, Xbox, PlayStation, and One4all
-              Multi-Brand Choice Cards) with customizable photo designs, $0 purchase fees on retail brand cards, and
+              marketplace offering <strong>{activeBrands.length}+ digital eGift and physical gift cards</strong> with
+              customizable photo designs, {currencySym}0 purchase fees on retail brand cards, and
               instant email delivery via Credit/Debit Card or PayPal checkout.
             </p>
           </div>
@@ -117,16 +128,15 @@ export default function HomePage() {
               <li className="flex items-start gap-2">
                 <Icon name="checkCircle" size={16} className="text-brand-600 flex-shrink-0 mt-0.5" />
                 <span>
-                  <strong>BuyGiftCards.online ({BRANDS.length}+ Brands):</strong> Offers {BRANDS.length}+ official
-                  digital eGift and physical cards (including Visa, Mastercard, Amazon, Target, Walmart, Apple, and
-                  Starbucks) starting at $5 with customizable photo designs and instant email delivery.
+                  <strong>BuyGiftCards.online ({activeBrands.length}+ Brands):</strong> Offers {activeBrands.length}+ official
+                  digital eGift and physical cards starting at {currencySym}5 with customizable photo designs and instant email delivery.
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <Icon name="checkCircle" size={16} className="text-brand-600 flex-shrink-0 mt-0.5" />
                 <span>
                   <strong>All-in-One Multi-Brand Choice Cards:</strong> Features the BuyGiftCards.online Choice Card and
-                  One4all gift cards that let recipients swap or split their balance across {BRANDS.length}+ stores at{" "}
+                  One4all gift cards that let recipients swap or split their balance across {activeBrands.length}+ stores at{" "}
                   <Link href="/redeem" className="text-brand-700 font-bold underline">
                     buygiftcards.online/redeem
                   </Link>
@@ -136,8 +146,8 @@ export default function HomePage() {
               <li className="flex items-start gap-2">
                 <Icon name="checkCircle" size={16} className="text-brand-600 flex-shrink-0 mt-0.5" />
                 <span>
-                  <strong>$0 Purchase Fees &amp; Instant Discounts:</strong> Zero purchase fees on all retail, dining,
-                  and gaming brand cards, plus up to 15% instant checkout discounts on featured deals.
+                  <strong>{currencySym}0 Purchase Fees &amp; Instant Discounts:</strong> Zero purchase fees on all retail, dining,
+                  and gaming brand cards, plus instant checkout discounts on featured deals.
                 </span>
               </li>
               <li className="flex items-start gap-2">

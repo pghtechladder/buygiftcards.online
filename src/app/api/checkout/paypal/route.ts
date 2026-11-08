@@ -7,7 +7,12 @@ import { isFulfillableBrand } from "@/lib/giftcard-provider";
 import { createPayPalOrder, fulfillPayPalOrderById } from "@/lib/paypal";
 import { auth } from "@/lib/auth";
 import { writeTransactionLog } from "@/lib/logger";
-import { resolveCountryFromHostOrEnv, getCountryEnv } from "@/lib/country-config";
+import {
+  resolveCountryFromHostOrEnv,
+  getCountryEnv,
+  getCurrencyCode,
+  getCurrencySymbol,
+} from "@/lib/country-config";
 
 const CartItemSchema = z.object({
   brandSlug: z.string(),
@@ -28,6 +33,7 @@ const ActionSchema = z.discriminatedUnion("action", [
     action: z.literal("create"),
     items: z.array(CartItemSchema).min(1).max(20),
     idempotencyKey: z.string().optional(),
+    country: z.string().max(4).optional(),
     landingPage: z.enum(["LOGIN", "GUEST_CHECKOUT", "NO_PREFERENCE"]).optional(),
     paymentMethod: z
       .enum(["paypal", "card", "crypto", "applepay", "googlepay"])
@@ -44,6 +50,7 @@ const ActionSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("capture"),
     paypalOrderId: z.string().min(3),
+    country: z.string().max(4).optional(),
   }),
 ]);
 
@@ -75,8 +82,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid PayPal checkout payload" }, { status: 400 });
     }
 
-    const host = req.headers.get("host");
-    const activeCountry = resolveCountryFromHostOrEnv(host);
+    const host = req.headers.get("x-forwarded-host") || req.headers.get("host");
+    const cookieCountry = req.cookies.get("bgc-country")?.value;
+    const activeCountry = resolveCountryFromHostOrEnv(
+      host,
+      parsed.data.country || cookieCountry
+    );
+    const currencyCode = getCurrencyCode(activeCountry);
+    const currencySym = getCurrencySymbol(activeCountry);
     const reqOrigin = req.nextUrl.origin;
     const siteUrl =
       reqOrigin && reqOrigin.includes("localhost")
@@ -97,7 +110,7 @@ export async function POST(req: NextRequest) {
       }> = [];
 
       for (const item of items) {
-        const brand = getBrand(item.brandSlug);
+        const brand = getBrand(item.brandSlug, activeCountry);
         if (!brand) {
           return NextResponse.json({ error: `Unknown brand: ${item.brandSlug}` }, { status: 400 });
         }
@@ -158,7 +171,7 @@ export async function POST(req: NextRequest) {
           countryCode: parsed.data.payer?.countryCode || activeCountry,
         },
         items: validatedLines.map((line) => ({
-          name: `${line.brandName} ${line.item.deliveryType === "egift" ? "eGift" : "Physical"} Card ($${line.item.amount})`,
+          name: `${line.brandName} ${line.item.deliveryType === "egift" ? "eGift" : "Physical"} Card (${currencySym}${line.item.amount})`,
           description: line.item.recipientEmail
             ? `Gift for ${line.item.recipientName || line.item.recipientEmail}`
             : `Digital Gift Card`,
@@ -182,7 +195,7 @@ export async function POST(req: NextRequest) {
           status: "PENDING",
           subtotalCents,
           totalCents: subtotalCents,
-          currency: "usd",
+          currency: currencyCode.toLowerCase(),
           stripeCheckoutSessionId: sessionKey,
           stripePaymentIntentId: JSON.stringify(
             validatedLines.map((l) => ({

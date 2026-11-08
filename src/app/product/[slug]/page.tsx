@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BRANDS, getBrand, logoUrl } from "@/lib/brands";
+import { BRANDS_CA } from "@/lib/brands-ca";
+import { getServerCountry } from "@/lib/server-country";
+import { getCurrencyCode, getCurrencySymbol } from "@/lib/country-config";
 import { ProductDetail } from "@/components/ProductDetail";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
 
 export function generateStaticParams() {
-  return BRANDS.map((brand) => ({ slug: brand.slug }));
+  const slugs = new Set([...BRANDS.map((b) => b.slug), ...BRANDS_CA.map((b) => b.slug)]);
+  return Array.from(slugs).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -15,16 +19,18 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const brand = getBrand(slug);
+  const country = await getServerCountry();
+  const brand = getBrand(slug, country);
   if (!brand || brand.hidden) {
     return {
       title: "Gift Card Not Found",
     };
   }
 
+  const currencySym = getCurrencySymbol(country);
   const discountLabel = brand.discountPercent ? ` (${brand.discountPercent}% Off)` : "";
   const title = `Buy ${brand.name} Gift Card${discountLabel}`;
-  const rawDesc = `Buy ${brand.name} gift cards online ($${brand.min}–$${brand.max}) with instant email delivery at buygiftcards.online. Pay with Card or PayPal with $0 fees.`;
+  const rawDesc = `Buy ${brand.name} gift cards online (${currencySym}${brand.min}–${currencySym}${brand.max}) with instant email delivery at buygiftcards.online. Pay with Card or PayPal with ${currencySym}0 fees.`;
   const description = rawDesc.length <= 160 ? rawDesc : rawDesc.slice(0, 157) + "...";
   const canonicalUrl = `${SITE_URL}/product/${brand.slug}`;
 
@@ -78,8 +84,12 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const brand = getBrand(slug);
+  const country = await getServerCountry();
+  const brand = getBrand(slug, country);
   if (!brand || brand.hidden) notFound();
+
+  const currencyCode = getCurrencyCode(country);
+  const currencySym = getCurrencySymbol(country);
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -88,7 +98,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         "@type": "Product",
         "@id": `${SITE_URL}/product/${brand.slug}#product`,
         name: `${brand.name} Gift Card`,
-        description: `Buy ${brand.name} digital gift cards online ($${brand.min}–$${brand.max}). ${brand.description} Instant email delivery via buygiftcards.online.`,
+        description: `Buy ${brand.name} digital gift cards online (${currencySym}${brand.min}–${currencySym}${brand.max}). ${brand.description} Instant email delivery via buygiftcards.online.`,
         image: brand.domain === "buygiftcards.online" ? `${SITE_URL}/logo-mark-512.png` : logoUrl(brand.domain, 256),
         sku: `BGC-${brand.slug.toUpperCase()}`,
         mpn: `EGIFT-${brand.slug.toUpperCase()}`,
@@ -100,7 +110,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         offers: {
           "@type": "AggregateOffer",
           url: `${SITE_URL}/product/${brand.slug}`,
-          priceCurrency: "USD",
+          priceCurrency: currencyCode,
           lowPrice: brand.min.toFixed(2),
           highPrice: brand.max.toFixed(2),
           offerCount: brand.denominations.length,
@@ -181,7 +191,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
-      <ProductDetail brand={brand} />
+      <ProductDetail brand={brand} country={country} />
     </>
   );
 }

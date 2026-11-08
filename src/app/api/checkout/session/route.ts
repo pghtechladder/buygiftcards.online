@@ -9,7 +9,8 @@ import { writeTransactionLog } from "@/lib/logger";
 export async function GET(req: NextRequest) {
   const apiUrl = req.nextUrl.toString();
   const hostHeader = req.headers.get("x-forwarded-host") || req.headers.get("host") || req.nextUrl.host;
-  const activeCountry = resolveCountryFromHostOrEnv(hostHeader);
+  const cookieCountry = req.cookies.get("bgc-country")?.value;
+  const activeCountry = resolveCountryFromHostOrEnv(hostHeader, cookieCountry);
   const paypalToken = req.nextUrl.searchParams.get("token");
   const rawSessionId = req.nextUrl.searchParams.get("session_id");
   const sessionId = rawSessionId || (paypalToken ? `paypal_${paypalToken}` : null);

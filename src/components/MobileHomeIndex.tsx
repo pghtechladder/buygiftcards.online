@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BRANDS, CATEGORIES, Brand, chargeAmountCents } from "@/lib/brands";
+import { getBrandsForCountry, getCategoriesForCountry, Brand, chargeAmountCents } from "@/lib/brands";
+import { CountryCode, formatCurrency, getCurrencySymbol, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { useCart } from "@/context/CartContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { useSession } from "next-auth/react";
@@ -11,8 +12,6 @@ import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
 import { DeviceInfo } from "@/lib/device";
 import { CountrySelector } from "./CountrySelector";
-
-const fmt = (n: number) => `$${n.toFixed(2)}`;
 
 const QUICK_AMOUNTS = [10, 25, 50, 100];
 
@@ -22,16 +21,28 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
   const { data: session } = useSession();
   const { open: openAuthModal } = useAuthModal();
 
+  const [country, setCountry] = useState<CountryCode>(() => resolveCountryFromHostOrEnv());
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCountry(resolveCountryFromHostOrEnv(window.location.host));
+    }
+  }, []);
+
+  const activeBrands = getBrandsForCountry(country);
+  const activeCategories = getCategoriesForCountry(country);
+  const currencySym = getCurrencySymbol(country);
+  const fmt = (n: number) => formatCurrency(n, country);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [quickBuyBrand, setQuickBuyBrand] = useState<Brand | null>(null);
   const [quickBuyAmount, setQuickBuyAmount] = useState<number>(25);
   const [justAddedSlug, setJustAddedSlug] = useState<string | null>(null);
 
-  const popularBrands = BRANDS.slice(0, 12);
-  const dealBrands = BRANDS.filter((b) => b.discountPercent).slice(0, 10);
+  const popularBrands = activeBrands.slice(0, 12);
+  const dealBrands = activeBrands.filter((b) => b.discountPercent).slice(0, 10);
 
-  const filteredBrands = BRANDS.filter((b) => {
+  const filteredBrands = activeBrands.filter((b) => {
     const matchesCategory = selectedCategory === "All" || b.category === selectedCategory;
     const matchesSearch =
       !searchQuery.trim() ||
@@ -107,7 +118,7 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
           Buy Gift Cards Online — Instant eGift Delivery
         </h1>
         <p className="text-xs text-white/85 mb-4">
-          Buy gift cards online from {BRANDS.length}+ official brands · One-tap Credit/Debit or PayPal checkout · Instant email delivery
+          Buy gift cards online from {activeBrands.length}+ official brands · One-tap Credit/Debit or PayPal checkout · Instant email delivery
         </p>
 
         {/* Mobile Instant Search Bar */}
@@ -177,11 +188,11 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-extrabold text-ink-900 uppercase tracking-wide">Browse Categories</h2>
           <Link href="/catalog" className="text-xs font-bold text-brand-600">
-            See All ({BRANDS.length}) &rarr;
+            See All ({activeBrands.length}) &rarr;
           </Link>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4">
-          {["All", ...CATEGORIES].map((cat) => {
+          {["All", ...activeCategories].map((cat) => {
             const active = selectedCategory === cat;
             return (
               <button
@@ -237,12 +248,12 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
                       <div className="text-[11px] text-ink-500 font-semibold mt-0.5">
                         {b.discountPercent ? (
                           <>
-                            <span className="line-through text-ink-400 mr-1">${b.min}</span>
+                            <span className="line-through text-ink-400 mr-1">{currencySym}{b.min}</span>
                             <span className="text-emerald-700 font-extrabold">From {fmt(minCharge)}</span>
                           </>
                         ) : (
                           <>
-                            ${b.min} – ${b.max}
+                            {currencySym}{b.min} – {currencySym}{b.max}
                           </>
                         )}
                       </div>
@@ -309,7 +320,7 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
                       </span>
                     </div>
                     <div className="text-[11px] text-ink-500 mt-0.5">
-                      <span className="line-through text-ink-400 mr-1">${b.min}</span>
+                      <span className="line-through text-ink-400 mr-1">{currencySym}{b.min}</span>
                       <span className="text-emerald-700 font-bold">From {fmt(minCharge)}</span> · Tap to buy
                     </div>
                   </div>
@@ -365,12 +376,12 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
                     <div className="text-[11px] text-ink-500 font-medium mt-0.5">
                       {b.discountPercent ? (
                         <>
-                          <span className="line-through text-ink-400 mr-1">${b.min}</span>
+                          <span className="line-through text-ink-400 mr-1">{currencySym}{b.min}</span>
                           <span className="text-emerald-700 font-extrabold">From {fmt(minCharge)}</span>
                         </>
                       ) : (
                         <>
-                          ${b.min} – ${b.max} · eGift
+                          {currencySym}{b.min} – {currencySym}{b.max} · eGift
                         </>
                       )}
                     </div>
@@ -420,7 +431,7 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
             href="/catalog"
             className="inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl bg-ink-950 text-white font-extrabold text-sm shadow"
           >
-            Browse All {BRANDS.length} Brands &amp; Filters
+            Browse All {activeBrands.length} Brands &amp; Filters
             <Icon name="chevronRight" size={16} />
           </Link>
         </div>
@@ -493,11 +504,11 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
                     >
                       {quickBuyBrand.discountPercent ? (
                         <>
-                          <span className="text-[10px] font-semibold line-through opacity-50 leading-none">${amt}</span>
+                          <span className="text-[10px] font-semibold line-through opacity-50 leading-none">{currencySym}{amt}</span>
                           <span className="leading-tight">{fmt(discountedAmt)}</span>
                         </>
                       ) : (
-                        <>${amt}</>
+                        <>{currencySym}{amt}</>
                       )}
                     </button>
                   );
@@ -515,7 +526,7 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
                     className="py-3.5 rounded-xl border-2 border-brand-600 text-brand-700 font-extrabold text-sm flex items-center justify-center gap-1.5"
                   >
                     <Icon name="cart" size={16} />
-                    Add {quickBuyBrand.discountPercent ? fmt(quickBuyCharge) : `$${quickBuyAmount}`}
+                    Add {quickBuyBrand.discountPercent ? fmt(quickBuyCharge) : `${currencySym}${quickBuyAmount}`}
                   </button>
                   <button
                     type="button"
@@ -523,7 +534,7 @@ export function MobileHomeIndex({ deviceInfo }: { deviceInfo?: DeviceInfo }) {
                     className="py-3.5 rounded-xl bg-[#FFC439] text-[#003087] font-extrabold text-sm flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     <Icon name="zap" size={16} />
-                    Buy Now · {quickBuyBrand.discountPercent ? fmt(quickBuyCharge) : `$${quickBuyAmount}`}
+                    Buy Now · {quickBuyBrand.discountPercent ? fmt(quickBuyCharge) : `${currencySym}${quickBuyAmount}`}
                   </button>
                 </div>
               );

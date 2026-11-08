@@ -6,12 +6,11 @@ import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { getBrand, chargeAmountCents } from "@/lib/brands";
+import { CountryCode, formatCurrency, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Icon } from "@/components/Icon";
 import { PaymentMethodSelector } from "@/components/PaymentMethodSelector";
 import { parseDeviceFromUserAgent, DeviceInfo } from "@/lib/device";
-
-const fmt = (n: number) => `$${n.toFixed(2)}`;
 
 export default function DedicatedCheckoutPage() {
   const { data: session } = useSession();
@@ -20,9 +19,11 @@ export default function DedicatedCheckoutPage() {
 
   const [device, setDevice] = useState<DeviceInfo | null>(null);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [country, setCountry] = useState<CountryCode>(() => resolveCountryFromHostOrEnv());
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    setCountry(resolveCountryFromHostOrEnv(window.location.host));
     const check = () => {
       const info = parseDeviceFromUserAgent(navigator.userAgent);
       setDevice(info);
@@ -32,6 +33,8 @@ export default function DedicatedCheckoutPage() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  const fmt = (n: number) => formatCurrency(n, country);
 
   if (items.length === 0) {
     return (
@@ -94,7 +97,7 @@ export default function DedicatedCheckoutPage() {
 
             <div className="divide-y divide-ink-100 space-y-3 max-h-[300px] overflow-y-auto pr-1">
               {items.map((item) => {
-                const brand = getBrand(item.brandSlug);
+                const brand = getBrand(item.brandSlug, country);
                 const chargePerCard = brand
                   ? chargeAmountCents(brand, item.amount) / 100
                   : item.amount;

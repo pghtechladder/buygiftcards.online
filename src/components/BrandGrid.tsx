@@ -1,10 +1,19 @@
 import Link from "next/link";
 import { Brand, chargeAmountCents } from "@/lib/brands";
+import { CountryCode, formatCurrency, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { BrandLogo } from "./BrandLogo";
 
-const fmt = (n: number) => `$${n.toFixed(2)}`;
-
-export function BrandGrid({ items, title }: { items: Brand[]; title?: string }) {
+export function BrandGrid({
+  items,
+  title,
+  country,
+}: {
+  items: Brand[];
+  title?: string;
+  country?: CountryCode;
+}) {
+  const activeCountry = country ?? resolveCountryFromHostOrEnv();
+  const fmt = (n: number) => formatCurrency(n, activeCountry);
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       {title && <h2 className="text-2xl font-extrabold mb-5">{title}</h2>}

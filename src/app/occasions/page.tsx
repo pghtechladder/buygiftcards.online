@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BRANDS } from "@/lib/brands";
+import { getBrandsForCountry } from "@/lib/brands";
+import { getServerCountry } from "@/lib/server-country";
+import { getCurrencySymbol } from "@/lib/country-config";
 import { BrandGrid } from "@/components/BrandGrid";
 import { Icon } from "@/components/Icon";
 
@@ -77,15 +79,19 @@ export default async function OccasionsPage({
   searchParams: Promise<{ occasion?: string }>;
 }) {
   const { occasion } = await searchParams;
+  const country = await getServerCountry();
+  const activeBrands = getBrandsForCountry(country);
+  const currencySym = getCurrencySymbol(country);
   const active = OCCASIONS.find((o) => o.id === occasion) ?? OCCASIONS[0];
 
-  const featuredBrands = active.slugs
-    .map((s) => BRANDS.find((b) => b.slug === s))
+  const matchedFeatured = active.slugs
+    .map((s) => activeBrands.find((b) => b.slug === s))
     .filter((b): b is NonNullable<typeof b> => Boolean(b));
+  const featuredBrands = matchedFeatured.length >= 6 ? matchedFeatured : activeBrands.slice(0, 10);
 
-  const stockingStuffers = BRANDS.filter((b) => b.min <= 15).slice(0, 10);
-  const crowdPleasers = BRANDS.slice(0, 10);
-  const cozyNights = BRANDS.filter((b) => ["Food & Drink", "Entertainment"].includes(b.category)).slice(0, 10);
+  const stockingStuffers = activeBrands.filter((b) => b.min <= 15).slice(0, 10);
+  const crowdPleasers = activeBrands.slice(0, 10);
+  const cozyNights = activeBrands.filter((b) => ["Food & Drink", "Entertainment", "Gaming"].includes(b.category)).slice(0, 10);
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
@@ -139,18 +145,18 @@ export default async function OccasionsPage({
         </div>
       </div>
 
-      <BrandGrid items={featuredBrands} title={`Top picks for ${active.title}`} />
+      <BrandGrid items={featuredBrands} title={`Top picks for ${active.title}`} country={country} />
 
       {active.id === "holidays" && (
         <>
           <div id="stocking-stuffers">
-            <BrandGrid items={stockingStuffers} title="🎄 Stocking stuffers ($10 – $15+)" />
+            <BrandGrid items={stockingStuffers} title={`🎄 Stocking stuffers (${currencySym}10 – ${currencySym}15+)`} country={country} />
           </div>
           <div id="crowd-pleasers">
-            <BrandGrid items={crowdPleasers} title="🎁 Holiday crowd-pleasers" />
+            <BrandGrid items={crowdPleasers} title="🎁 Holiday crowd-pleasers" country={country} />
           </div>
           <div id="cozy-nights">
-            <BrandGrid items={cozyNights} title="❄️ Cozy winter nights in (Dining & Streaming)" />
+            <BrandGrid items={cozyNights} title="❄️ Cozy winter nights in (Dining & Streaming)" country={country} />
           </div>
         </>
       )}

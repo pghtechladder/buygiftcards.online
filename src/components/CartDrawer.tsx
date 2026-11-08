@@ -6,13 +6,12 @@ import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { getBrand, chargeAmountCents } from "@/lib/brands";
+import { CountryCode, formatCurrency, getCurrencyCode, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
 import { trackRetailEvent } from "@/lib/analytics";
 import { parseDeviceFromUserAgent, DeviceInfo } from "@/lib/device";
-
-const fmt = (n: number) => `$${n.toFixed(2)}`;
 
 declare global {
   interface Window {
@@ -43,6 +42,16 @@ export function CartDrawer() {
   const { items, isOpen, setOpen, updateQty, remove, total, faceTotal, savingsTotal } = useCart();
   const [device, setDevice] = useState<DeviceInfo | null>(null);
   const [isMobileScreen, setIsMobileScreen] = useState(false);
+  const [country, setCountry] = useState<CountryCode>(() => resolveCountryFromHostOrEnv());
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCountry(resolveCountryFromHostOrEnv(window.location.host));
+    }
+  }, [isOpen]);
+
+  const fmt = (n: number) => formatCurrency(n, country);
+  const currencyCode = getCurrencyCode(country);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -72,7 +81,7 @@ export function CartDrawer() {
     if (!isOpen || items.length === 0) return;
 
     trackRetailEvent("view_cart", {
-      currency: "USD",
+      currency: currencyCode,
       value: total,
       items: items.map((i) => ({
         item_id: i.brandSlug,
@@ -82,7 +91,7 @@ export function CartDrawer() {
         quantity: i.qty,
       })),
     });
-  }, [isOpen, items, total]);
+  }, [isOpen, items, total, currencyCode]);
 
   if (!isOpen) return null;
 
@@ -141,7 +150,7 @@ export function CartDrawer() {
               {/* Cart Line Items */}
               <div className="divide-y divide-ink-100 border border-ink-100 rounded-2xl bg-white px-3.5 sm:px-4">
                 {items.map((item) => {
-                  const brand = getBrand(item.brandSlug);
+                  const brand = getBrand(item.brandSlug, country);
                   const chargePerCard = brand
                     ? chargeAmountCents(brand, item.amount) / 100
                     : item.amount;

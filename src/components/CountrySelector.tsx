@@ -17,19 +17,56 @@ export function CountrySelector({ variant = "header" }: { variant?: "header" | "
     setSelectedCountry(detected);
   }, []);
 
-  const handleCountryChange = (newCode: CountryCode) => {
+  const handleCountryChange = async (newCode: CountryCode) => {
     setSelectedCountry(newCode);
     const targetMarket = COUNTRY_MARKETS[newCode];
     if (!targetMarket || typeof window === "undefined") return;
 
+    // Persist country selection in cookie (and shared `.buygiftcards.online` cookie on production)
+    document.cookie = `bgc-country=${newCode}; path=/; max-age=31536000; SameSite=Lax`;
+    if (window.location.hostname.endsWith("buygiftcards.online")) {
+      document.cookie = `bgc-country=${newCode}; domain=.buygiftcards.online; path=/; max-age=31536000; SameSite=Lax`;
+    }
+
     const currentHost = window.location.host.toLowerCase();
     const targetHost = new URL(targetMarket.siteUrl).host.toLowerCase();
 
-    // Redirect immediately to the selected country's dedicated storefront domain
-    // e.g. US -> https://buygiftcards.online, CA -> https://ca.buygiftcards.online, SG -> https://sg.buygiftcards.online
+    const activateOnCurrentDomain = () => {
+      const url = new URL(window.location.href);
+      if (newCode === "US") {
+        url.searchParams.delete("country");
+      } else {
+        url.searchParams.set("country", newCode);
+      }
+      window.location.href = url.toString();
+    };
+
+    // If on localhost or preview URL, stay on current host with `?country=<CODE>`
+    if (currentHost.includes("localhost") || currentHost.includes("127.0.0.1")) {
+      activateOnCurrentDomain();
+      return;
+    }
+
+    // Try redirecting to the selected country's dedicated storefront domain
+    // (`https://ca.buygiftcards.online`, `https://sg.buygiftcards.online`, etc.)
+    // If the subdomain DNS is not yet propagated, activate the country portal on the current domain immediately!
     if (currentHost !== targetHost) {
-      const destUrl = `${targetMarket.siteUrl}${window.location.pathname}${window.location.search}`;
-      window.location.href = destUrl;
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 1200);
+        await fetch(`${targetMarket.siteUrl}/favicon.ico`, {
+          mode: "no-cors",
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        const destUrl = `${targetMarket.siteUrl}${window.location.pathname}${window.location.search}`;
+        window.location.href = destUrl;
+      } catch {
+        activateOnCurrentDomain();
+      }
+    } else {
+      activateOnCurrentDomain();
     }
   };
 

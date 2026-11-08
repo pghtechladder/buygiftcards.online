@@ -17,7 +17,18 @@ export function getPayPalCredentials(country: CountryCode = resolveCountryFromHo
     getCountryEnv("PAYPAL_CLIENT_SECRET", country) || DEFAULT_PAYPAL_CLIENT_SECRET;
   const configuredBaseUrl =
     getCountryEnv("PAYPAL_API_BASE_URL", country) || PRODUCTION_PAYPAL_API_BASE_URL;
-  const currency = getCountryEnv("PAYPAL_CURRENCY", country, "USD") || "USD";
+  const currency =
+    getCountryEnv("PAYPAL_CURRENCY", country) ||
+    getCountryEnv("COUNTRY_CURRENCY", country) ||
+    (country === "CA"
+      ? "CAD"
+      : country === "SG"
+      ? "SGD"
+      : country === "UK"
+      ? "GBP"
+      : country === "AU"
+      ? "AUD"
+      : "USD");
   return { clientId, clientSecret, configuredBaseUrl, currency };
 }
 
@@ -350,7 +361,6 @@ export async function fulfillPayPalOrderById(
 }> {
   const { prisma } = await import("./prisma");
   const { buildProvider } = await import("./giftcard-provider");
-  const activeGiftCardProvider = buildProvider(country);
   const { sendOrderConfirmationEmail, sendRecipientGiftEmail } = await import("./email");
   const { triggerKitTrustpilotWorkflow } = await import("./newsletter");
 
@@ -360,6 +370,19 @@ export async function fulfillPayPalOrderById(
     where: { stripeCheckoutSessionId: sessionKey },
     include: { items: { include: { codes: true } } },
   });
+
+  // If the stored order specifies a currency (e.g. "cad" for Canada), ensure activeGiftCardProvider uses that country
+  const effectiveCountry: CountryCode =
+    existing?.currency?.toLowerCase() === "cad"
+      ? "CA"
+      : existing?.currency?.toLowerCase() === "sgd"
+      ? "SG"
+      : existing?.currency?.toLowerCase() === "gbp"
+      ? "UK"
+      : existing?.currency?.toLowerCase() === "aud"
+      ? "AU"
+      : country;
+  const activeGiftCardProvider = buildProvider(effectiveCountry);
 
   if (existing && existing.status === "FULFILLED" && existing.items.some((i) => i.codes.length > 0)) {
     const existingAccount = await prisma.user.findUnique({
@@ -375,7 +398,7 @@ export async function fulfillPayPalOrderById(
   }
 
   // Capture via PayPal Orders V2 API
-  const captured = await capturePayPalOrder(paypalOrderId, country);
+  const captured = await capturePayPalOrder(paypalOrderId, effectiveCountry);
   if (captured.status !== "COMPLETED") {
     throw new Error(`PayPal payment status is ${captured.status} (expected COMPLETED)`);
   }

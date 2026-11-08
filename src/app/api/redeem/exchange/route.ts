@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getBrand, HOUSE_BRAND_SLUGS } from "@/lib/brands";
-import { giftCardProvider } from "@/lib/giftcard-provider";
+import { buildProvider } from "@/lib/giftcard-provider";
+import { CountryCode, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { generateDemoCode, generateDemoPin } from "@/lib/order";
 import { sendRedemptionConfirmationEmail } from "@/lib/email";
 import { writeTransactionLog } from "@/lib/logger";
@@ -109,6 +110,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Determine country from request or stored order currency
+    const hostHeader = req.headers.get("x-forwarded-host") || req.headers.get("host");
+    const cookieCountry = req.cookies.get("bgc-country")?.value;
+    const orderCurrency = sourceCard.orderItem.order.currency?.toLowerCase();
+    const activeCountry: CountryCode =
+      orderCurrency === "cad"
+        ? "CA"
+        : orderCurrency === "sgd"
+        ? "SG"
+        : orderCurrency === "gbp"
+        ? "UK"
+        : orderCurrency === "aud"
+        ? "AU"
+        : resolveCountryFromHostOrEnv(hostHeader, cookieCountry);
+    const activeProvider = buildProvider(activeCountry);
+
     // Validate all requested merchant brands and compute total cents
     let totalRequestedCents = 0;
     const validatedSelections: {
@@ -125,7 +142,7 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-      const brand = getBrand(sel.brandSlug);
+      const brand = getBrand(sel.brandSlug, activeCountry);
       if (!brand) {
         return NextResponse.json(
           { error: `Unknown brand "${sel.brandSlug}".` },
@@ -194,7 +211,7 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        const issued = await giftCardProvider.issue({
+        const issued = await activeProvider.issue({
           brandSlug: sel.brandSlug,
           amountCents: sel.amountCents,
           deliveryType: "egift",

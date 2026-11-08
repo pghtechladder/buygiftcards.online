@@ -6,8 +6,7 @@ import { signIn, useSession } from "next-auth/react";
 import { Icon } from "./Icon";
 import { PASSWORD_RULE_TEXT, isValidPassword } from "@/lib/passwordRules";
 import { trackRetailEvent } from "@/lib/analytics";
-
-const fmt = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+import { CountryCode, formatCurrency, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 
 const STATUS_STYLE: Record<string, string> = {
   PAID: "bg-brand-50 text-brand-700",
@@ -21,6 +20,7 @@ type Order = {
   orderNumber: string;
   customerEmail: string;
   hasAccount?: boolean;
+  currency?: string;
   subtotalCents: number;
   totalCents: number;
   taxCents: number | null;
@@ -48,6 +48,25 @@ type Order = {
 export function OrderDetail({ orderNumber, email }: { orderNumber: string; email: string }) {
   const { data: session, status: sessionStatus } = useSession();
   const [order, setOrder] = useState<Order | null>(null);
+  const [country, setCountry] = useState<CountryCode>(() => resolveCountryFromHostOrEnv());
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCountry(resolveCountryFromHostOrEnv(window.location.host));
+    }
+  }, []);
+
+  const orderCountry: CountryCode =
+    order?.currency?.toLowerCase() === "cad"
+      ? "CA"
+      : order?.currency?.toLowerCase() === "sgd"
+      ? "SG"
+      : order?.currency?.toLowerCase() === "gbp"
+      ? "UK"
+      : order?.currency?.toLowerCase() === "aud"
+      ? "AU"
+      : country;
+  const fmt = (cents: number) => formatCurrency(cents / 100, orderCountry);
   const [error, setError] = useState<string | null>(null);
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);

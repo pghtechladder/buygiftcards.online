@@ -7,14 +7,13 @@ import { useCart } from "@/context/CartContext";
 import { Icon } from "@/components/Icon";
 import { trackRetailEvent } from "@/lib/analytics";
 import { safeRandomId } from "@/lib/device";
+import { CountryCode, formatCurrency, getCurrencyCode, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 
 export type PaymentChoice = "paypal" | "card" | "googlepay" | "applepay" | "crypto";
 
 const PAYPAL_CLIENT_ID =
   process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
   "BAAvF_aLV7jrJ7SZG0qB5WSUEoJH8GqF88uriChuLdsgV6-XWKmbVZnexjrv8-d7VM8K_QwTIqeQqo6ZOg";
-
-const fmt = (n: number) => `$${n.toFixed(2)}`;
 
 interface PaymentMethodSelectorProps {
   compact?: boolean;
@@ -28,6 +27,16 @@ export function PaymentMethodSelector({
   const router = useRouter();
   const { data: session } = useSession();
   const { items, total, clear } = useCart();
+
+  const [country, setCountry] = useState<CountryCode>(() => resolveCountryFromHostOrEnv());
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCountry(resolveCountryFromHostOrEnv(window.location.host));
+    }
+  }, []);
+
+  const currencyCode = getCurrencyCode(country);
+  const fmt = (n: number) => formatCurrency(n, country);
 
   // Progressive disclosure state:
   // Initially show limited top options (PayPal + Debit/Credit Card) and a neat
@@ -102,12 +111,12 @@ export function PaymentMethodSelector({
     script.id = "paypal-js-sdk";
     script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(
       PAYPAL_CLIENT_ID
-    )}&currency=USD&intent=capture&components=buttons,funding-eligibility&enable-funding=card,venmo,paylater`;
+    )}&currency=${encodeURIComponent(currencyCode)}&intent=capture&components=buttons,funding-eligibility&enable-funding=card,venmo,paylater`;
     script.async = true;
     script.onload = () => setSdkReady(true);
     script.onerror = () => setSdkReady(false);
     document.body.appendChild(script);
-  }, [items.length]);
+  }, [items.length, currencyCode]);
 
   // Render inline PayPal / Card smart buttons only when expanded
   useEffect(() => {
@@ -141,7 +150,7 @@ export function PaymentMethodSelector({
       createOrder: async () => {
         setError(null);
         trackRetailEvent("begin_checkout", {
-          currency: "USD",
+          currency: currencyCode,
           value: total,
           payment_type: `inline_${selectedMethod}`,
           items: items.map((i) => ({
@@ -158,6 +167,7 @@ export function PaymentMethodSelector({
             action: "create",
             idempotencyKey,
             paymentMethod: selectedMethod,
+            country,
             items: serializedItems,
           }),
         });
@@ -177,6 +187,7 @@ export function PaymentMethodSelector({
             body: JSON.stringify({
               action: "capture",
               paypalOrderId: data.orderID,
+              country,
             }),
           });
           const captured = await res.json();
@@ -186,7 +197,7 @@ export function PaymentMethodSelector({
           trackRetailEvent("purchase", {
             transaction_id: captured.order.orderNumber,
             paypal_order_id: data.orderID,
-            currency: "USD",
+            currency: currencyCode,
             value: total,
             items: items.map((i) => ({
               item_id: i.brandSlug,
@@ -248,7 +259,7 @@ export function PaymentMethodSelector({
         : "NO_PREFERENCE";
 
     trackRetailEvent("begin_checkout", {
-      currency: "USD",
+      currency: currencyCode,
       value: total,
       payment_type: method,
       items: items.map((i) => ({
@@ -268,11 +279,12 @@ export function PaymentMethodSelector({
           idempotencyKey,
           landingPage,
           paymentMethod: method,
+          country,
           payer: {
             givenName: cryptoFirstName.trim() || "Valued",
             surname: cryptoLastName.trim() || "Customer",
             email: cryptoEmail.trim() || undefined,
-            countryCode: "US",
+            countryCode: country === "UK" ? "GB" : country,
           },
           items: serializedItems,
         }),
@@ -614,7 +626,7 @@ export function PaymentMethodSelector({
                 Pay with Crypto (PayPal Orders V2 APM)
               </span>
               <span className="text-[11px] font-semibold text-indigo-700 bg-indigo-100/80 px-2 py-0.5 rounded-md">
-                USD Settlement
+                {currencyCode} Settlement
               </span>
             </div>
 

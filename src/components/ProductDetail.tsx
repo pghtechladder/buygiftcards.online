@@ -3,14 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Brand, BRANDS, HOUSE_BRAND_SLUGS } from "@/lib/brands";
+import { Brand, getBrandsForCountry, HOUSE_BRAND_SLUGS } from "@/lib/brands";
+import {
+  CountryCode,
+  formatCurrency,
+  getCurrencyCode,
+  getCurrencySymbol,
+  resolveCountryFromHostOrEnv,
+} from "@/lib/country-config";
 import { BrandLogo } from "./BrandLogo";
 import { BrandGrid } from "./BrandGrid";
 import { useCart } from "@/context/CartContext";
 import { Icon } from "./Icon";
 import { trackRetailEvent } from "@/lib/analytics";
 
-const fmt = (n: number) => `$${n.toFixed(2)}`;
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -23,8 +29,20 @@ const OCCASION_DESIGNS = [
   { id: "Celebration", label: "🥂 Congratulations", badge: "CONGRATS!", gradient: "linear-gradient(135deg, #1e293b, #334155, #eab308)" },
 ];
 
-export function ProductDetail({ brand: b }: { brand: Brand }) {
+export function ProductDetail({
+  brand: b,
+  country,
+}: {
+  brand: Brand;
+  country?: CountryCode;
+}) {
   const router = useRouter();
+  const activeCountry = country ?? resolveCountryFromHostOrEnv();
+  const currencySym = getCurrencySymbol(activeCountry);
+  const currencyCode = getCurrencyCode(activeCountry);
+  const fmt = (n: number) => formatCurrency(n, activeCountry);
+  const activeBrands = getBrandsForCountry(activeCountry);
+
   const { add, setOpen: setCartOpen } = useCart();
   const [amount, setAmount] = useState<number>(b.denominations[1] ?? b.denominations[0]);
   const [custom, setCustom] = useState("");
@@ -53,11 +71,11 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
   const chargeAmt = b.discountPercent ? Math.round(amt * (1 - b.discountPercent / 100) * 100) / 100 : amt;
 
   const activeDesign = OCCASION_DESIGNS.find((d) => d.id === designId) ?? OCCASION_DESIGNS[0];
-  const relatedBrands = BRANDS.filter((x) => x.category === b.category && x.slug !== b.slug).slice(0, 5);
+  const relatedBrands = activeBrands.filter((x) => x.category === b.category && x.slug !== b.slug).slice(0, 5);
 
   useEffect(() => {
     trackRetailEvent("view_item", {
-      currency: "USD",
+      currency: currencyCode,
       value: amt,
       items: [
         {
@@ -252,7 +270,7 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
           </div>
           <h1 className="text-3xl font-extrabold mb-2">Buy {b.name} Gift Card Online</h1>
           <p className="text-sm text-ink-600 mb-7 leading-relaxed">
-            Buy a <strong>{b.name} gift card online</strong> (${b.min}–${b.max}) with instant digital email delivery
+            Buy a <strong>{b.name} gift card online</strong> ({currencySym}{b.min}–{currencySym}{b.max}) with instant digital email delivery
             {b.discountPercent ? ` and save ${b.discountPercent}% automatically at checkout` : ""}.{" "}
             {b.description}
           </p>
@@ -389,7 +407,7 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
                   )}
                 </button>
               ))}
-              {b.min !== b.max && (
+              {!b.fixedOnly && b.min !== b.max && (
                 <button
                   type="button"
                   onClick={() => {
@@ -400,7 +418,7 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
                     isCustom ? "border-brand-600 bg-brand-50 text-brand-600" : "border-ink-100 text-ink-600 hover:border-brand-200"
                   }`}
                 >
-                  Custom (${b.min}–${b.max})
+                  Custom ({currencySym}{b.min}–{currencySym}{b.max})
                 </button>
               )}
             </div>
@@ -415,7 +433,7 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
                   onChange={(e) => setCustom(e.target.value)}
                   className="w-48 px-4 py-3 border-2 border-ink-100 rounded-xl font-bold outline-none focus:border-brand-500"
                 />
-                <span className="text-xs text-ink-400">Enter whole dollar amount between ${b.min} and ${b.max}</span>
+                <span className="text-xs text-ink-400">Enter whole dollar amount between {currencySym}{b.min} and {currencySym}{b.max}</span>
               </div>
             )}
           </div>
@@ -670,7 +688,7 @@ export function ProductDetail({ brand: b }: { brand: Brand }) {
 
       {relatedBrands.length > 0 && (
         <div className="mt-10 pt-8 border-t border-ink-100">
-          <BrandGrid items={relatedBrands} title={`More in ${b.category}`} />
+          <BrandGrid items={relatedBrands} title={`More in ${b.category}`} country={activeCountry} />
         </div>
       )}
     </div>

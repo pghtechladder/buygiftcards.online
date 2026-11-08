@@ -6,12 +6,21 @@ export function middleware(req: NextRequest) {
   const proto = req.headers.get("x-forwarded-proto") || "https";
   const pathname = req.nextUrl.pathname;
 
-  // Detect active storefront country from subdomain (`ca.buygiftcards.online`, `sg.buygiftcards.online`, etc.)
+  // Detect active storefront country from:
+  //   1. Subdomain (`ca.buygiftcards.online`, `sg.buygiftcards.online`, etc.)
+  //   2. Query parameter (`?country=CA` / `?country=US` / etc.)
+  //   3. Existing `bgc-country` cookie
+  const VALID_COUNTRIES = new Set(["US", "CA", "SG", "UK", "AU"]);
+  const queryCountry = (req.nextUrl.searchParams.get("country") || "").toUpperCase().trim();
+  const cookieCountry = (req.cookies.get("bgc-country")?.value || "").toUpperCase().trim();
+
   let country = "US";
   if (host.startsWith("ca.")) country = "CA";
   else if (host.startsWith("sg.")) country = "SG";
   else if (host.startsWith("uk.") || host.startsWith("gb.")) country = "UK";
   else if (host.startsWith("au.")) country = "AU";
+  else if (VALID_COUNTRIES.has(queryCountry)) country = queryCountry;
+  else if (VALID_COUNTRIES.has(cookieCountry)) country = cookieCountry;
 
   // Enforce HTTPS on production requests (excluding webhooks), while allowing both
   // buygiftcards.online, www.buygiftcards.online, and country subdomains (ca., sg., uk., au.)

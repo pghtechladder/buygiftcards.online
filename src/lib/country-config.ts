@@ -73,16 +73,43 @@ export const COUNTRY_MARKETS: Record<CountryCode, CountryMarketConfig> = {
 export const SUPPORTED_COUNTRIES: CountryMarketConfig[] = Object.values(COUNTRY_MARKETS);
 
 /**
- * Resolves the active CountryCode from a hostname (e.g. `ca.buygiftcards.online` -> `CA`,
- * `sg.buygiftcards.online` -> `SG`) or `APP_COUNTRY` / `NEXT_PUBLIC_COUNTRY` env variable.
+ * Resolves the active CountryCode from:
+ *   1. Subdomain (`ca.buygiftcards.online` -> `CA`, `sg.buygiftcards.online` -> `SG`, etc.)
+ *   2. Explicit override (`cookieOrQueryCountry` or browser `?country=CA` / `bgc-country` cookie)
+ *   3. `APP_COUNTRY` / `NEXT_PUBLIC_COUNTRY` env variable (defaults to `US`).
  */
-export function resolveCountryFromHostOrEnv(host?: string | null): CountryCode {
-  if (host) {
-    const cleanHost = host.toLowerCase().split(":")[0];
+export function resolveCountryFromHostOrEnv(
+  host?: string | null,
+  cookieOrQueryCountry?: string | null
+): CountryCode {
+  const effectiveHost =
+    host ?? (typeof window !== "undefined" ? window.location.host : null);
+
+  if (effectiveHost) {
+    const cleanHost = effectiveHost.toLowerCase().split(":")[0];
     if (cleanHost.startsWith("ca.")) return "CA";
     if (cleanHost.startsWith("sg.")) return "SG";
     if (cleanHost.startsWith("uk.") || cleanHost.startsWith("gb.")) return "UK";
     if (cleanHost.startsWith("au.")) return "AU";
+  }
+
+  let candidate = (cookieOrQueryCountry || "").toUpperCase().trim();
+  if (!candidate && typeof window !== "undefined") {
+    try {
+      const qsCountry = new URLSearchParams(window.location.search).get("country");
+      if (qsCountry) {
+        candidate = qsCountry.toUpperCase().trim();
+      } else {
+        const match = document.cookie.match(/(?:^|;\s*)bgc-country=([A-Za-z]{2})/);
+        if (match) candidate = match[1].toUpperCase();
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (candidate && candidate in COUNTRY_MARKETS) {
+    return candidate as CountryCode;
   }
 
   const envCountry = (
@@ -98,6 +125,27 @@ export function resolveCountryFromHostOrEnv(host?: string | null): CountryCode {
   }
 
   return "US";
+}
+
+export function getCurrencySymbol(
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): string {
+  return (COUNTRY_MARKETS[country] || COUNTRY_MARKETS.US).currencySymbol;
+}
+
+export function getCurrencyCode(
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): string {
+  return (COUNTRY_MARKETS[country] || COUNTRY_MARKETS.US).currency;
+}
+
+export function formatCurrency(
+  amountDollars: number,
+  country: CountryCode = resolveCountryFromHostOrEnv(),
+  decimals = 2
+): string {
+  const sym = getCurrencySymbol(country);
+  return `${sym}${amountDollars.toFixed(decimals)}`;
 }
 
 // Cache of parsed `.env-<country>` property files so we don't hit disk repeatedly

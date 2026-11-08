@@ -1,3 +1,6 @@
+import { ALL_BRANDS_CA, BRANDS_CA, CATEGORIES_CA } from "./brands-ca";
+import { CountryCode, resolveCountryFromHostOrEnv } from "./country-config";
+
 export type DeliveryType = "egift" | "physical" | "both";
 
 export type Brand = {
@@ -241,9 +244,42 @@ export const BRANDS: Brand[] = ALL_BRANDS.filter((b) => !b.hidden);
 
 export const CATEGORIES = [...new Set(BRANDS.map((b) => b.category))].sort();
 
-// Looks up ALL_BRANDS so existing orders for hidden brands still resolve.
-export function getBrand(slug: string): Brand | undefined {
-  return ALL_BRANDS.find((b) => b.slug === slug);
+/**
+ * Returns the active storefront brand catalog for the selected country:
+ * - `CA` -> Canada-supported gift cards (`BRANDS_CA` from `src/lib/brands-ca.ts`)
+ * - `US` (and default) -> US gift cards (`BRANDS`)
+ */
+export function getBrandsForCountry(
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): Brand[] {
+  if (country === "CA") return BRANDS_CA;
+  return BRANDS;
+}
+
+export function getCategoriesForCountry(
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): string[] {
+  if (country === "CA") return CATEGORIES_CA;
+  return CATEGORIES;
+}
+
+// Looks up country-appropriate brand first, then falls back across ALL_BRANDS and ALL_BRANDS_CA
+// so Canada-specific brands (`bostonpizza`, `ardene`, `petrocanada`, `kobo`, `cabelas`, etc.)
+// and existing orders always resolve cleanly.
+export function getBrand(
+  slug: string,
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): Brand | undefined {
+  if (country === "CA") {
+    return (
+      ALL_BRANDS_CA.find((b) => b.slug === slug) ||
+      ALL_BRANDS.find((b) => b.slug === slug)
+    );
+  }
+  return (
+    ALL_BRANDS.find((b) => b.slug === slug) ||
+    ALL_BRANDS_CA.find((b) => b.slug === slug)
+  );
 }
 
 export const HOUSE_BRAND_SLUGS = ["buygiftcards", "one4all", "holidayfavorites"];

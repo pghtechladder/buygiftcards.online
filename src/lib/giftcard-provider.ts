@@ -2,6 +2,7 @@ import { generateDemoCode, generateDemoPin } from "./order";
 import { HOUSE_BRAND_SLUGS } from "./brands";
 import { loggedFetch, writeTransactionLog } from "./logger";
 import { GENERATED_ZENDIT_OFFERS } from "./zendit-offers.generated";
+import { GENERATED_ZENDIT_CA_OFFERS } from "./zendit-offers-ca.generated";
 import { CountryCode, getCountryEnv, resolveCountryFromHostOrEnv } from "./country-config";
 
 /**
@@ -413,7 +414,7 @@ export const BRAND_TO_ZENDIT_OFFER: Record<string, ZenditOfferSpec> = {
 
 function buildZenditRequiredFields(
   requiredKeys?: string[],
-  context?: { recipientEmail?: string; recipientName?: string; senderName?: string }
+  context?: { recipientEmail?: string; recipientName?: string; senderName?: string; country?: CountryCode }
 ): { key: string; value: string }[] {
   if (!requiredKeys || requiredKeys.length === 0) return [];
   const defaultEmail =
@@ -424,6 +425,7 @@ function buildZenditRequiredFields(
   const senderParts = (context?.senderName || "").trim().split(/\s+/).filter(Boolean);
   const senderFirst = senderParts[0] || firstName;
   const senderLast = senderParts.slice(1).join(" ") || lastName;
+  const countryCode = context?.country || "US";
 
   return requiredKeys.map((key) => {
     switch (key) {
@@ -445,7 +447,7 @@ function buildZenditRequiredFields(
         return { key, value: "+15552345678" };
       case "recipient.country":
       case "sender.country":
-        return { key, value: "US" };
+        return { key, value: countryCode };
       default:
         return { key, value: "BuyGiftCards" };
     }
@@ -457,6 +459,18 @@ const ZENDIT_OFFERS: Record<string, ZenditOfferSpec> = {
   ...GENERATED_ZENDIT_OFFERS,
   ...BRAND_TO_ZENDIT_OFFER,
 };
+
+const ZENDIT_CA_OFFERS: Record<string, ZenditOfferSpec> = {
+  ...GENERATED_ZENDIT_CA_OFFERS,
+  ...BRAND_TO_ZENDIT_OFFER,
+};
+
+export function getZenditOffersForCountry(
+  country: CountryCode = resolveCountryFromHostOrEnv()
+): Record<string, ZenditOfferSpec> {
+  if (country === "CA") return ZENDIT_CA_OFFERS;
+  return ZENDIT_OFFERS;
+}
 
 /**
  * Returns which primary provider is chosen via country-aware environment properties:
@@ -477,7 +491,8 @@ export function isFulfillableBrand(slug: string, country: CountryCode = resolveC
     return Boolean(BRAND_TO_TANGO_UTID[slug]);
   }
 
-  const spec = ZENDIT_OFFERS[slug];
+  const offersMap = getZenditOffersForCountry(country);
+  const spec = offersMap[slug];
   return Boolean(spec && (spec.fixedOffers || (spec.rangeOfferId && spec.rangeOfferId !== "HOUSE_SWAP")));
 }
 
@@ -497,6 +512,7 @@ export const ZENDIT_API_URL = "https://api.zendit.io/v1";
 export class ZenditProvider implements GiftCardProvider {
   private apiKey: string;
   private baseUrl: string;
+  private country: CountryCode;
 
   constructor(country: CountryCode = resolveCountryFromHostOrEnv()) {
     // Environment is chosen purely by the key: `sand_...` = Zendit sandbox, `prod_...` = live.
@@ -505,6 +521,7 @@ export class ZenditProvider implements GiftCardProvider {
     if (!key) throw new Error(`ZENDIT_API_KEY is not set — required for ZenditProvider (${country})`);
     this.apiKey = key;
     this.baseUrl = getCountryEnv("ZENDIT_API_BASE_URL", country, ZENDIT_API_URL).replace(/\/+$/, "");
+    this.country = country;
   }
 
   async issue({
@@ -515,7 +532,8 @@ export class ZenditProvider implements GiftCardProvider {
     senderName,
   }: IssueCardParams): Promise<IssuedCard> {
     const isHouseBrand = HOUSE_BRAND_SLUGS.includes(brandSlug);
-    const spec = ZENDIT_OFFERS[brandSlug];
+    const offersMap = getZenditOffersForCountry(this.country);
+    const spec = offersMap[brandSlug] || ZENDIT_OFFERS[brandSlug];
 
     const dollars = Math.max(1, Math.round(amountCents / 100));
 
@@ -527,7 +545,7 @@ export class ZenditProvider implements GiftCardProvider {
       writeTransactionLog({
         phase: "PROCESS_COMPLETE",
         process: `ZenditProvider.issue(${brandSlug}, $${dollars})`,
-        details: { brandSlug, amountCents, note: "House card issued; supplier voucher is purchased at redemption." },
+        details: { brandSlug, amountCents, country: this.country, note: "House card issued; supplier voucher is purchased at redemption." },
       });
       return { code, pin, isDemo: false };
     }
@@ -547,7 +565,7 @@ export class ZenditProvider implements GiftCardProvider {
 
     // Never substitute a different brand/denomination: a customer who paid for X must get X.
     if (!offerId) {
-      const msg = `No Zendit offer for brand "${brandSlug}" at $${dollars} — refusing to issue a different card.`;
+      const msg = `No Zendit offer (${this.country}) for brand "${brandSlug}" at $${dollars} — refusing to issue a different card.`;
       writeTransactionLog({ phase: "PROCESS_ERROR", process: `ZenditProvider.issue(${brandSlug})`, error: msg });
       throw new ZenditUnfulfillableError(msg);
     }
@@ -557,6 +575,7 @@ export class ZenditProvider implements GiftCardProvider {
       recipientEmail,
       recipientName,
       senderName,
+      country: this.country,
     });
 
     const payload: Record<string, unknown> = {
@@ -748,7 +767,7 @@ export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv
 
   // 2. Default or explicitly chosen: Zendit as primary
   if (zenditProvider) {
-    const mappedCount = Object.keys(ZENDIT_OFFERS).length;
+    const mappedCount = Object.keys(getZenditOffersForCountry(country)).length;
     const mode = zenditKey.startsWith("prod_") ? "LIVE" : "SANDBOX";
     console.log(
       `[giftcard-provider:${country}] Using ZenditProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=${selected}) ` +

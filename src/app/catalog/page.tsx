@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { BrandGrid } from "@/components/BrandGrid";
-import { BRANDS, CATEGORIES } from "@/lib/brands";
+import { BRANDS, getBrandsForCountry, getCategoriesForCountry } from "@/lib/brands";
+import { getServerCountry } from "@/lib/server-country";
+import { getCurrencySymbol } from "@/lib/country-config";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 
@@ -71,7 +73,11 @@ export default async function CatalogPage({
   searchParams: Promise<{ q?: string; type?: string; category?: string; price?: string; deals?: string }>;
 }) {
   const { q, type, category, price, deals } = await searchParams;
-  let items = BRANDS;
+  const country = await getServerCountry();
+  const activeBrands = getBrandsForCountry(country);
+  const activeCategories = getCategoriesForCountry(country);
+  const currencySym = getCurrencySymbol(country);
+  let items = activeBrands;
 
   if (q) {
     const needle = q.toLowerCase();
@@ -102,10 +108,10 @@ export default async function CatalogPage({
     : `Buy Gift Cards Online — All ${items.length} Brands`;
 
   const leadText = category
-    ? `Buy ${category.toLowerCase()} gift cards online with instant digital email delivery and $0 purchase fees.`
+    ? `Buy ${category.toLowerCase()} gift cards online with instant digital email delivery and ${currencySym}0 purchase fees.`
     : deals === "1"
-    ? "Buy discounted gift cards online and save up to 15% automatically at checkout while receiving 100% full face value."
-    : "Buy gift cards online from 165+ official retail, dining, gaming, and prepaid brands with instant email delivery.";
+    ? "Buy discounted gift cards online and save automatically at checkout while receiving 100% full face value."
+    : `Buy gift cards online from ${activeBrands.length}+ official retail, dining, gaming, and prepaid brands with instant email delivery.`;
 
   const buildHref = (patch: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
@@ -178,7 +184,7 @@ export default async function CatalogPage({
                 : "border-ink-100 text-ink-600 hover:border-brand-300"
             }`}
           >
-            🎄 Under $25 (Stocking Stuffers)
+            🎄 Under {currencySym}25 (Stocking Stuffers)
           </Link>
         </div>
 
@@ -192,7 +198,7 @@ export default async function CatalogPage({
           >
             All Categories
           </Link>
-          {CATEGORIES.map((c) => (
+          {activeCategories.map((c) => (
             <Link
               key={c}
               href={buildHref({ category: category === c ? undefined : c })}
@@ -208,7 +214,7 @@ export default async function CatalogPage({
         </div>
       </div>
 
-      <BrandGrid items={items} />
+      <BrandGrid items={items} country={country} />
     </div>
   );
 }

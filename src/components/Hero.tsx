@@ -1,20 +1,29 @@
 import Link from "next/link";
-import { BRANDS, chargeAmountCents } from "@/lib/brands";
+import { getBrandsForCountry, chargeAmountCents } from "@/lib/brands";
+import { CountryCode, formatCurrency, getCurrencySymbol, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
 import { CountrySelector } from "./CountrySelector";
 
-const fmt = (n: number) => `$${n.toFixed(2)}`;
+export function Hero({ country = resolveCountryFromHostOrEnv() }: { country?: CountryCode }) {
+  const activeBrands = getBrandsForCountry(country);
+  const brandCount = activeBrands.length;
+  const currencySym = getCurrencySymbol(country);
+  const fmt = (n: number) => formatCurrency(n, country);
 
-const FEATURED = [
-  BRANDS.find((b) => b.slug === "buygiftcards")!,
-  BRANDS.find((b) => b.slug === "visa")!,
-  BRANDS.find((b) => b.slug === "doordash") ?? BRANDS.find((b) => b.slug === "amazon")!,
-  BRANDS.find((b) => b.slug === "adidas") ?? BRANDS.find((b) => b.slug === "starbucks")!,
-];
-const brandCount = BRANDS.length;
+  const FEATURED = [
+    activeBrands.find((b) => b.slug === "buygiftcards") ?? activeBrands[0],
+    activeBrands.find((b) => b.slug === "visa") ?? activeBrands.find((b) => b.slug === "amazon") ?? activeBrands[1],
+    activeBrands.find((b) => b.slug === "bostonpizza") ??
+      activeBrands.find((b) => b.slug === "doordash") ??
+      activeBrands.find((b) => b.slug === "ubereats") ??
+      activeBrands[2],
+    activeBrands.find((b) => b.slug === "ardene") ??
+      activeBrands.find((b) => b.slug === "adidas") ??
+      activeBrands.find((b) => b.slug === "xbox") ??
+      activeBrands[3],
+  ].filter(Boolean);
 
-export function Hero() {
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-[#0a4738] via-brand-700 to-[#7f1d1d]">
       <div
@@ -65,7 +74,7 @@ export function Hero() {
           <div className="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-xs sm:text-sm text-white/85 font-medium">
             <span className="flex items-center gap-1.5"><Icon name="zap" size={14} className="text-amber-300" />Instant eGift claim links</span>
             <span className="flex items-center gap-1.5"><Icon name="lock" size={14} className="text-amber-300" />Secure Stripe checkout</span>
-            <span className="flex items-center gap-1.5"><Icon name="shield" size={14} className="text-amber-300" />$0 purchase fees on brand cards</span>
+            <span className="flex items-center gap-1.5"><Icon name="shield" size={14} className="text-amber-300" />{currencySym}0 purchase fees on brand cards</span>
           </div>
         </div>
 
@@ -94,11 +103,11 @@ export function Hero() {
                 <span className="text-xs font-bold text-white text-center px-2 line-clamp-1">{b.name}</span>
                 {b.discountPercent ? (
                   <span className="text-[11px] font-bold text-amber-300">
-                    <span className="line-through text-white/60 mr-1">${b.min}</span>
+                    <span className="line-through text-white/60 mr-1">{currencySym}{b.min}</span>
                     From {fmt(minCharge)}
                   </span>
                 ) : (
-                  <span className="text-[11px] text-white/85">${b.min} – ${b.max}</span>
+                  <span className="text-[11px] text-white/85">{currencySym}{b.min} – {currencySym}{b.max}</span>
                 )}
               </Link>
             );

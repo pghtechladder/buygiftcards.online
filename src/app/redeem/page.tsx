@@ -4,7 +4,8 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { BRANDS, CATEGORIES, HOUSE_BRAND_SLUGS, Brand } from "@/lib/brands";
+import { getBrandsForCountry, getCategoriesForCountry, getBrand, HOUSE_BRAND_SLUGS, Brand } from "@/lib/brands";
+import { CountryCode, formatCurrency, getCurrencyCode, getCurrencySymbol, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Icon } from "@/components/Icon";
 import { trackRetailEvent } from "@/lib/analytics";
@@ -50,15 +51,32 @@ type RedemptionResult = {
   };
 };
 
-const fmt = (cents: number) => `$${(cents / 100).toFixed(2)}`;
-
-const PARTICIPATING_BRANDS = BRANDS.filter((b) => !HOUSE_BRAND_SLUGS.includes(b.slug));
-const SWAP_CATEGORIES = ["All", ...CATEGORIES.filter((c) => c !== "Multi-Brand")];
-
 function RedeemPortalContent() {
   const searchParams = useSearchParams();
   const initialCode = searchParams.get("code") || "";
   const initialPin = searchParams.get("pin") || "";
+
+  const [country, setCountry] = useState<CountryCode>(() => resolveCountryFromHostOrEnv());
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCountry(resolveCountryFromHostOrEnv(window.location.host));
+    }
+  }, []);
+
+  const activeBrands = useMemo(() => getBrandsForCountry(country), [country]);
+  const activeCategories = useMemo(() => getCategoriesForCountry(country), [country]);
+  const currencySym = getCurrencySymbol(country);
+  const currencyCode = getCurrencyCode(country);
+  const fmt = (cents: number) => formatCurrency(cents / 100, country);
+
+  const PARTICIPATING_BRANDS = useMemo(
+    () => activeBrands.filter((b) => !HOUSE_BRAND_SLUGS.includes(b.slug)),
+    [activeBrands]
+  );
+  const SWAP_CATEGORIES = useMemo(
+    () => ["All", ...activeCategories.filter((c) => c !== "Multi-Brand")],
+    [activeCategories]
+  );
 
   const [code, setCode] = useState(initialCode);
   const [pin, setPin] = useState(initialPin);
@@ -143,7 +161,7 @@ function RedeemPortalContent() {
       }
       return true;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [PARTICIPATING_BRANDS, selectedCategory, searchQuery]);
 
   const getDenomsForBrand = (b: Brand): number[] => {
     const base = b.denominations.length ? b.denominations : [25, 50, 100];
@@ -222,7 +240,7 @@ function RedeemPortalContent() {
         source_brand: data.sourceBrandName,
         redeemed_count: data.redeemedItems?.length || 0,
         value: selectedCents / 100,
-        currency: "USD",
+        currency: currencyCode,
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -295,7 +313,7 @@ function RedeemPortalContent() {
               <div className="flex items-baseline justify-between">
                 <span className="text-xs font-bold text-emerald-200">Redeemable Choice Card</span>
                 <span className="text-2xl font-extrabold text-white">
-                  {card ? fmt(card.balanceCents) : "$10 – $500"}
+                  {card ? fmt(card.balanceCents) : `${currencySym}10 – ${currencySym}500`}
                 </span>
               </div>
             </div>
@@ -347,7 +365,7 @@ function RedeemPortalContent() {
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {result.redeemedItems.map((item) => {
-                  const brandObj = BRANDS.find((b) => b.slug === item.brandSlug);
+                  const brandObj = getBrand(item.brandSlug, country);
                   const isUrl = /^https?:\/\//i.test(item.code);
                   return (
                     <div
@@ -726,7 +744,7 @@ function RedeemPortalContent() {
                                         : "bg-ink-50 text-ink-300 border-ink-100"
                                     }`}
                                   >
-                                    ${d}
+                                    {currencySym}{d}
                                   </button>
                                 );
                               })}
@@ -740,7 +758,7 @@ function RedeemPortalContent() {
                             className="w-full py-2.5 rounded-xl bg-ink-900 text-white font-extrabold text-xs hover:bg-brand-600 transition disabled:opacity-40 disabled:hover:bg-ink-900"
                           >
                             {canAfford
-                              ? `+ Add $${chosenAmt} ${b.name}`
+                              ? `+ Add ${currencySym}${chosenAmt} ${b.name}`
                               : `Exceeds Remaining (${fmt(remainingCents)})`}
                           </button>
                         </div>
@@ -782,13 +800,13 @@ function RedeemPortalContent() {
                           <div className="min-w-0">
                             <div className="font-bold text-xs text-ink-900 truncate">{item.brand.name}</div>
                             <div className="text-[11px] text-ink-500">
-                              ${item.amountDollars} × {item.quantity}
+                              {currencySym}{item.amountDollars} × {item.quantity}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <span className="font-extrabold text-xs text-ink-900">
-                            ${(item.amountDollars * item.quantity).toFixed(2)}
+                            {currencySym}{(item.amountDollars * item.quantity).toFixed(2)}
                           </span>
                           <button
                             type="button"

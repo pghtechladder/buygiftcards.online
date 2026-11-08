@@ -2,15 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { BRANDS } from "@/lib/brands";
+import { getBrandsForCountry } from "@/lib/brands";
+import { resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { Icon } from "./Icon";
-
-const maxDiscount = Math.max(...BRANDS.map((b) => b.discountPercent || 0), 5);
-const topDiscountBrandNames = BRANDS.filter((b) => b.discountPercent)
-  .sort((a, b) => (b.discountPercent || 0) - (a.discountPercent || 0))
-  .slice(0, 6)
-  .map((b) => `${b.name} (${b.discountPercent}% off)`)
-  .join(", ");
 
 type Slide = {
   eyebrow: string;
@@ -22,49 +16,65 @@ type Slide = {
   holiday?: boolean;
 };
 
-const SLIDES: Slide[] = [
-  {
-    eyebrow: "🎄 Holiday Gift Guide",
-    title: "Festive eGift Cards & Stocking Stuffers",
-    copy: "Send holiday cheer in minutes with custom holiday card designs, personal messages, and instant delivery.",
-    ctaLabel: "Shop Holiday Gifts",
-    ctaHref: "/occasions?occasion=holidays",
-    icon: "gift",
-    holiday: true,
-  },
-  {
-    eyebrow: "✨ Instant Discount Deals",
-    title: `Save up to ${maxDiscount}% on top brands automatically at checkout`,
-    copy: `Instant discounts on ${topDiscountBrandNames}, and more.`,
-    ctaLabel: "View All Deals",
-    ctaHref: "/deals",
-    icon: "zap",
-    holiday: true,
-  },
-  {
-    eyebrow: "Custom Photo Card",
-    title: "Put your favorite holiday photo on a Visa® or Mastercard®",
-    copy: "Upload a family picture and create a personalized holiday gift card they will always remember.",
-    ctaLabel: "Design a Card",
-    ctaHref: "/product/visa",
-    icon: "package",
-  },
-  {
-    eyebrow: "Corporate Holiday Gifting",
-    title: "Reward your entire team or client list",
-    copy: "Bulk holiday orders, multi-brand choice links, and custom invoicing for teams of any size.",
-    ctaLabel: "Get a Business Quote",
-    ctaHref: "/business",
-    icon: "shield",
-  },
-];
-
 const INTERVAL_MS = 5500;
 
 export function PromoBanner() {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [country, setCountry] = useState(() => resolveCountryFromHostOrEnv());
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCountry(resolveCountryFromHostOrEnv(window.location.host));
+    }
+  }, []);
+
+  const activeBrands = getBrandsForCountry(country);
+  const maxDiscount = Math.max(...activeBrands.map((b) => b.discountPercent || 0), 5);
+  const topDiscountBrandNames = activeBrands
+    .filter((b) => b.discountPercent)
+    .sort((a, b) => (b.discountPercent || 0) - (a.discountPercent || 0))
+    .slice(0, 6)
+    .map((b) => `${b.name} (${b.discountPercent}% off)`)
+    .join(", ");
+
+  const SLIDES: Slide[] = [
+    {
+      eyebrow: "🎄 Holiday Gift Guide",
+      title: "Festive eGift Cards & Stocking Stuffers",
+      copy: "Send holiday cheer in minutes with custom holiday card designs, personal messages, and instant delivery.",
+      ctaLabel: "Shop Holiday Gifts",
+      ctaHref: "/occasions?occasion=holidays",
+      icon: "gift",
+      holiday: true,
+    },
+    {
+      eyebrow: "✨ Instant Discount Deals",
+      title: `Save up to ${maxDiscount}% on top brands automatically at checkout`,
+      copy: `Instant discounts on ${topDiscountBrandNames}, and more.`,
+      ctaLabel: "View All Deals",
+      ctaHref: "/deals",
+      icon: "zap",
+      holiday: true,
+    },
+    {
+      eyebrow: "Custom Photo Card",
+      title: "Put your favorite holiday photo on a Multi-Brand or Choice Gift Card",
+      copy: "Upload a family picture and create a personalized holiday gift card they will always remember.",
+      ctaLabel: "Design a Card",
+      ctaHref: "/product/buygiftcards",
+      icon: "package",
+    },
+    {
+      eyebrow: "Corporate Holiday Gifting",
+      title: "Reward your entire team or client list",
+      copy: "Bulk holiday orders, multi-brand choice links, and custom invoicing for teams of any size.",
+      ctaLabel: "Get a Business Quote",
+      ctaHref: "/business",
+      icon: "shield",
+    },
+  ];
 
   useEffect(() => {
     if (paused) return;

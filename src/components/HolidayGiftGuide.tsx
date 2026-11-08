@@ -1,50 +1,68 @@
 import Link from "next/link";
-import { BRANDS } from "@/lib/brands";
+import { getBrandsForCountry } from "@/lib/brands";
+import { CountryCode, getCurrencySymbol, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
 
-const HOLIDAY_COLLECTIONS = [
-  {
-    id: "stocking-stuffers",
-    tag: "Under $25",
-    title: "Stocking Stuffers",
-    subtitle: "Coffee, music, gaming & treats under $25",
-    href: "/occasions?occasion=holidays#stocking-stuffers",
-    gradient: "from-red-900 via-red-800 to-rose-700",
-    brands: ["starbucks", "chipotle", "dominos", "coldstonecreamery"],
-  },
-  {
-    id: "crowd-pleasers",
-    tag: "Most Gifted",
-    title: "Holiday Crowd-Pleasers",
-    subtitle: "The universal favorites everyone has on their list",
-    href: "/occasions?occasion=holidays#crowd-pleasers",
-    gradient: "from-emerald-950 via-brand-800 to-emerald-700",
-    brands: ["buygiftcards", "visa", "amazon", "target"],
-  },
-  {
-    id: "cozy-nights",
-    tag: "Winter Favorites",
-    title: "Cozy Winter Nights In",
-    subtitle: "Delivery, streaming & home comforts for chilly evenings",
-    href: "/occasions?occasion=holidays#cozy-nights",
-    gradient: "from-amber-900 via-amber-800 to-yellow-700",
-    brands: ["doordash", "netflix", "ubereats", "panera"],
-  },
-  {
-    id: "holiday-travel",
-    tag: "For Travelers",
-    title: "Holiday Getaways",
-    subtitle: "Flights, stays & rides home for the holidays",
-    href: "/catalog?category=Travel",
-    gradient: "from-slate-900 via-indigo-950 to-slate-800",
-    brands: ["airbnb", "southwest", "goldennugget", "uber"],
-  },
-];
+export function HolidayGiftGuide({ country = resolveCountryFromHostOrEnv() }: { country?: CountryCode }) {
+  const activeBrands = getBrandsForCountry(country);
+  const currencySym = getCurrencySymbol(country);
+  const maxDiscount = Math.max(...activeBrands.map((b) => b.discountPercent || 0), 5);
 
-const maxDiscount = Math.max(...BRANDS.map((b) => b.discountPercent || 0), 5);
+  const HOLIDAY_COLLECTIONS = [
+    {
+      id: "stocking-stuffers",
+      tag: `Under ${currencySym}25`,
+      title: "Stocking Stuffers",
+      subtitle: `Coffee, music, gaming & treats under ${currencySym}25`,
+      href: "/occasions?occasion=holidays#stocking-stuffers",
+      gradient: "from-red-900 via-red-800 to-rose-700",
+      brands:
+        country === "CA"
+          ? ["bostonpizza", "googleplay", "nintendo", "kobo"]
+          : ["starbucks", "chipotle", "dominos", "coldstonecreamery"],
+    },
+    {
+      id: "crowd-pleasers",
+      tag: "Most Gifted",
+      title: "Holiday Crowd-Pleasers",
+      subtitle: "The universal favorites everyone has on their list",
+      href: "/occasions?occasion=holidays#crowd-pleasers",
+      gradient: "from-emerald-950 via-brand-800 to-emerald-700",
+      brands:
+        country === "CA"
+          ? ["buygiftcards", "amazon", "xbox", "ardene"]
+          : ["buygiftcards", "visa", "amazon", "target"],
+    },
+    {
+      id: "cozy-nights",
+      tag: "Winter Favorites",
+      title: "Cozy Winter Nights In",
+      subtitle: "Delivery, streaming & home comforts for chilly evenings",
+      href: "/occasions?occasion=holidays#cozy-nights",
+      gradient: "from-amber-900 via-amber-800 to-yellow-700",
+      brands:
+        country === "CA"
+          ? ["ubereats", "bostonpizza", "redlobster", "kobo"]
+          : ["doordash", "netflix", "ubereats", "panera"],
+    },
+    {
+      id: "holiday-travel",
+      tag: country === "CA" ? "Outdoor & Auto" : "For Travelers",
+      title: country === "CA" ? "Canadian Winter & Outdoors" : "Holiday Getaways",
+      subtitle:
+        country === "CA"
+          ? "Winter gear, outdoor adventure & road-trip fuel across Canada"
+          : "Flights, stays & rides home for the holidays",
+      href: country === "CA" ? "/catalog?category=Sports%20%26%20Outdoors" : "/catalog?category=Travel",
+      gradient: "from-slate-900 via-indigo-950 to-slate-800",
+      brands:
+        country === "CA"
+          ? ["basspro", "cabelas", "columbiasportswear", "petrocanada"]
+          : ["airbnb", "southwest", "goldennugget", "uber"],
+    },
+  ];
 
-export function HolidayGiftGuide() {
   return (
     <section className="max-w-7xl mx-auto px-6 py-10">
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#5c0f14] via-[#7f1d1d] to-[#0a4738] text-white p-8 sm:p-12 shadow-xl">
@@ -95,7 +113,7 @@ export function HolidayGiftGuide() {
         <div className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {HOLIDAY_COLLECTIONS.map((col) => {
             const resolvedBrands = col.brands
-              .map((slug) => BRANDS.find((b) => b.slug === slug))
+              .map((slug) => activeBrands.find((b) => b.slug === slug))
               .filter(Boolean);
             return (
               <Link
