@@ -16,11 +16,13 @@ export function Hero({ country = resolveCountryFromHostOrEnv() }: { country?: Co
     activeBrands.find((b) => b.slug === "visa") ?? activeBrands.find((b) => b.slug === "amazon") ?? activeBrands[1],
     activeBrands.find((b) => b.slug === "bostonpizza") ??
       activeBrands.find((b) => b.slug === "garena") ??
+      activeBrands.find((b) => b.slug === "target") ??
       activeBrands.find((b) => b.slug === "doordash") ??
       activeBrands.find((b) => b.slug === "ubereats") ??
       activeBrands[2],
     activeBrands.find((b) => b.slug === "ardene") ??
       activeBrands.find((b) => b.slug === "adidas") ??
+      activeBrands.find((b) => b.slug === "asos") ??
       activeBrands.find((b) => b.slug === "xbox") ??
       activeBrands[3],
   ].filter(Boolean);

@@ -26,7 +26,12 @@ export function CountrySelector({ variant = "header" }: { variant?: "header" | "
     document.cookie = `bgc-country=${newCode}; path=/; max-age=31536000; SameSite=Lax`;
     if (window.location.hostname.endsWith("buygiftcards.online")) {
       document.cookie = `bgc-country=${newCode}; domain=.buygiftcards.online; path=/; max-age=31536000; SameSite=Lax`;
-    } else if (window.location.hostname.endsWith(".sg")) {
+    } else if (
+      window.location.hostname.endsWith(".sg") ||
+      window.location.hostname.endsWith(".ca") ||
+      window.location.hostname.endsWith(".au") ||
+      window.location.hostname.endsWith(".uk")
+    ) {
       document.cookie = `bgc-country=${newCode}; path=/; max-age=31536000; SameSite=Lax`;
     }
 

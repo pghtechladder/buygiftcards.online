@@ -1,5 +1,6 @@
 import { ALL_BRANDS_CA, BRANDS_CA, CATEGORIES_CA } from "./brands-ca";
 import { ALL_BRANDS_SG, BRANDS_SG, CATEGORIES_SG } from "./brands-sg";
+import { ALL_BRANDS_AU, BRANDS_AU, CATEGORIES_AU } from "./brands-au";
 import { CountryCode, resolveCountryFromHostOrEnv } from "./country-config";
 
 export type DeliveryType = "egift" | "physical" | "both";
@@ -252,6 +253,7 @@ export const CATEGORIES = [...new Set(BRANDS.map((b) => b.category))].sort();
  * Returns the active gift card catalog for the given country:
  * - `CA` -> Canada gift cards (`BRANDS_CA`, CAD)
  * - `SG` -> Singapore gift cards (`BRANDS_SG`, SGD)
+ * - `AU` -> Australia gift cards (`BRANDS_AU`, AUD)
  * - `US` (and default) -> US gift cards (`BRANDS`, USD)
  */
 export function getBrandsForCountry(
@@ -259,6 +261,7 @@ export function getBrandsForCountry(
 ): Brand[] {
   if (country === "CA") return BRANDS_CA;
   if (country === "SG") return BRANDS_SG;
+  if (country === "AU") return BRANDS_AU;
   return BRANDS;
 }
 
@@ -267,10 +270,11 @@ export function getCategoriesForCountry(
 ): string[] {
   if (country === "CA") return CATEGORIES_CA;
   if (country === "SG") return CATEGORIES_SG;
+  if (country === "AU") return CATEGORIES_AU;
   return CATEGORIES;
 }
 
-// Looks up country-appropriate brand first, then falls back across ALL_BRANDS, ALL_BRANDS_CA, and ALL_BRANDS_SG
+// Looks up country-appropriate brand first, then falls back across ALL_BRANDS, ALL_BRANDS_CA, ALL_BRANDS_SG, and ALL_BRANDS_AU
 // so country-specific brands (`bostonpizza`, `ardene`, `petrocanada`, `garena`, `asos`, `globalhotel`, etc.)
 // and existing orders always resolve cleanly.
 export function getBrand(
@@ -281,20 +285,31 @@ export function getBrand(
     return (
       ALL_BRANDS_CA.find((b) => b.slug === slug) ||
       ALL_BRANDS.find((b) => b.slug === slug) ||
-      ALL_BRANDS_SG.find((b) => b.slug === slug)
+      ALL_BRANDS_SG.find((b) => b.slug === slug) ||
+      ALL_BRANDS_AU.find((b) => b.slug === slug)
     );
   }
   if (country === "SG") {
     return (
       ALL_BRANDS_SG.find((b) => b.slug === slug) ||
       ALL_BRANDS.find((b) => b.slug === slug) ||
-      ALL_BRANDS_CA.find((b) => b.slug === slug)
+      ALL_BRANDS_CA.find((b) => b.slug === slug) ||
+      ALL_BRANDS_AU.find((b) => b.slug === slug)
+    );
+  }
+  if (country === "AU") {
+    return (
+      ALL_BRANDS_AU.find((b) => b.slug === slug) ||
+      ALL_BRANDS.find((b) => b.slug === slug) ||
+      ALL_BRANDS_CA.find((b) => b.slug === slug) ||
+      ALL_BRANDS_SG.find((b) => b.slug === slug)
     );
   }
   return (
     ALL_BRANDS.find((b) => b.slug === slug) ||
     ALL_BRANDS_CA.find((b) => b.slug === slug) ||
-    ALL_BRANDS_SG.find((b) => b.slug === slug)
+    ALL_BRANDS_SG.find((b) => b.slug === slug) ||
+    ALL_BRANDS_AU.find((b) => b.slug === slug)
   );
 }
 

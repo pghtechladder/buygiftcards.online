@@ -29,7 +29,9 @@ export function middleware(req: NextRequest) {
     host === "buygiftcards.online" ||
     host.endsWith(".buygiftcards.online") ||
     host.endsWith(".sg") ||
-    host.endsWith(".ca");
+    host.endsWith(".ca") ||
+    host.endsWith(".au") ||
+    host.endsWith(".uk");
   if (isProdDomain && !pathname.startsWith("/api/webhooks") && proto === "http") {
     const secureUrl = new URL(req.nextUrl.pathname + req.nextUrl.search, `https://${host}`);
     return NextResponse.redirect(secureUrl, 308);

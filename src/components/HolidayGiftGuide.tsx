@@ -22,6 +22,8 @@ export function HolidayGiftGuide({ country = resolveCountryFromHostOrEnv() }: { 
           ? ["bostonpizza", "googleplay", "nintendo", "kobo"]
           : country === "SG"
           ? ["garena", "mobilelegends", "starbucks", "pubg"]
+          : country === "AU"
+          ? ["amazon", "target", "hm", "ubereats"]
           : ["starbucks", "chipotle", "dominos", "coldstonecreamery"],
     },
     {
@@ -36,6 +38,8 @@ export function HolidayGiftGuide({ country = resolveCountryFromHostOrEnv() }: { 
           ? ["buygiftcards", "amazon", "xbox", "ardene"]
           : country === "SG"
           ? ["buygiftcards", "visa", "amazon", "adidas"]
+          : country === "AU"
+          ? ["buygiftcards", "amazon", "target", "asos"]
           : ["buygiftcards", "visa", "amazon", "target"],
     },
     {
@@ -50,6 +54,8 @@ export function HolidayGiftGuide({ country = resolveCountryFromHostOrEnv() }: { 
           ? ["ubereats", "bostonpizza", "redlobster", "kobo"]
           : country === "SG"
           ? ["netflix", "disney", "ubereats", "doordash"]
+          : country === "AU"
+          ? ["ubereats", "doordash", "ticketmaster", "asos"]
           : ["doordash", "netflix", "ubereats", "panera"],
     },
     {
@@ -60,12 +66,16 @@ export function HolidayGiftGuide({ country = resolveCountryFromHostOrEnv() }: { 
           ? "Canadian Winter & Outdoors"
           : country === "SG"
           ? "Singapore & Global Getaways"
+          : country === "AU"
+          ? "Aussie Summer Getaways"
           : "Holiday Getaways",
       subtitle:
         country === "CA"
           ? "Winter gear, outdoor adventure & road-trip fuel across Canada"
           : country === "SG"
           ? "Hotels, stays, tours & rides across Singapore and worldwide"
+          : country === "AU"
+          ? "Coastal hotels, tours, experiences & rides across Australia"
           : "Flights, stays & rides home for the holidays",
       href: country === "CA" ? "/catalog?category=Sports%20%26%20Outdoors" : "/catalog?category=Travel",
       gradient: "from-slate-900 via-indigo-950 to-slate-800",
@@ -74,6 +84,8 @@ export function HolidayGiftGuide({ country = resolveCountryFromHostOrEnv() }: { 
           ? ["basspro", "cabelas", "columbiasportswear", "petrocanada"]
           : country === "SG"
           ? ["airbnb", "globalhotel", "globalexperiences", "uber"]
+          : country === "AU"
+          ? ["globalhotel", "globalexperiences", "uber", "ticketmaster"]
           : ["airbnb", "southwest", "goldennugget", "uber"],
     },
   ];

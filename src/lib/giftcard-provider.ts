@@ -4,6 +4,7 @@ import { loggedFetch, writeTransactionLog } from "./logger";
 import { GENERATED_ZENDIT_OFFERS } from "./zendit-offers.generated";
 import { GENERATED_ZENDIT_CA_OFFERS } from "./zendit-offers-ca.generated";
 import { GENERATED_ZENDIT_SG_OFFERS } from "./zendit-offers-sg.generated";
+import { GENERATED_ZENDIT_AU_OFFERS } from "./zendit-offers-au.generated";
 import { CountryCode, getCountryEnv, resolveCountryFromHostOrEnv } from "./country-config";
 
 /**
@@ -471,11 +472,17 @@ const ZENDIT_SG_OFFERS: Record<string, ZenditOfferSpec> = {
   ...BRAND_TO_ZENDIT_OFFER,
 };
 
+const ZENDIT_AU_OFFERS: Record<string, ZenditOfferSpec> = {
+  ...GENERATED_ZENDIT_AU_OFFERS,
+  ...BRAND_TO_ZENDIT_OFFER,
+};
+
 export function getZenditOffersForCountry(
   country: CountryCode = resolveCountryFromHostOrEnv()
 ): Record<string, ZenditOfferSpec> {
   if (country === "CA") return ZENDIT_CA_OFFERS;
   if (country === "SG") return ZENDIT_SG_OFFERS;
+  if (country === "AU") return ZENDIT_AU_OFFERS;
   return ZENDIT_OFFERS;
 }
 

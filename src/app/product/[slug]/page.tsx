@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BRANDS, getBrand, logoUrl } from "@/lib/brands";
 import { BRANDS_CA } from "@/lib/brands-ca";
 import { BRANDS_SG } from "@/lib/brands-sg";
+import { BRANDS_AU } from "@/lib/brands-au";
 import { getServerCountry } from "@/lib/server-country";
 import { getCurrencyCode, getCurrencySymbol } from "@/lib/country-config";
 import { ProductDetail } from "@/components/ProductDetail";
@@ -14,6 +15,7 @@ export function generateStaticParams() {
     ...BRANDS.map((b) => b.slug),
     ...BRANDS_CA.map((b) => b.slug),
     ...BRANDS_SG.map((b) => b.slug),
+    ...BRANDS_AU.map((b) => b.slug),
   ]);
   return Array.from(slugs).map((slug) => ({ slug }));
 }
