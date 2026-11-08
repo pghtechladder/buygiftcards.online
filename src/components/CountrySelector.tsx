@@ -26,6 +26,8 @@ export function CountrySelector({ variant = "header" }: { variant?: "header" | "
     document.cookie = `bgc-country=${newCode}; path=/; max-age=31536000; SameSite=Lax`;
     if (window.location.hostname.endsWith("buygiftcards.online")) {
       document.cookie = `bgc-country=${newCode}; domain=.buygiftcards.online; path=/; max-age=31536000; SameSite=Lax`;
+    } else if (window.location.hostname.endsWith(".sg")) {
+      document.cookie = `bgc-country=${newCode}; path=/; max-age=31536000; SameSite=Lax`;
     }
 
     const currentHost = window.location.host.toLowerCase();

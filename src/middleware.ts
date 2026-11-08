@@ -15,16 +15,21 @@ export function middleware(req: NextRequest) {
   const cookieCountry = (req.cookies.get("bgc-country")?.value || "").toUpperCase().trim();
 
   let country = "US";
-  if (host.startsWith("ca.")) country = "CA";
-  else if (host.startsWith("sg.")) country = "SG";
-  else if (host.startsWith("uk.") || host.startsWith("gb.")) country = "UK";
-  else if (host.startsWith("au.")) country = "AU";
+  if (host.startsWith("ca.") || host.endsWith(".ca")) country = "CA";
+  else if (host.startsWith("sg.") || host.endsWith(".sg")) country = "SG";
+  else if (host.startsWith("uk.") || host.startsWith("gb.") || host.endsWith(".uk")) country = "UK";
+  else if (host.startsWith("au.") || host.endsWith(".au")) country = "AU";
   else if (VALID_COUNTRIES.has(queryCountry)) country = queryCountry;
   else if (VALID_COUNTRIES.has(cookieCountry)) country = cookieCountry;
 
   // Enforce HTTPS on production requests (excluding webhooks), while allowing both
-  // buygiftcards.online, www.buygiftcards.online, and country subdomains (ca., sg., uk., au.)
-  const isProdDomain = host === "buygiftcards.online" || host.endsWith(".buygiftcards.online");
+  // buygiftcards.online, www.buygiftcards.online, country subdomains (ca., sg., uk., au.),
+  // and country TLDs (.ca, .sg, .uk, .au)
+  const isProdDomain =
+    host === "buygiftcards.online" ||
+    host.endsWith(".buygiftcards.online") ||
+    host.endsWith(".sg") ||
+    host.endsWith(".ca");
   if (isProdDomain && !pathname.startsWith("/api/webhooks") && proto === "http") {
     const secureUrl = new URL(req.nextUrl.pathname + req.nextUrl.search, `https://${host}`);
     return NextResponse.redirect(secureUrl, 308);

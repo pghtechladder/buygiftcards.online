@@ -87,10 +87,15 @@ export function resolveCountryFromHostOrEnv(
 
   if (effectiveHost) {
     const cleanHost = effectiveHost.toLowerCase().split(":")[0];
-    if (cleanHost.startsWith("ca.")) return "CA";
-    if (cleanHost.startsWith("sg.")) return "SG";
-    if (cleanHost.startsWith("uk.") || cleanHost.startsWith("gb.")) return "UK";
-    if (cleanHost.startsWith("au.")) return "AU";
+    if (cleanHost.startsWith("ca.") || cleanHost.endsWith(".ca")) return "CA";
+    if (cleanHost.startsWith("sg.") || cleanHost.endsWith(".sg")) return "SG";
+    if (
+      cleanHost.startsWith("uk.") ||
+      cleanHost.startsWith("gb.") ||
+      cleanHost.endsWith(".uk")
+    )
+      return "UK";
+    if (cleanHost.startsWith("au.") || cleanHost.endsWith(".au")) return "AU";
   }
 
   let candidate = (cookieOrQueryCountry || "").toUpperCase().trim();

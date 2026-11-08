@@ -20,6 +20,8 @@ export function HolidayGiftGuide({ country = resolveCountryFromHostOrEnv() }: { 
       brands:
         country === "CA"
           ? ["bostonpizza", "googleplay", "nintendo", "kobo"]
+          : country === "SG"
+          ? ["garena", "mobilelegends", "starbucks", "pubg"]
           : ["starbucks", "chipotle", "dominos", "coldstonecreamery"],
     },
     {
@@ -32,33 +34,46 @@ export function HolidayGiftGuide({ country = resolveCountryFromHostOrEnv() }: { 
       brands:
         country === "CA"
           ? ["buygiftcards", "amazon", "xbox", "ardene"]
+          : country === "SG"
+          ? ["buygiftcards", "visa", "amazon", "adidas"]
           : ["buygiftcards", "visa", "amazon", "target"],
     },
     {
       id: "cozy-nights",
       tag: "Winter Favorites",
-      title: "Cozy Winter Nights In",
-      subtitle: "Delivery, streaming & home comforts for chilly evenings",
+      title: "Cozy Nights In",
+      subtitle: "Delivery, streaming & gaming for relaxing evenings",
       href: "/occasions?occasion=holidays#cozy-nights",
       gradient: "from-amber-900 via-amber-800 to-yellow-700",
       brands:
         country === "CA"
           ? ["ubereats", "bostonpizza", "redlobster", "kobo"]
+          : country === "SG"
+          ? ["netflix", "disney", "ubereats", "doordash"]
           : ["doordash", "netflix", "ubereats", "panera"],
     },
     {
       id: "holiday-travel",
       tag: country === "CA" ? "Outdoor & Auto" : "For Travelers",
-      title: country === "CA" ? "Canadian Winter & Outdoors" : "Holiday Getaways",
+      title:
+        country === "CA"
+          ? "Canadian Winter & Outdoors"
+          : country === "SG"
+          ? "Singapore & Global Getaways"
+          : "Holiday Getaways",
       subtitle:
         country === "CA"
           ? "Winter gear, outdoor adventure & road-trip fuel across Canada"
+          : country === "SG"
+          ? "Hotels, stays, tours & rides across Singapore and worldwide"
           : "Flights, stays & rides home for the holidays",
       href: country === "CA" ? "/catalog?category=Sports%20%26%20Outdoors" : "/catalog?category=Travel",
       gradient: "from-slate-900 via-indigo-950 to-slate-800",
       brands:
         country === "CA"
           ? ["basspro", "cabelas", "columbiasportswear", "petrocanada"]
+          : country === "SG"
+          ? ["airbnb", "globalhotel", "globalexperiences", "uber"]
           : ["airbnb", "southwest", "goldennugget", "uber"],
     },
   ];

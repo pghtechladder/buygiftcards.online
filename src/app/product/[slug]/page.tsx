@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BRANDS, getBrand, logoUrl } from "@/lib/brands";
 import { BRANDS_CA } from "@/lib/brands-ca";
+import { BRANDS_SG } from "@/lib/brands-sg";
 import { getServerCountry } from "@/lib/server-country";
 import { getCurrencyCode, getCurrencySymbol } from "@/lib/country-config";
 import { ProductDetail } from "@/components/ProductDetail";
@@ -9,7 +10,11 @@ import { ProductDetail } from "@/components/ProductDetail";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://buygiftcards.online";
 
 export function generateStaticParams() {
-  const slugs = new Set([...BRANDS.map((b) => b.slug), ...BRANDS_CA.map((b) => b.slug)]);
+  const slugs = new Set([
+    ...BRANDS.map((b) => b.slug),
+    ...BRANDS_CA.map((b) => b.slug),
+    ...BRANDS_SG.map((b) => b.slug),
+  ]);
   return Array.from(slugs).map((slug) => ({ slug }));
 }
 
