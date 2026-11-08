@@ -750,18 +750,20 @@ class HybridZenditProvider implements GiftCardProvider {
 }
 
 /**
- * Routes `deliveryType === "physical"` orders to the eGifter Merchandise Return API
- * (`EGifterPhysicalProvider` — `https://merchreturns-api.egifter.com/v1/Orders`), since Zendit
- * only fulfills digital eGift vouchers (`deliveryType === "egift"`).
+ * For US (`country === "US"`):
+ *   - Digital eGift cards (`deliveryType === "egift"`) -> fulfilled via Zendit (`ZenditProvider`).
+ *   - Physical plastic gift cards (`deliveryType === "physical"`) -> fulfilled via eGifter
+ *     Merchandise Return API (`EGifterPhysicalProvider` — `https://merchreturns-api.egifter.com/v1/Orders`).
+ * For other countries (`CA`, `SG`, `AU`, `UK`), all orders are digital eGifts fulfilled via Zendit.
  */
 class DeliveryAwareGiftCardProvider implements GiftCardProvider {
   constructor(
     private digitalProvider: GiftCardProvider,
-    private physicalProvider: EGifterPhysicalProvider
+    private physicalProvider: EGifterPhysicalProvider | null
   ) {}
 
   async issue(params: IssueCardParams): Promise<IssuedCard> {
-    if (params.deliveryType === "physical") {
+    if (params.deliveryType === "physical" && this.physicalProvider) {
       return await this.physicalProvider.issue(params);
     }
     return await this.digitalProvider.issue(params);
@@ -770,12 +772,12 @@ class DeliveryAwareGiftCardProvider implements GiftCardProvider {
 
 // ---------------------------------------------------------------------------
 // Factory — switchable via GIFTCARD_PROVIDER="zendit" | "tango" per country
-// Physical gift cards (`deliveryType === "physical"`) always use eGifter Merchandise Return API.
+// For US: Zendit fulfills digital eGift cards & eGifter fulfills physical gift cards.
 // ---------------------------------------------------------------------------
 
 export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv()): GiftCardProvider {
   const demo = new DemoGiftCardProvider();
-  const physicalProvider = new EGifterPhysicalProvider(country);
+  const physicalProvider = country === "US" ? new EGifterPhysicalProvider("US") : null;
   const selected = getSelectedProviderName(country);
 
   const hasTangoConfig = isTangoActive(country);
@@ -794,7 +796,8 @@ export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv
         tangoBaseUrl.includes("integration-api");
       const mode = isSandboxCreds ? "SANDBOX" : "PRODUCTION";
       console.log(
-        `[giftcard-provider:${country}] Using TangoCardProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=tango) + EGifterPhysicalProvider for physical cards ` +
+        `[giftcard-provider:${country}] Using TangoCardProvider [${mode}] as PRIMARY (GIFTCARD_PROVIDER=tango)` +
+          (physicalProvider ? ` + EGifterPhysicalProvider for US physical cards ` : ` `) +
           `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped, account: ${getCountryEnv("TANGO_ACCOUNT_IDENTIFIER", country)})`
       );
       return new DeliveryAwareGiftCardProvider(
@@ -806,12 +809,13 @@ export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv
     }
   }
 
-  // 2. Default or explicitly chosen: Zendit as primary digital + eGifter Merchandise Return API for physical
+  // 2. Default or explicitly chosen: Zendit as primary digital (+ eGifter for US physical gift cards)
   if (zenditProvider) {
     const mappedCount = Object.keys(getZenditOffersForCountry(country)).length;
     const mode = zenditKey.startsWith("prod_") ? "LIVE" : "SANDBOX";
     console.log(
-      `[giftcard-provider:${country}] Using ZenditProvider [${mode}] for digital eGifts + EGifterPhysicalProvider for physical gift cards ` +
+      `[giftcard-provider:${country}] Using ZenditProvider [${mode}] for digital eGifts` +
+        (physicalProvider ? ` + EGifterPhysicalProvider for US physical gift cards ` : ` `) +
         `(${mappedCount} brands mapped, account: ${getCountryEnv("ZENDIT_USERNAME", country, "sri@techladder.io")})`
     );
     return new DeliveryAwareGiftCardProvider(zenditProvider, physicalProvider);
@@ -822,7 +826,8 @@ export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv
     const tangoBaseUrl = getCountryEnv("TANGO_API_BASE_URL", country, "https://api.tangocard.com/raas/v2");
     const mode = tangoBaseUrl.includes("integration-api") ? "SANDBOX" : "PRODUCTION";
     console.log(
-      `[giftcard-provider:${country}] Falling back to TangoCardProvider [${mode}] + EGifterPhysicalProvider ` +
+      `[giftcard-provider:${country}] Falling back to TangoCardProvider [${mode}]` +
+        (physicalProvider ? ` + EGifterPhysicalProvider ` : ` `) +
         `(${Object.keys(BRAND_TO_TANGO_UTID).length} brands mapped)`
     );
     return new DeliveryAwareGiftCardProvider(

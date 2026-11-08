@@ -7,9 +7,13 @@ NEXT_PUBLIC_COUNTRY="US"
 NEXT_PUBLIC_SITE_URL="https://www.buygiftcards.online"
 COUNTRY_CURRENCY="USD"
 
-# Gift Card Provider for United States: "zendit" or "tango"
+# Gift Card Provider for United States:
+# - Digital eGift Cards (`deliveryType === "egift"`): "zendit" (or "tango")
+# - Physical Gift Cards (`deliveryType === "physical"`): "egifter" (eGifter Merchandise Return API v1)
 GIFTCARD_PROVIDER="zendit"
 US_GIFTCARD_PROVIDER="zendit"
+PHYSICAL_GIFTCARD_PROVIDER="egifter"
+US_PHYSICAL_GIFTCARD_PROVIDER="egifter"
 
 # Zendit Configuration for United States
 ZENDIT_API_KEY="prod_21c9f3fe-a10a-454d-acdf-ad0250c8030c6ae4af6f0273f38d602cb8f9"
