@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { useAuthModal } from "@/context/AuthModalContext";
-import { getBrand, chargeAmountCents } from "@/lib/brands";
+import { getBrand, chargeAmountCents, activationFeeCents } from "@/lib/brands";
 import { CountryCode, formatCurrency, getCurrencyCode, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { BrandLogo } from "./BrandLogo";
 import { Icon } from "./Icon";
@@ -154,6 +154,7 @@ export function CartDrawer() {
                   const chargePerCard = brand
                     ? chargeAmountCents(brand, item.amount) / 100
                     : item.amount;
+                  const actFeePerCard = brand ? activationFeeCents(brand, item.amount) / 100 : 0;
                   const hasDiscount = chargePerCard < item.amount;
                   const lineTotal = chargePerCard * item.qty;
 
@@ -203,6 +204,11 @@ export function CartDrawer() {
                             {hasDiscount && (
                               <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-accent-500 text-ink-950">
                                 {brand?.discountPercent}% OFF
+                              </span>
+                            )}
+                            {actFeePerCard > 0 && (
+                              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-ink-100 text-ink-700">
+                                +{fmt(actFeePerCard)} Fee
                               </span>
                             )}
                           </div>

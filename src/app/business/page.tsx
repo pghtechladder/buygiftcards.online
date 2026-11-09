@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BusinessQuoteForm } from "@/components/BusinessQuoteForm";
 import { Icon } from "@/components/Icon";
 
@@ -56,6 +57,22 @@ export default function BusinessPage() {
             Reward employees, thank clients for the holidays, or power marketing incentives across 165+ top brands.
             Build your bulk order below and receive a formal invoice within one business day.
           </p>
+          <div className="flex flex-wrap gap-3 pt-5">
+            <Link
+              href="/platform"
+              className="px-4 py-2 rounded-xl bg-white text-ink-950 font-extrabold text-xs hover:bg-white/90 transition flex items-center gap-1.5"
+            >
+              <span>Explore Platform ($0 Fees)</span>
+              <span>&rarr;</span>
+            </Link>
+            <Link
+              href="/platform/api"
+              className="px-4 py-2 rounded-xl bg-white/15 border border-white/20 text-white font-extrabold text-xs hover:bg-white/25 transition flex items-center gap-1.5"
+            >
+              <Icon name="code" size={14} />
+              <span>Developer REST API</span>
+            </Link>
+          </div>
         </div>
       </div>
 

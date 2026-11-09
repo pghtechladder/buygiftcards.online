@@ -124,6 +124,9 @@ export async function createPayPalOrder(opts: {
     surname?: string;
     email?: string;
     countryCode?: string;
+    postalCode?: string;
+    addressLine1?: string;
+    adminArea2?: string;
   };
 }): Promise<{
   id: string;
@@ -186,6 +189,8 @@ export async function createPayPalOrder(opts: {
         : {}),
       purchase_units: [
         {
+          reference_id: opts.customId,
+          invoice_id: opts.customId, // Level 3 Interchange requirement: unique invoice ID
           custom_id: opts.customId,
           description: "buygiftcards.online Digital Gift Cards",
           amount: {
@@ -196,6 +201,11 @@ export async function createPayPalOrder(opts: {
                 currency_code: currencyCode,
                 value: totalStr,
               },
+              tax_total: {
+                // Level 2 Interchange requirement: explicit 0.00 tax indicator for tax-exempt gift cards
+                currency_code: currencyCode,
+                value: "0.00",
+              },
             },
           },
           items: opts.items.map((item) => ({
@@ -205,6 +215,10 @@ export async function createPayPalOrder(opts: {
             unit_amount: {
               currency_code: currencyCode,
               value: (item.unitAmountCents / 100).toFixed(2),
+            },
+            tax: {
+              currency_code: currencyCode,
+              value: "0.00",
             },
             quantity: String(item.quantity),
             category: "DIGITAL_GOODS",

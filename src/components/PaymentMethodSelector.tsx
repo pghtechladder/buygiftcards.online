@@ -374,8 +374,13 @@ export function PaymentMethodSelector({
               </svg>
             </div>
             <div className="min-w-0 flex-1">
-              <div className="font-extrabold text-xs sm:text-sm text-ink-950 truncate">PayPal</div>
-              <div className="text-[11px] text-ink-500 truncate">Balance · Pay Later</div>
+              <div className="font-extrabold text-xs sm:text-sm text-ink-950 truncate flex items-center gap-1.5">
+                <span>PayPal</span>
+                <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">
+                  LOW FEE
+                </span>
+              </div>
+              <div className="text-[11px] text-ink-500 truncate">Balance · Venmo · 0% Fee</div>
             </div>
             {selectedMethod === "paypal" && (
               <span className="w-2.5 h-2.5 rounded-full bg-[#0070ba] flex-shrink-0" />
@@ -405,7 +410,7 @@ export function PaymentMethodSelector({
               <div className="font-extrabold text-xs sm:text-sm text-ink-950 truncate">
                 Debit / Credit
               </div>
-              <div className="text-[11px] text-ink-500 truncate">Visa · MC · Amex</div>
+              <div className="text-[11px] text-ink-500 truncate">Durbin Debit &amp; 3DS Safe</div>
             </div>
             {selectedMethod === "card" && (
               <span className="w-2.5 h-2.5 rounded-full bg-ink-950 flex-shrink-0" />
@@ -510,8 +515,11 @@ export function PaymentMethodSelector({
                 <div className="flex items-center gap-1 font-extrabold text-xs sm:text-sm">
                   <span className="text-amber-500 font-black">₿</span>
                   <span>Crypto</span>
+                  <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 ml-1">
+                    0% FEE
+                  </span>
                 </div>
-                <span className="text-[10px] text-ink-400">BTC · ETH · PYUSD</span>
+                <span className="text-[10px] text-ink-400">PYUSD · BTC · ETH</span>
               </button>
             </div>
           </div>

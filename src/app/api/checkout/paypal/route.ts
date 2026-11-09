@@ -47,6 +47,7 @@ const ActionSchema = z.discriminatedUnion("action", [
         surname: z.string().max(80).optional(),
         email: z.string().email().max(120).optional().or(z.literal("")),
         countryCode: z.string().max(4).optional(),
+        postalCode: z.string().max(20).optional(),
       })
       .optional(),
   }),
@@ -189,6 +190,7 @@ export async function POST(req: NextRequest) {
           surname: parsed.data.payer?.surname || defaultLast || "Customer",
           email: parsed.data.payer?.email || authSession?.user?.email || undefined,
           countryCode: parsed.data.payer?.countryCode || activeCountry,
+          postalCode: parsed.data.payer?.postalCode,
         },
         items: validatedLines.map((line) => ({
           name: `${line.brandName} ${line.item.deliveryType === "egift" ? "eGift" : "Physical"} Card (${currencySym}${line.item.amount})`,

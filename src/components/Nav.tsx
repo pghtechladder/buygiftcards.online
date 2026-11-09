@@ -14,13 +14,16 @@ const TOP_UTILITY_LINKS = [
   { label: "Redeem Gift Card", href: "/redeem" },
   { label: "Track Order", href: "/track-order" },
   { label: "Activate Card", href: "/activate" },
+  { label: "Platform API", href: "/platform/api" },
   { label: "Check Balance", href: "/balance" },
-  { label: "Corporate & Bulk", href: "/business" },
+  { label: "Corporate & Bulk", href: "/platform" },
   { label: "Support & FAQ", href: "/support" },
 ];
 
 const NAV_LINKS = [
   { label: "🎄 Holiday Shop", href: "/occasions?occasion=holidays", highlight: true },
+  { label: "Platform", href: "/platform" },
+  { label: "Gift Card API", href: "/platform/api" },
   { label: "All Brands", href: "/catalog" },
   { label: "BuyGiftCards Card", href: "/product/buygiftcards" },
   { label: "Redeem Card", href: "/redeem" },

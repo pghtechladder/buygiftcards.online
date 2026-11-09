@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Brand, getBrandsForCountry, HOUSE_BRAND_SLUGS } from "@/lib/brands";
+import { Brand, getBrandsForCountry, HOUSE_BRAND_SLUGS, activationFeeCents, chargeAmountCents } from "@/lib/brands";
 import {
   CountryCode,
   formatCurrency,
@@ -68,7 +68,8 @@ export function ProductDetail({
 
   const amt = isCustom ? Number(custom) || 0 : amount;
   const valid = amt >= b.min && amt <= b.max && !photoUploading;
-  const chargeAmt = b.discountPercent ? Math.round(amt * (1 - b.discountPercent / 100) * 100) / 100 : amt;
+  const actFee = activationFeeCents(b, amt) / 100;
+  const chargeAmt = chargeAmountCents(b, amt) / 100;
 
   const activeDesign = OCCASION_DESIGNS.find((d) => d.id === designId) ?? OCCASION_DESIGNS[0];
   const relatedBrands = activeBrands.filter((x) => x.category === b.category && x.slug !== b.slug).slice(0, 5);
@@ -553,12 +554,21 @@ export function ProductDetail({
                   <div className="text-3xl font-extrabold">{fmt(chargeAmt * qty)}</div>
                   <div className="text-sm font-semibold text-ink-400 line-through">{fmt(amt * qty)}</div>
                 </div>
+              ) : actFee > 0 ? (
+                <div>
+                  <div className="text-3xl font-extrabold">{fmt(chargeAmt * qty)}</div>
+                  <div className="text-[11px] text-ink-600 font-semibold mt-0.5">
+                    Includes {fmt(actFee * qty)} activation fee ({fmt(actFee)}/card)
+                  </div>
+                </div>
               ) : (
                 <div className="text-3xl font-extrabold">{fmt(amt * qty)}</div>
               )}
               <div className="text-[11px] text-ink-400 mt-0.5">
                 {b.discountPercent
                   ? `Card value: ${fmt(amt * qty)} — you save ${fmt((amt - chargeAmt) * qty)}`
+                  : actFee > 0
+                  ? `Prepaid Card Value: ${fmt(amt * qty)}`
                   : "Card value: full amount, $0 fees"}
               </div>
             </div>

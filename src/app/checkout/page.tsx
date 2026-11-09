@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { useAuthModal } from "@/context/AuthModalContext";
-import { getBrand, chargeAmountCents } from "@/lib/brands";
+import { getBrand, chargeAmountCents, activationFeeCents } from "@/lib/brands";
 import { CountryCode, formatCurrency, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Icon } from "@/components/Icon";
@@ -35,6 +35,12 @@ export default function DedicatedCheckoutPage() {
   }, []);
 
   const fmt = (n: number) => formatCurrency(n, country);
+
+  const activationFeesTotal = items.reduce((s, item) => {
+    const brand = getBrand(item.brandSlug, country);
+    const fee = brand ? activationFeeCents(brand, item.amount) / 100 : 0;
+    return s + fee * item.qty;
+  }, 0);
 
   if (items.length === 0) {
     return (
@@ -101,6 +107,7 @@ export default function DedicatedCheckoutPage() {
                 const chargePerCard = brand
                   ? chargeAmountCents(brand, item.amount) / 100
                   : item.amount;
+                const actFeePerCard = brand ? activationFeeCents(brand, item.amount) / 100 : 0;
                 const hasDiscount = chargePerCard < item.amount;
                 const lineTotal = chargePerCard * item.qty;
 
@@ -134,6 +141,11 @@ export default function DedicatedCheckoutPage() {
                           {hasDiscount && (
                             <span className="ml-1.5 text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-accent-500 text-ink-950">
                               {brand?.discountPercent}% OFF
+                            </span>
+                          )}
+                          {actFeePerCard > 0 && (
+                            <span className="ml-1.5 text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-ink-100 text-ink-700">
+                              +{fmt(actFeePerCard)} Fee
                             </span>
                           )}
                         </div>
@@ -181,6 +193,12 @@ export default function DedicatedCheckoutPage() {
                 <span>Gift Card Face Value</span>
                 <span>{fmt(faceTotal)}</span>
               </div>
+              {activationFeesTotal > 0 && (
+                <div className="flex justify-between text-ink-600">
+                  <span>Prepaid Card Activation Fee</span>
+                  <span className="font-semibold text-ink-900">+{fmt(activationFeesTotal)}</span>
+                </div>
+              )}
               {savingsTotal > 0 && (
                 <div className="flex justify-between text-emerald-600 font-bold">
                   <span>Instant Savings</span>

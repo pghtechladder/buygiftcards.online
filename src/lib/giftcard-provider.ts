@@ -863,3 +863,4 @@ export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv
 }
 
 export const giftCardProvider: GiftCardProvider = buildProvider();
+export const getGiftCardProvider = buildProvider;

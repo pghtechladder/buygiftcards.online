@@ -202,11 +202,40 @@ export function loadCountryEnvFile(country: CountryCode): Record<string, string>
 }
 
 /**
+ * If a secret was stored as an encrypted token (`enc:v1:...`), decrypt it
+ * server-side using the master APP_ENCRYPTION_KEY.
+ */
+function decryptIfEncrypted(val: string): string {
+  if (!val || typeof val !== "string" || !val.startsWith("enc:v1:")) {
+    return val;
+  }
+  if (typeof window !== "undefined") {
+    // Encrypted secrets should never be accessible on the client
+    return "";
+  }
+  try {
+    const req = eval("require") as NodeRequire;
+    const path = req("path") as typeof import("path");
+    const modPath =
+      typeof __dirname !== "undefined"
+        ? path.join(__dirname, "encryption")
+        : path.join(process.cwd(), "src", "lib", "encryption");
+    const { decryptSecret } = req(modPath) as typeof import("./encryption");
+    return decryptSecret(val);
+  } catch (err) {
+    console.error("Failed to decrypt secret in getCountryEnv:", err);
+    return val;
+  }
+}
+
+/**
  * Looks up a configuration property for a specific country (`US`, `CA`, `SG`, etc.) with priority:
  *   1. Country-prefixed environment variable: `process.env[`${country}_${key}`]` (e.g. `CA_GIFTCARD_PROVIDER`, `SG_PAYPAL_CLIENT_ID`)
  *   2. Country property file (`env-ca` / `.env-ca`, `env-sg` / `.env-sg`): `fileEnv[key]`
  *   3. Global environment variable: `process.env[key]`
  *   4. Default fallback value
+ *
+ * Transparently decrypts values encrypted with `enc:v1:` using the master key.
  */
 export function getCountryEnv(
   key: string,
@@ -214,17 +243,21 @@ export function getCountryEnv(
   fallback = ""
 ): string {
   const prefixedKey = `${country}_${key}`;
+  let raw = "";
+
   if (process.env[prefixedKey]) {
-    return process.env[prefixedKey]!;
+    raw = process.env[prefixedKey]!;
+  } else {
+    const fileProps = loadCountryEnvFile(country);
+    if (fileProps[prefixedKey]) {
+      raw = fileProps[prefixedKey];
+    } else if (fileProps[key]) {
+      raw = fileProps[key];
+    } else if (process.env[key]) {
+      raw = process.env[key]!;
+    }
   }
 
-  const fileProps = loadCountryEnvFile(country);
-  if (fileProps[prefixedKey]) return fileProps[prefixedKey];
-  if (fileProps[key]) return fileProps[key];
-
-  if (process.env[key]) {
-    return process.env[key]!;
-  }
-
-  return fallback;
+  const result = raw || fallback;
+  return decryptIfEncrypted(result);
 }

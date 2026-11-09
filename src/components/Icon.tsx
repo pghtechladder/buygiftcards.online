@@ -5,9 +5,15 @@
 export type IconName =
   | "search" | "cart" | "x" | "lock" | "package" | "mail" | "zap" | "shield"
   | "checkCircle" | "messageCircle" | "wallet" | "chevronRight" | "chevronDown" | "gift"
-  | "undo" | "loader" | "inbox" | "copy";
+  | "undo" | "loader" | "inbox" | "copy" | "code";
 
 const paths: Record<IconName, React.ReactNode> = {
+  code: (
+    <>
+      <polyline points="16 18 22 12 16 6" fill="none" />
+      <polyline points="8 6 2 12 8 18" fill="none" />
+    </>
+  ),
   search: (
     <>
       <circle cx="11" cy="11" r="7" />

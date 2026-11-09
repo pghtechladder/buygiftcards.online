@@ -33,6 +33,8 @@ const COLUMNS = [
       ["Track Your Order", "/track-order"],
       ["Check Card Balance", "/balance"],
       ["Activate a Card", "/activate"],
+      ["Platform & Rewards API", "/platform"],
+      ["Developer REST API", "/platform/api"],
       ["Corporate & Bulk Orders", "/business"],
       ["My Account", "/account"],
       ["Support & FAQ", "/support"],

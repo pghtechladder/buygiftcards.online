@@ -18,7 +18,10 @@
     "test:tango": "node scripts/test-tango.mjs",
     "test:gateways": "node scripts/test-gateways.mjs",
     "audit:catalog": "node scripts/audit-catalog.mjs",
-    "env:sync": "node scripts/sync-env-to-vercel.mjs"
+    "env:sync": "node scripts/sync-env-to-vercel.mjs",
+    "secret:keygen": "node scripts/manage-secrets.mjs keygen",
+    "secret:encrypt": "node scripts/manage-secrets.mjs encrypt",
+    "secret:decrypt": "node scripts/manage-secrets.mjs decrypt"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",

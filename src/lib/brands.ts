@@ -343,14 +343,36 @@ export function isValidDenomination(brand: Brand, amountCents: number): boolean 
 }
 
 /**
+ * Calculates the mandatory purchase/activation fee (in cents) for open-loop prepaid cards
+ * (e.g., Visa and Mastercard), following GiftCards.com / Vanilla / Blackhawk network standards.
+ * Closed-loop retail brand cards (Amazon, Starbucks, Adidas, etc.) have NO activation fee ($0).
+ */
+export function activationFeeCents(brand: Brand, faceValueDollars: number): number {
+  const isPrepaidCard =
+    brand.slug === "visa" ||
+    brand.slug === "mastercard" ||
+    brand.category === "Visa" ||
+    brand.category === "Mastercard";
+
+  if (!isPrepaidCard) return 0;
+
+  if (faceValueDollars <= 74.99) return 395; // $3.95
+  if (faceValueDollars <= 149.99) return 495; // $4.95
+  if (faceValueDollars <= 249.99) return 595; // $5.95
+  return 695; // $6.95 for $250+
+}
+
+/**
  * What the customer actually pays for a given face-value denomination, in
- * cents, after any discount. The gift card is still issued at the full
- * face value — the discount is the reseller's margin, same model real
- * gift-card marketplaces use. Server-side source of truth; the checkout
+ * cents, after any discount plus any open-loop prepaid activation fee. The gift card
+ * is still issued at the full face value — the discount is the reseller's margin,
+ * same model real gift-card marketplaces use. Server-side source of truth; the checkout
  * route recomputes this itself rather than trusting a client-sent price.
  */
 export function chargeAmountCents(brand: Brand, faceValueDollars: number): number {
   const faceCents = Math.round(faceValueDollars * 100);
-  if (!brand.discountPercent) return faceCents;
-  return Math.round(faceCents * (1 - brand.discountPercent / 100));
+  const feeCents = activationFeeCents(brand, faceValueDollars);
+  if (!brand.discountPercent) return faceCents + feeCents;
+  const discounted = Math.round(faceCents * (1 - brand.discountPercent / 100));
+  return discounted + feeCents;
 }
