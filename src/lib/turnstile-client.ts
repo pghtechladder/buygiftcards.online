@@ -1,8 +1,7 @@
 "use client";
 
 /**
- * Client helper: obtains an invisible Cloudflare Turnstile token right before a sensitive
- * request (checkout, register, password reset). Returns "" when no site key is configured.
+ * Client helper: obtains a Cloudflare Turnstile token or renders interactive widget.
  */
 
 declare global {
@@ -21,10 +20,21 @@ const SCRIPT_ID = "cf-turnstile-script";
 
 let scriptPromise: Promise<void> | null = null;
 
-function loadScript(): Promise<void> {
+export function isTurnstileConfigured(): boolean {
+  return Boolean(SITE_KEY && SITE_KEY.trim().length > 0);
+}
+
+export function loadTurnstileScript(): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve();
   if (window.turnstile) return Promise.resolve();
   if (scriptPromise) return scriptPromise;
+
   scriptPromise = new Promise((resolve, reject) => {
+    const existing = document.getElementById(SCRIPT_ID);
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
+      return;
+    }
     const s = document.createElement("script");
     s.id = SCRIPT_ID;
     s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
@@ -39,9 +49,40 @@ function loadScript(): Promise<void> {
   return scriptPromise;
 }
 
+export async function renderTurnstileWidget(
+  container: HTMLElement,
+  options: {
+    action?: string;
+    onSuccess: (token: string) => void;
+    onError?: () => void;
+    onExpire?: () => void;
+  }
+): Promise<string> {
+  if (!isTurnstileConfigured()) return "";
+  await loadTurnstileScript();
+
+  if (!window.turnstile) return "";
+
+  return window.turnstile.render(container, {
+    sitekey: SITE_KEY,
+    action: options.action || "form",
+    callback: options.onSuccess,
+    "error-callback": options.onError,
+    "expired-callback": options.onExpire,
+  });
+}
+
+export function removeTurnstileWidget(widgetId: string): void {
+  try {
+    if (widgetId && window.turnstile) {
+      window.turnstile.remove(widgetId);
+    }
+  } catch {}
+}
+
 export async function getTurnstileToken(action = "checkout"): Promise<string> {
   if (!SITE_KEY || typeof window === "undefined") return "";
-  await loadScript();
+  await loadTurnstileScript();
 
   return new Promise<string>((resolve, reject) => {
     const host = document.createElement("div");
@@ -80,4 +121,3 @@ export async function getTurnstileToken(action = "checkout"): Promise<string> {
     });
   });
 }
-

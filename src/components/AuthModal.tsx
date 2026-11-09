@@ -7,6 +7,7 @@ import { useAuthModal } from "@/context/AuthModalContext";
 import { Icon } from "./Icon";
 import { PASSWORD_RULE_TEXT, isValidPassword } from "@/lib/passwordRules";
 import { getTurnstileToken } from "@/lib/turnstile-client";
+import { CaptchaChallenge } from "./CaptchaChallenge";
 
 type OAuthProviderId = "google" | "facebook" | "apple";
 
@@ -34,8 +35,16 @@ export function AuthModal() {
   const [regPassword, setRegPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const [regCaptchaToken, setRegCaptchaToken] = useState("");
   const [regLoading, setRegLoading] = useState(false);
   const [regError, setRegError] = useState<string | null>(null);
+
+  // Forgot password form state
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotCaptchaToken, setForgotCaptchaToken] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState<string | null>(null);
+  const [forgotError, setForgotError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -98,9 +107,15 @@ export function AuthModal() {
       setRegError("Passwords don't match.");
       return;
     }
+    if (!regCaptchaToken) {
+      setRegError("Please solve the security check (CAPTCHA) below to continue.");
+      return;
+    }
+
     setRegLoading(true);
     try {
-      const turnstileToken = await getTurnstileToken("register");
+      // Use explicit captcha token from widget, or obtain turnstile background token
+      const turnstileToken = regCaptchaToken || (await getTurnstileToken("register"));
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -140,35 +155,93 @@ export function AuthModal() {
     }
   };
 
+  const submitForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError(null);
+    setForgotSuccess(null);
+
+    if (!forgotEmail) {
+      setForgotError("Please enter your account email address.");
+      return;
+    }
+    if (!forgotCaptchaToken) {
+      setForgotError("Please solve the security check (CAPTCHA) below to continue.");
+      return;
+    }
+
+    setForgotLoading(true);
+    try {
+      const turnstileToken = forgotCaptchaToken || (await getTurnstileToken("forgot_password"));
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(turnstileToken ? { "x-turnstile-token": turnstileToken } : {}),
+        },
+        body: JSON.stringify({ email: forgotEmail.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setForgotError(data.error || "Failed to process password reset.");
+        return;
+      }
+      setForgotSuccess(
+        data.message || "If an account with that email exists, we've sent a password reset link to your inbox."
+      );
+    } catch {
+      setForgotError("Something went wrong. Please try again.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
       <div onClick={close} className="absolute inset-0 bg-ink-950/60 backdrop-blur-sm" />
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-[420px] w-full max-h-[90vh] overflow-y-auto p-8 animate-slide-in">
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-[440px] w-full max-h-[90vh] overflow-y-auto p-7 animate-slide-in">
         <button onClick={close} aria-label="Close" className="absolute top-4 right-4 text-ink-400 hover:text-ink-900 transition">
           <Icon name="x" size={20} />
         </button>
 
-        <div className="flex gap-6 border-b border-ink-100 mb-6">
-          <button
-            onClick={() => open("signin")}
-            className={`pb-3 text-sm font-bold border-b-2 transition ${
-              mode === "signin" ? "text-brand-600 border-brand-500" : "text-ink-400 border-transparent hover:text-ink-600"
-            }`}
-          >
-            Sign in
-          </button>
-          <button
-            onClick={() => open("register")}
-            className={`pb-3 text-sm font-bold border-b-2 transition ${
-              mode === "register" ? "text-brand-600 border-brand-500" : "text-ink-400 border-transparent hover:text-ink-600"
-            }`}
-          >
-            Register
-          </button>
-        </div>
+        {mode !== "forgot" ? (
+          <div className="flex gap-6 border-b border-ink-100 mb-6">
+            <button
+              onClick={() => open("signin")}
+              className={`pb-3 text-sm font-bold border-b-2 transition ${
+                mode === "signin" ? "text-brand-600 border-brand-500" : "text-ink-400 border-transparent hover:text-ink-600"
+              }`}
+            >
+              Sign in
+            </button>
+            <button
+              onClick={() => open("register")}
+              className={`pb-3 text-sm font-bold border-b-2 transition ${
+                mode === "register" ? "text-brand-600 border-brand-500" : "text-ink-400 border-transparent hover:text-ink-600"
+              }`}
+            >
+              Register
+            </button>
+          </div>
+        ) : (
+          <div className="border-b border-ink-100 pb-4 mb-6">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => open("signin")}
+                className="text-xs font-bold text-ink-400 hover:text-ink-700 flex items-center gap-1 transition"
+              >
+                &larr; Back to Sign in
+              </button>
+            </div>
+            <h2 className="text-xl font-bold text-ink-900 mt-2">Reset Password</h2>
+            <p className="text-xs text-ink-500 mt-1">
+              Enter your email and we’ll send you a secure link to create a new password.
+            </p>
+          </div>
+        )}
 
         {mode === "register" && (
-          <div className="bg-brand-50 rounded-xl p-4 mb-6">
+          <div className="bg-brand-50 rounded-xl p-4 mb-5">
             <div className="text-xs font-bold text-brand-700 mb-2 uppercase tracking-wide">Benefits of registering</div>
             <ul className="space-y-1.5 text-sm text-ink-800">
               <li className="flex items-start gap-2">
@@ -187,7 +260,7 @@ export function AuthModal() {
           </div>
         )}
 
-        {oauthProviders.length > 0 && (
+        {mode !== "forgot" && oauthProviders.length > 0 && (
           <>
             <div className="space-y-2.5 mb-5">
               {oauthProviders.map((id) => (
@@ -216,6 +289,7 @@ export function AuthModal() {
                 type="email"
                 value={signinEmail}
                 onChange={(e) => setSigninEmail(e.target.value)}
+                required
                 className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
               />
             </div>
@@ -225,17 +299,25 @@ export function AuthModal() {
                 type="password"
                 value={signinPassword}
                 onChange={(e) => setSigninPassword(e.target.value)}
+                required
                 className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
               />
             </div>
 
             <div className="text-right">
-              <Link href="/reset-password" className="text-xs font-semibold text-brand-600 hover:text-brand-700">
+              <button
+                type="button"
+                onClick={() => {
+                  setForgotEmail(signinEmail);
+                  open("forgot");
+                }}
+                className="text-xs font-semibold text-brand-600 hover:text-brand-700 underline"
+              >
                 Forgot password?
-              </Link>
+              </button>
             </div>
 
-            {signinError && <div className="text-red-600 text-sm">{signinError}</div>}
+            {signinError && <div className="text-red-600 text-sm font-medium">{signinError}</div>}
 
             <button
               disabled={signinLoading}
@@ -252,6 +334,52 @@ export function AuthModal() {
               </button>
             </div>
           </form>
+        ) : mode === "forgot" ? (
+          <form onSubmit={submitForgot} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-ink-600 mb-1.5">Your Account Email</label>
+              <input
+                type="email"
+                placeholder="name@example.com"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
+              />
+            </div>
+
+            {/* Interactive CAPTCHA challenge */}
+            <CaptchaChallenge
+              action="forgot_password"
+              onVerify={(token) => setForgotCaptchaToken(token)}
+            />
+
+            {forgotError && <div className="text-red-600 text-sm font-medium">{forgotError}</div>}
+            {forgotSuccess && (
+              <div className="p-3.5 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm">
+                <div className="font-bold flex items-center gap-1.5 mb-1">
+                  <Icon name="checkCircle" size={16} className="text-green-600" />
+                  Email Dispatched
+                </div>
+                {forgotSuccess}
+              </div>
+            )}
+
+            <button
+              disabled={forgotLoading}
+              className="w-full py-3.5 rounded-xl bg-brand-600 text-white font-bold hover:bg-brand-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {forgotLoading && <Icon name="loader" size={16} className="animate-spin" />}
+              {forgotLoading ? "Sending reset link…" : "Send Reset Link"}
+            </button>
+
+            <div className="text-center text-sm text-ink-600">
+              Remembered your password?{" "}
+              <button type="button" onClick={() => open("signin")} className="font-bold text-brand-600 hover:text-brand-700">
+                Sign in
+              </button>
+            </div>
+          </form>
         ) : (
           <form onSubmit={submitRegister} className="space-y-3.5">
             <div className="grid grid-cols-2 gap-3">
@@ -260,6 +388,7 @@ export function AuthModal() {
                 <input
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
+                  required
                   className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
                 />
               </div>
@@ -268,6 +397,7 @@ export function AuthModal() {
                 <input
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
+                  required
                   className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
                 />
               </div>
@@ -279,6 +409,7 @@ export function AuthModal() {
                 type="email"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
+                required
                 className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
               />
             </div>
@@ -289,6 +420,7 @@ export function AuthModal() {
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                placeholder="(555) 000-0000"
                 className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
               />
             </div>
@@ -299,6 +431,7 @@ export function AuthModal() {
                 type="password"
                 value={regPassword}
                 onChange={(e) => setRegPassword(e.target.value)}
+                required
                 className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
               />
               <p className="text-xs text-ink-400 mt-1.5">{PASSWORD_RULE_TEXT}</p>
@@ -310,9 +443,16 @@ export function AuthModal() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                required
                 className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
               />
             </div>
+
+            {/* Interactive CAPTCHA check for account creation */}
+            <CaptchaChallenge
+              action="register"
+              onVerify={(token) => setRegCaptchaToken(token)}
+            />
 
             <label className="flex items-start gap-2.5 text-xs text-ink-600">
               <input
@@ -334,7 +474,7 @@ export function AuthModal() {
               </span>
             </label>
 
-            {regError && <div className="text-red-600 text-sm">{regError}</div>}
+            {regError && <div className="text-red-600 text-sm font-medium">{regError}</div>}
 
             <button
               disabled={regLoading}

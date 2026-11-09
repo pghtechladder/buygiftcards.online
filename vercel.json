@@ -26,7 +26,13 @@
     "TANGO_API_BASE_URL": "https://api.tangocard.com/raas/v2",
     "NEXT_PUBLIC_GA_MEASUREMENT_ID": "G-BGC2026RETAIL",
     "NEXT_PUBLIC_SITE_URL": "https://buygiftcards.online",
-    "NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION": "m9t6x_k_nCeYtg6lwj--5JFMkP8HieXqjbgELxIOl9I"
+    "NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION": "m9t6x_k_nCeYtg6lwj--5JFMkP8HieXqjbgELxIOl9I",
+    "SMTP_HOST": "smtp.zoho.com",
+    "SMTP_PORT": "465",
+    "SMTP_USER": "support@buygiftcards.online",
+    "SMTP_PASS": "Techl@der@2023",
+    "SMTP_FROM": "BuyGiftCards.online Support <support@buygiftcards.online>",
+    "SUPPORT_INBOX_EMAIL": "support@buygiftcards.online"
   },
   "headers": [
     {

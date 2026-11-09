@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
-export type AuthModalMode = "signin" | "register";
+export type AuthModalMode = "signin" | "register" | "forgot";
 
 type AuthModalContextValue = {
   isOpen: boolean;

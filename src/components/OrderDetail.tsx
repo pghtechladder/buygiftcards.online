@@ -7,6 +7,7 @@ import { Icon } from "./Icon";
 import { PASSWORD_RULE_TEXT, isValidPassword } from "@/lib/passwordRules";
 import { trackRetailEvent } from "@/lib/analytics";
 import { getTurnstileToken } from "@/lib/turnstile-client";
+import { CaptchaChallenge } from "@/components/CaptchaChallenge";
 import { CountryCode, formatCurrency, resolveCountryFromHostOrEnv } from "@/lib/country-config";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -82,6 +83,7 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -146,10 +148,14 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
       setAuthError("Passwords do not match.");
       return;
     }
+    if (!captchaToken) {
+      setAuthError("Please solve the security check (CAPTCHA) below to complete your account.");
+      return;
+    }
 
     setAuthLoading(true);
     try {
-      const turnstileToken = await getTurnstileToken("register");
+      const turnstileToken = captchaToken || (await getTurnstileToken("register"));
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -386,6 +392,12 @@ export function OrderDetail({ orderNumber, email }: { orderNumber: string; email
                   className="w-full px-4 py-3 border-2 border-ink-100 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition"
                 />
               </div>
+
+              {/* CAPTCHA security challenge */}
+              <CaptchaChallenge
+                action="order_register"
+                onVerify={(tok) => setCaptchaToken(tok)}
+              />
 
               <label className="flex items-start gap-2.5 text-xs text-ink-600">
                 <input
