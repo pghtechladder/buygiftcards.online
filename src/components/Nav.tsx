@@ -11,6 +11,7 @@ import { Icon } from "./Icon";
 import { CountrySelector } from "./CountrySelector";
 
 const TOP_UTILITY_LINKS = [
+  { label: "⭐ Reviews (4.8)", href: "/reviews" },
   { label: "Redeem Gift Card", href: "/redeem" },
   { label: "Track Order", href: "/track-order" },
   { label: "Activate Card", href: "/activate" },
@@ -22,6 +23,7 @@ const TOP_UTILITY_LINKS = [
 
 const NAV_LINKS = [
   { label: "🎄 Holiday Shop", href: "/occasions?occasion=holidays", highlight: true },
+  { label: "⭐ Reviews", href: "/reviews" },
   { label: "Platform", href: "/platform" },
   { label: "Gift Card API", href: "/platform/api" },
   { label: "All Brands", href: "/catalog" },

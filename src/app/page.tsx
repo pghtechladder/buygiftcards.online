@@ -5,6 +5,7 @@ import { HolidayGiftGuide } from "@/components/HolidayGiftGuide";
 import { BrandGrid } from "@/components/BrandGrid";
 import { BrandLogoStrip } from "@/components/BrandLogoStrip";
 import { PromoTiles } from "@/components/PromoTiles";
+import { CustomerReviewsSection } from "@/components/CustomerReviewsSection";
 import { ResponsiveHomeSwitcher } from "@/components/ResponsiveHomeSwitcher";
 import { parseDeviceFromUserAgent } from "@/lib/device";
 import { getBrandsForCountry } from "@/lib/brands";
@@ -45,6 +46,7 @@ export default async function HomePage() {
       )}
       <BrandLogoStrip items={bestBrands} title="Shop top gift card brands" />
       <BrandGrid items={featured} title="Featured gift cards" country={country} />
+      <CustomerReviewsSection />
 
       {/* Giftcards.com-style Self-Service Quick Bar */}
       <section aria-labelledby="self-service-heading" className="max-w-7xl mx-auto px-6 py-10">

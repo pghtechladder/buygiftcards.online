@@ -44,11 +44,80 @@ export function StructuredData() {
         ],
         aggregateRating: {
           "@type": "AggregateRating",
-          ratingValue: "4.9",
-          reviewCount: "1840",
+          ratingValue: "4.8",
+          reviewCount: "1428",
           bestRating: "5",
           worstRating: "1",
         },
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          applicableCountry: "US",
+          returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+          merchantReturnDays: 30,
+          returnMethod: "https://schema.org/ReturnByMail",
+          returnFees: "https://schema.org/FreeReturn",
+        },
+        shippingDetails: {
+          "@type": "OfferShippingDetails",
+          shippingRate: {
+            "@type": "MonetaryAmount",
+            value: "0.00",
+            currency: "USD",
+          },
+          deliveryTime: {
+            "@type": "ShippingDeliveryTime",
+            handlingTime: {
+              "@type": "QuantitativeValue",
+              minValue: 0,
+              maxValue: 0,
+              unitCode: "DAY",
+            },
+            transitTime: {
+              "@type": "QuantitativeValue",
+              minValue: 0,
+              maxValue: 0,
+              unitCode: "DAY",
+            },
+          },
+          shippingDestination: {
+            "@type": "DefinedRegion",
+            addressCountry: "US",
+          },
+        },
+        review: [
+          {
+            "@type": "Review",
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: "5",
+              bestRating: "5",
+              worstRating: "1",
+            },
+            author: {
+              "@type": "Person",
+              name: "David M.",
+            },
+            datePublished: "2026-11-04",
+            headline: "Instant delivery within seconds",
+            reviewBody: "Got my $100 Amazon gift card in my email literally 45 seconds after paying with PayPal. Claim code worked immediately.",
+          },
+          {
+            "@type": "Review",
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: "5",
+              bestRating: "5",
+              worstRating: "1",
+            },
+            author: {
+              "@type": "Person",
+              name: "Sarah K.",
+            },
+            datePublished: "2026-11-02",
+            headline: "Saved 5% on Choice Card",
+            reviewBody: "Purchased the BuyGiftCards Choice Card with 5% instant discount. Recipient split balance between Starbucks and Target with zero fees.",
+          },
+        ],
         hasOfferCatalog: {
           "@type": "OfferCatalog",
           name: "Digital Gift Cards & Prepaid eGift Catalog",
