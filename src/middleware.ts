@@ -13,13 +13,17 @@ export function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
   // --- Subdomain Routing: api.buygiftcards.online ---
-  // api.buygiftcards.online/ or api.buygiftcards.online/docs -> /docs
+  // api.buygiftcards.online/ -> /docs
+  // api.buygiftcards.online/docs/* -> /docs/*
   // api.buygiftcards.online/v1/* -> /api/v1/*
   if (host.startsWith("api.")) {
-    if (pathname === "/" || pathname === "" || pathname === "/docs" || pathname.startsWith("/docs/")) {
+    if (pathname === "/" || pathname === "") {
       const docsUrl = req.nextUrl.clone();
       docsUrl.pathname = "/docs";
       return NextResponse.rewrite(docsUrl);
+    }
+    if (pathname === "/docs" || pathname.startsWith("/docs/")) {
+      return NextResponse.next();
     }
     if (pathname.startsWith("/v1/")) {
       const apiUrl = req.nextUrl.clone();

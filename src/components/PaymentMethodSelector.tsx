@@ -9,6 +9,7 @@ import { trackRetailEvent } from "@/lib/analytics";
 import { getTurnstileToken } from "@/lib/turnstile-client";
 import { safeRandomId } from "@/lib/device";
 import { CountryCode, formatCurrency, getCurrencyCode, resolveCountryFromHostOrEnv } from "@/lib/country-config";
+import { EmailVerificationBox } from "@/components/EmailVerificationBox";
 
 export type PaymentChoice = "paypal" | "card" | "googlepay" | "applepay" | "crypto";
 
@@ -52,6 +53,11 @@ export function PaymentMethodSelector({
   const [cryptoLastName, setCryptoLastName] = useState(defaultParts.slice(1).join(" ") || "");
   const [cryptoEmail, setCryptoEmail] = useState(session?.user?.email || "");
   const [selectedCryptoAsset, setSelectedCryptoAsset] = useState<"PYUSD" | "BTC" | "ETH" | "SOL">("PYUSD");
+
+  // Email verification state (checkout is blocked until email is verified)
+  const [verifiedEmail, setVerifiedEmail] = useState("");
+  const [verificationToken, setVerificationToken] = useState<string | null>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -150,6 +156,11 @@ export function PaymentMethodSelector({
       },
       createOrder: async () => {
         setError(null);
+        if (!isEmailVerified) {
+          const errMsg = "Please complete the email verification above before connecting to PayPal.";
+          setError(errMsg);
+          throw new Error(errMsg);
+        }
         trackRetailEvent("begin_checkout", {
           currency: currencyCode,
           value: total,
@@ -173,6 +184,13 @@ export function PaymentMethodSelector({
             idempotencyKey,
             paymentMethod: selectedMethod,
             country,
+            emailVerificationToken: verificationToken || undefined,
+            payer: {
+              givenName: cryptoFirstName.trim() || "Valued",
+              surname: cryptoLastName.trim() || "Customer",
+              email: verifiedEmail || cryptoEmail.trim() || undefined,
+              countryCode: country === "UK" ? "GB" : country,
+            },
             items: serializedItems,
           }),
         });
@@ -248,6 +266,12 @@ export function PaymentMethodSelector({
   const startPaymentAction = async (method: PaymentChoice) => {
     setError(null);
 
+    // Mandatory Email Verification gate: cannot connect or checkout without email verification
+    if (!isEmailVerified) {
+      setError("Please complete the email verification above before connecting to PayPal or paying.");
+      return;
+    }
+
     if (method === "crypto") {
       if (!cryptoFirstName.trim() || !cryptoLastName.trim()) {
         setError("Please enter your first and last name for PayPal Crypto Checkout.");
@@ -289,10 +313,11 @@ export function PaymentMethodSelector({
           landingPage,
           paymentMethod: method,
           country,
+          emailVerificationToken: verificationToken || undefined,
           payer: {
             givenName: cryptoFirstName.trim() || "Valued",
             surname: cryptoLastName.trim() || "Customer",
-            email: cryptoEmail.trim() || undefined,
+            email: verifiedEmail || cryptoEmail.trim() || undefined,
             countryCode: country === "UK" ? "GB" : country,
           },
           items: serializedItems,
@@ -337,6 +362,27 @@ export function PaymentMethodSelector({
         <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-start gap-2">
           <Icon name="shield" size={15} className="text-red-500 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
+        </div>
+      )}
+
+      {/* MANDATORY EMAIL VERIFICATION GATE */}
+      <EmailVerificationBox
+        initialEmail={cryptoEmail || items.find((i) => i.recipientEmail)?.recipientEmail || ""}
+        onVerified={(email, token) => {
+          setVerifiedEmail(email);
+          setCryptoEmail(email);
+          setVerificationToken(token);
+          setIsEmailVerified(true);
+          setError(null);
+        }}
+      />
+
+      {!isEmailVerified && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3 flex items-center gap-2.5 text-xs text-amber-900 font-medium">
+          <Icon name="lock" size={16} className="text-amber-600 flex-shrink-0" />
+          <span>
+            <strong>Verification Required:</strong> Complete the 6-digit email verification step above. Payment options unlock once verified.
+          </span>
         </div>
       )}
 
@@ -537,13 +583,26 @@ export function PaymentMethodSelector({
             <button
               type="button"
               onClick={() => startPaymentAction("paypal")}
-              disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-[#FFC439] hover:bg-[#f2b829] text-[#003087] font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={loading || !isEmailVerified}
+              className={`w-full py-3.5 px-4 rounded-xl font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 ${
+                isEmailVerified
+                  ? "bg-[#FFC439] hover:bg-[#f2b829] text-[#003087]"
+                  : "bg-ink-100 text-ink-400 cursor-not-allowed border border-ink-200"
+              }`}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z" />
-              </svg>
-              <span>{loading ? "Connecting to PayPal…" : `Continue with PayPal · ${fmt(total)}`}</span>
+              {isEmailVerified ? (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z" />
+                  </svg>
+                  <span>{loading ? "Connecting to PayPal…" : `Continue with PayPal · ${fmt(total)}`}</span>
+                </>
+              ) : (
+                <>
+                  <Icon name="lock" size={16} />
+                  <span>Verify Email Above to Pay with PayPal</span>
+                </>
+              )}
             </button>
 
             <button
@@ -567,13 +626,26 @@ export function PaymentMethodSelector({
             <button
               type="button"
               onClick={() => startPaymentAction("card")}
-              disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-ink-950 hover:bg-ink-800 text-white font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={loading || !isEmailVerified}
+              className={`w-full py-3.5 px-4 rounded-xl font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 ${
+                isEmailVerified
+                  ? "bg-ink-950 hover:bg-ink-800 text-white"
+                  : "bg-ink-100 text-ink-400 cursor-not-allowed border border-ink-200"
+              }`}
             >
-              <Icon name="wallet" size={18} className="text-amber-300" />
-              <span>
-                {loading ? "Opening Secure Card Form…" : `Pay with Card · ${fmt(total)}`}
-              </span>
+              {isEmailVerified ? (
+                <>
+                  <Icon name="wallet" size={18} className="text-amber-300" />
+                  <span>
+                    {loading ? "Opening Secure Card Form…" : `Pay with Card · ${fmt(total)}`}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Icon name="lock" size={16} />
+                  <span>Verify Email Above to Pay with Card</span>
+                </>
+              )}
             </button>
 
             <button
@@ -597,13 +669,26 @@ export function PaymentMethodSelector({
             <button
               type="button"
               onClick={() => startPaymentAction("applepay")}
-              disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-black hover:bg-neutral-800 text-white font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={loading || !isEmailVerified}
+              className={`w-full py-3.5 px-4 rounded-xl font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 ${
+                isEmailVerified
+                  ? "bg-black hover:bg-neutral-800 text-white"
+                  : "bg-ink-100 text-ink-400 cursor-not-allowed border border-ink-200"
+              }`}
             >
-              <svg width="16" height="18" viewBox="0 0 170 170" fill="currentColor" aria-hidden="true">
-                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.13-1.9-14.34-6.08-3.69-3.03-7.61-7.83-11.77-14.4-5.03-7.86-9.16-16.92-12.41-27.18-3.25-10.26-4.88-20.16-4.88-29.7 0-10.97 2.74-20.22 8.22-27.75 5.48-7.53 12.58-11.41 21.3-11.63 4.69 0 9.89 1.45 15.6 4.36 5.7 2.91 9.39 4.42 11.07 4.53 1.23 0 5.31-1.79 12.24-5.37 6.93-3.58 12.8-5.14 17.61-4.7 13.08 1.01 22.92 6.15 29.52 15.43-11.74 7.15-17.5 17.16-17.28 30.02.22 10.06 4.02 18.39 11.4 24.99 5.14 4.58 11.18 7.38 18.11 8.39-1.45 4.47-3.08 8.71-4.89 12.7zM119.22 31.01c0 7.84-2.86 15.16-8.58 21.95-6.89 8.05-15.23 12.69-24.28 11.95-.12-.95-.18-1.97-.18-3.05 0-7.53 3.16-15.56 8.79-22.11 2.81-3.27 6.38-5.99 10.71-8.16 4.33-2.16 8.43-3.36 12.31-3.59.15 1.07.23 2.08.23 3.01z" />
-              </svg>
-              <span>{loading ? "Opening Apple Pay…" : `Pay with Apple Pay · ${fmt(total)}`}</span>
+              {isEmailVerified ? (
+                <>
+                  <svg width="16" height="18" viewBox="0 0 170 170" fill="currentColor" aria-hidden="true">
+                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.13-1.9-14.34-6.08-3.69-3.03-7.61-7.83-11.77-14.4-5.03-7.86-9.16-16.92-12.41-27.18-3.25-10.26-4.88-20.16-4.88-29.7 0-10.97 2.74-20.22 8.22-27.75 5.48-7.53 12.58-11.41 21.3-11.63 4.69 0 9.89 1.45 15.6 4.36 5.7 2.91 9.39 4.42 11.07 4.53 1.23 0 5.31-1.79 12.24-5.37 6.93-3.58 12.8-5.14 17.61-4.7 13.08 1.01 22.92 6.15 29.52 15.43-11.74 7.15-17.5 17.16-17.28 30.02.22 10.06 4.02 18.39 11.4 24.99 5.14 4.58 11.18 7.38 18.11 8.39-1.45 4.47-3.08 8.71-4.89 12.7zM119.22 31.01c0 7.84-2.86 15.16-8.58 21.95-6.89 8.05-15.23 12.69-24.28 11.95-.12-.95-.18-1.97-.18-3.05 0-7.53 3.16-15.56 8.79-22.11 2.81-3.27 6.38-5.99 10.71-8.16 4.33-2.16 8.43-3.36 12.31-3.59.15 1.07.23 2.08.23 3.01z" />
+                  </svg>
+                  <span>{loading ? "Opening Apple Pay…" : `Pay with Apple Pay · ${fmt(total)}`}</span>
+                </>
+              ) : (
+                <>
+                  <Icon name="lock" size={16} />
+                  <span>Verify Email Above to Pay with Apple Pay</span>
+                </>
+              )}
             </button>
           </div>
         )}
@@ -617,18 +702,31 @@ export function PaymentMethodSelector({
             <button
               type="button"
               onClick={() => startPaymentAction("googlepay")}
-              disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-ink-50 text-ink-950 border-2 border-ink-900 font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={loading || !isEmailVerified}
+              className={`w-full py-3.5 px-4 rounded-xl border-2 font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 ${
+                isEmailVerified
+                  ? "bg-white hover:bg-ink-50 text-ink-950 border-ink-900"
+                  : "bg-ink-100 text-ink-400 cursor-not-allowed border-ink-200"
+              }`}
             >
-              <span className="font-black text-base">
-                <span className="text-[#4285F4]">G</span>
-                <span className="text-[#EA4335]">o</span>
-                <span className="text-[#FBBC05]">o</span>
-                <span className="text-[#4285F4]">g</span>
-                <span className="text-[#34A853]">l</span>
-                <span className="text-[#EA4335]">e</span>
-              </span>
-              <span>{loading ? "Opening Google Pay…" : `Pay · ${fmt(total)}`}</span>
+              {isEmailVerified ? (
+                <>
+                  <span className="font-black text-base">
+                    <span className="text-[#4285F4]">G</span>
+                    <span className="text-[#EA4335]">o</span>
+                    <span className="text-[#FBBC05]">o</span>
+                    <span className="text-[#4285F4]">g</span>
+                    <span className="text-[#34A853]">l</span>
+                    <span className="text-[#EA4335]">e</span>
+                  </span>
+                  <span>{loading ? "Opening Google Pay…" : `Pay · ${fmt(total)}`}</span>
+                </>
+              ) : (
+                <>
+                  <Icon name="lock" size={16} />
+                  <span>Verify Email Above to Pay with Google Pay</span>
+                </>
+              )}
             </button>
           </div>
         )}
@@ -725,15 +823,28 @@ export function PaymentMethodSelector({
             <button
               type="button"
               onClick={() => startPaymentAction("crypto")}
-              disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={loading || !isEmailVerified}
+              className={`w-full py-3.5 px-4 rounded-xl font-extrabold text-sm transition shadow-sm flex items-center justify-center gap-2 ${
+                isEmailVerified
+                  ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                  : "bg-ink-100 text-ink-400 cursor-not-allowed border border-ink-200"
+              }`}
             >
-              <span>₿</span>
-              <span>
-                {loading
-                  ? "Creating Crypto Order…"
-                  : `Pay with ${selectedCryptoAsset} Crypto · ${fmt(total)}`}
-              </span>
+              {isEmailVerified ? (
+                <>
+                  <span>₿</span>
+                  <span>
+                    {loading
+                      ? "Creating Crypto Order…"
+                      : `Pay with ${selectedCryptoAsset} Crypto · ${fmt(total)}`}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Icon name="lock" size={16} />
+                  <span>Verify Email Above to Pay with Crypto</span>
+                </>
+              )}
             </button>
           </div>
         )}

@@ -16,6 +16,7 @@ import {
   getCurrencyCode,
   getCurrencySymbol,
 } from "@/lib/country-config";
+import { isEmailVerified } from "@/lib/email-verification";
 
 const CartItemSchema = z.object({
   brandSlug: z.string(),
@@ -41,6 +42,7 @@ const ActionSchema = z.discriminatedUnion("action", [
     paymentMethod: z
       .enum(["paypal", "card", "crypto", "applepay", "googlepay"])
       .optional(),
+    emailVerificationToken: z.string().optional(),
     payer: z
       .object({
         givenName: z.string().max(80).optional(),
@@ -115,6 +117,46 @@ export async function POST(req: NextRequest) {
         });
         return NextResponse.json(
           { error: "Security verification failed. Please refresh the page and try again." },
+          { status: 403 }
+        );
+      }
+
+      // Mandatory Email Verification Check:
+      // Checkout cannot proceed without verified email address (stops carding bots & ensures delivery)
+      const customerEmail = (
+        parsed.data.payer?.email ||
+        authSession?.user?.email ||
+        parsed.data.items.find((i) => i.recipientEmail)?.recipientEmail ||
+        ""
+      ).trim().toLowerCase();
+
+      if (!customerEmail) {
+        return NextResponse.json(
+          {
+            error: "A valid email address is required before continuing to checkout.",
+            code: "EMAIL_REQUIRED",
+          },
+          { status: 400 }
+        );
+      }
+
+      const isVerified = await isEmailVerified(customerEmail, parsed.data.emailVerificationToken);
+      if (!isVerified) {
+        writeTransactionLog({
+          phase: "PROCESS_ERROR",
+          process: "PayPal.CreateCheckoutOrder.EmailVerificationRequired",
+          method: "POST",
+          apiUrl,
+          statusCode: 403,
+          error: `Email verification required for ${customerEmail}`,
+        });
+        return NextResponse.json(
+          {
+            error: "Email verification is required before checkout. Please complete the 6-digit email verification step to proceed.",
+            code: "EMAIL_VERIFICATION_REQUIRED",
+            requiresVerification: true,
+            email: customerEmail,
+          },
           { status: 403 }
         );
       }

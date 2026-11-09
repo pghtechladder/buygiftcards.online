@@ -249,14 +249,42 @@ export default function DedicatedCheckoutPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-3.5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5 text-xs text-emerald-950">
-                <Icon name="checkCircle" size={16} className="text-emerald-600 flex-shrink-0" />
+            <div
+              className={`border rounded-2xl p-3.5 flex items-center justify-between ${
+                (session.user as unknown as { emailVerified?: boolean })?.emailVerified
+                  ? "bg-emerald-50/80 border-emerald-200"
+                  : "bg-amber-50/80 border-amber-200"
+              }`}
+            >
+              <div className="flex items-center gap-2.5 text-xs text-ink-900">
+                <Icon
+                  name={
+                    (session.user as unknown as { emailVerified?: boolean })?.emailVerified
+                      ? "checkCircle"
+                      : "shield"
+                  }
+                  size={16}
+                  className={
+                    (session.user as unknown as { emailVerified?: boolean })?.emailVerified
+                      ? "text-emerald-600"
+                      : "text-amber-600"
+                  }
+                />
                 <span>
                   Signed in as <strong>{session.user.email}</strong>
                 </span>
               </div>
-              <span className="text-[11px] font-bold text-emerald-700">Verified</span>
+              <span
+                className={`text-[11px] font-bold ${
+                  (session.user as unknown as { emailVerified?: boolean })?.emailVerified
+                    ? "text-emerald-700"
+                    : "text-amber-700"
+                }`}
+              >
+                {(session.user as unknown as { emailVerified?: boolean })?.emailVerified
+                  ? "Verified ✓"
+                  : "Email Unverified"}
+              </span>
             </div>
           )}
 

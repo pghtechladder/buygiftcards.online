@@ -12,6 +12,15 @@ const nextConfig = {
     // rendering inline via the image optimizer (forces a download instead).
     contentDispositionType: "inline",
   },
+  async redirects() {
+    return [
+      { source: "/mastercard", destination: "/product/mastercard", permanent: false },
+      { source: "/visa", destination: "/product/visa", permanent: false },
+      { source: "/amazon", destination: "/product/amazon", permanent: false },
+      { source: "/target", destination: "/product/target", permanent: false },
+      { source: "/walmart", destination: "/product/walmart", permanent: false },
+    ];
+  },
   async headers() {
     return [
       {

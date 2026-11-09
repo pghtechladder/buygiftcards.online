@@ -6,6 +6,7 @@ import { isValidPassword, PASSWORD_RULE_TEXT } from "@/lib/passwordRules";
 import { subscribeToKit } from "@/lib/newsletter";
 import { verifyTurnstile, TURNSTILE_HEADER } from "@/lib/turnstile";
 import { getClientIp } from "@/lib/rate-limit";
+import { createAndSendVerificationOtp } from "@/lib/email-verification";
 
 const BodySchema = z
   .object({
@@ -88,7 +89,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ ok: true }, { status: 201 });
+    // Send initial 6-digit email verification code upon account creation
+    try {
+      await createAndSendVerificationOtp(email);
+    } catch (err) {
+      console.warn("[/api/auth/register] Failed to dispatch verification OTP:", err);
+    }
+
+    return NextResponse.json({ ok: true, requiresVerification: true, email }, { status: 201 });
   } catch (err) {
     console.error("[/api/auth/register]", err);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });

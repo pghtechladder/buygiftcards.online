@@ -46,6 +46,19 @@ export function AuthModal() {
   const [forgotSuccess, setForgotSuccess] = useState<string | null>(null);
   const [forgotError, setForgotError] = useState<string | null>(null);
 
+  // Email OTP verification state after registration
+  const [verifyMode, setVerifyMode] = useState(false);
+  const [verifyOtpInput, setVerifyOtpInput] = useState("");
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setInterval(() => setResendCooldown((c) => (c > 0 ? c - 1 : 0)), 1000);
+    return () => clearInterval(t);
+  }, [resendCooldown]);
+
   useEffect(() => {
     if (!isOpen) return;
     fetch("/api/auth/providers")
@@ -137,6 +150,11 @@ export function AuthModal() {
         setRegError(data.error || "Something went wrong");
         return;
       }
+      if (data.requiresVerification) {
+        setVerifyMode(true);
+        setResendCooldown(60);
+        return;
+      }
       const result = await signIn("credentials", {
         email: regEmail,
         password: regPassword,
@@ -195,6 +213,61 @@ export function AuthModal() {
     }
   };
 
+  const submitVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setVerifyError(null);
+    const cleanOtp = verifyOtpInput.trim();
+    if (cleanOtp.length !== 6) {
+      setVerifyError("Please enter all 6 digits of your verification code.");
+      return;
+    }
+    setVerifyLoading(true);
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: regEmail.trim().toLowerCase(), otp: cleanOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setVerifyError(data.error || "Verification failed. Please try again.");
+        return;
+      }
+      // Successfully verified! Sign in automatically with credentials
+      const result = await signIn("credentials", {
+        email: regEmail,
+        password: regPassword,
+        redirect: false,
+      });
+      if (result?.error) {
+        setVerifyError("Verified! Please sign in with your credentials.");
+        setVerifyMode(false);
+        open("signin");
+        return;
+      }
+      setVerifyMode(false);
+      close();
+    } catch {
+      setVerifyError("Something went wrong. Please try again.");
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0) return;
+    try {
+      await fetch("/api/auth/send-verification-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: regEmail.trim().toLowerCase() }),
+      });
+      setResendCooldown(60);
+    } catch {
+      // Ignore
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
       <div onClick={close} className="absolute inset-0 bg-ink-950/60 backdrop-blur-sm" />
@@ -203,10 +276,10 @@ export function AuthModal() {
           <Icon name="x" size={20} />
         </button>
 
-        {mode !== "forgot" ? (
+        {!verifyMode && mode !== "forgot" ? (
           <div className="flex gap-6 border-b border-ink-100 mb-6">
             <button
-              onClick={() => open("signin")}
+              onClick={() => { setVerifyMode(false); open("signin"); }}
               className={`pb-3 text-sm font-bold border-b-2 transition ${
                 mode === "signin" ? "text-brand-600 border-brand-500" : "text-ink-400 border-transparent hover:text-ink-600"
               }`}
@@ -214,7 +287,7 @@ export function AuthModal() {
               Sign in
             </button>
             <button
-              onClick={() => open("register")}
+              onClick={() => { setVerifyMode(false); open("register"); }}
               className={`pb-3 text-sm font-bold border-b-2 transition ${
                 mode === "register" ? "text-brand-600 border-brand-500" : "text-ink-400 border-transparent hover:text-ink-600"
               }`}
@@ -222,7 +295,7 @@ export function AuthModal() {
               Register
             </button>
           </div>
-        ) : (
+        ) : !verifyMode && mode === "forgot" ? (
           <div className="border-b border-ink-100 pb-4 mb-6">
             <div className="flex items-center gap-2">
               <button
@@ -238,9 +311,9 @@ export function AuthModal() {
               Enter your email and we’ll send you a secure link to create a new password.
             </p>
           </div>
-        )}
+        ) : null}
 
-        {mode === "register" && (
+        {mode === "register" && !verifyMode && (
           <div className="bg-brand-50 rounded-xl p-4 mb-5">
             <div className="text-xs font-bold text-brand-700 mb-2 uppercase tracking-wide">Benefits of registering</div>
             <ul className="space-y-1.5 text-sm text-ink-800">
@@ -260,7 +333,7 @@ export function AuthModal() {
           </div>
         )}
 
-        {mode !== "forgot" && oauthProviders.length > 0 && (
+        {!verifyMode && mode !== "forgot" && oauthProviders.length > 0 && (
           <>
             <div className="space-y-2.5 mb-5">
               {oauthProviders.map((id) => (
@@ -281,7 +354,69 @@ export function AuthModal() {
           </>
         )}
 
-        {mode === "signin" ? (
+        {verifyMode ? (
+          <form onSubmit={submitVerifyOtp} className="space-y-4">
+            <div className="text-center space-y-2 mb-2">
+              <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
+                <Icon name="mail" size={24} />
+              </div>
+              <h2 className="text-xl font-extrabold text-ink-950">Verify Your Email</h2>
+              <p className="text-xs text-ink-600 leading-relaxed max-w-sm mx-auto">
+                We sent a 6-digit verification code to <strong>{regEmail}</strong>. Please enter the code below to complete your registration.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-ink-700 mb-1.5 text-center">
+                6-Digit Verification Code
+              </label>
+              <input
+                type="text"
+                maxLength={6}
+                value={verifyOtpInput}
+                onChange={(e) => setVerifyOtpInput(e.target.value.replace(/\D/g, ""))}
+                placeholder="123456"
+                autoFocus
+                required
+                className="w-full px-4 py-3 text-center text-2xl font-extrabold tracking-widest border-2 border-brand-200 rounded-xl bg-ink-50 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 font-mono transition"
+              />
+            </div>
+
+            {verifyError && (
+              <div className="text-red-600 text-xs font-semibold bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2">
+                <Icon name="x" size={14} className="flex-shrink-0" />
+                <span>{verifyError}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={verifyLoading || verifyOtpInput.trim().length !== 6}
+              className="w-full py-3.5 rounded-xl bg-brand-600 text-white font-extrabold text-sm hover:bg-brand-700 transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+            >
+              {verifyLoading && <Icon name="loader" size={16} className="animate-spin" />}
+              <span>{verifyLoading ? "Verifying code…" : "Verify & Sign In"}</span>
+            </button>
+
+            <div className="flex items-center justify-between text-xs text-ink-500 pt-2 border-t border-ink-100">
+              <button
+                type="button"
+                onClick={() => setVerifyMode(false)}
+                className="font-semibold text-ink-500 hover:text-ink-800 underline"
+              >
+                &larr; Back to registration
+              </button>
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={resendCooldown > 0}
+                className="font-bold text-brand-600 hover:text-brand-700 disabled:opacity-40"
+              >
+                {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : "Resend Code"}
+              </button>
+            </div>
+          </form>
+        ) : mode === "signin" ? (
           <form onSubmit={submitSignin} className="space-y-3.5">
             <div>
               <label className="block text-xs font-bold text-ink-600 mb-1.5">Email</label>

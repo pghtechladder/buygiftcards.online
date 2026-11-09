@@ -72,3 +72,4 @@ export function authenticateEnterpriseRequest(req: NextRequest): EnterpriseAuthR
     error: "Invalid Enterprise API Key. Use bgc_test_platform_2026 for sandbox testing, or request a production key at /platform.",
   };
 }
+

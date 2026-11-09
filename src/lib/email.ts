@@ -190,6 +190,38 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string): P
   });
 }
 
+export async function sendVerificationOtpEmail(email: string, otp: string): Promise<EmailResult> {
+  const html = `
+    <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;border:1px solid #eceef0;border-radius:16px;padding:32px 24px;background:#ffffff;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <img src="cid:bgc-logo" alt="buygiftcards.online" width="210" style="max-width:210px;height:auto;display:block;margin:0 auto;" />
+      </div>
+      <h2 style="color:#0f8c66;margin:0 0 12px;font-size:22px;text-align:center;">Verify Your Email Address</h2>
+      <p style="color:#4b5563;font-size:14px;line-height:1.6;text-align:center;margin:0 0 24px;">
+        Use the 6-digit verification code below to verify your email address and continue with secure checkout on BuyGiftCards.online.
+      </p>
+      <div style="background-color:#f0fdf4;border:2px dashed #0f8c66;border-radius:12px;padding:18px 24px;text-align:center;margin:24px 0;">
+        <span style="font-size:36px;font-weight:900;letter-spacing:10px;color:#0f8c66;font-family:Courier, monospace;display:inline-block;padding-left:10px;">${otp}</span>
+      </div>
+      <p style="color:#6b7280;font-size:12px;text-align:center;margin:16px 0 0;line-height:1.5;">
+        This code is valid for <strong>15 minutes</strong>. If you did not request this verification code, you can safely ignore this message.
+      </p>
+      <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0 16px;" />
+      <p style="color:#9ca3af;font-size:11px;text-align:center;margin:0;">
+        &copy; ${new Date().getFullYear()} buygiftcards.online &bull; Instant Digital Gift Cards & Rewards
+      </p>
+    </div>
+  `;
+
+  return sendViaSmtp({
+    to: email,
+    subject: `Your BuyGiftCards.online Verification Code: ${otp}`,
+    html,
+    text: `Your BuyGiftCards.online verification code is ${otp}. Valid for 15 minutes.`,
+    label: `email verification code for ${email}`,
+  });
+}
+
 export async function sendRedemptionConfirmationEmail(opts: {
   email: string;
   sourceBrandName: string;
