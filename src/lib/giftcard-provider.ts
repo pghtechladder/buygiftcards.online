@@ -108,6 +108,9 @@ export const BRAND_TO_TANGO_UTID: Record<string, string | Record<number, string>
   // Prepaid Visa USD
   visa: "U677579",
 
+  // Prepaid Mastercard (Tango Promotional Prepaid Mastercard USD / Universal Prepaid)
+  mastercard: "U750197",
+
   // Retail, Tech, Dining, Entertainment, Travel (100% verified USD Tango catalog)
   amazon: "U163059",
   starbucks: "U761382",
@@ -508,6 +511,11 @@ export function isFulfillableBrand(slug: string, country: CountryCode = resolveC
     return Boolean(BRAND_TO_TANGO_UTID[slug]);
   }
 
+  // If brand is supported by Tango (e.g. Mastercard), it is fulfillable via Tango bridge
+  if (slug === "mastercard" && Boolean(BRAND_TO_TANGO_UTID["mastercard"])) {
+    return true;
+  }
+
   const offersMap = getZenditOffersForCountry(country);
   const spec = offersMap[slug];
   return Boolean(spec && (spec.fixedOffers || (spec.rangeOfferId && spec.rangeOfferId !== "HOUSE_SWAP")));
@@ -730,15 +738,25 @@ export class ZenditProvider implements GiftCardProvider {
 class HybridZenditProvider implements GiftCardProvider {
   constructor(
     private zendit: GiftCardProvider,
-    private fallback: GiftCardProvider
+    private tango: GiftCardProvider | null
   ) {}
 
   async issue(params: IssueCardParams): Promise<IssuedCard> {
+    // If brand is specifically Mastercard or not present in Zendit, route to Tango if available
+    if (params.brandSlug === "mastercard" && this.tango) {
+      console.log(`[giftcard-provider] Routing brand "${params.brandSlug}" to Tango Card provider`);
+      return await this.tango.issue(params);
+    }
+
     try {
       return await this.zendit.issue(params);
     } catch (err) {
-      // Never swap in placeholder codes or silently fall back to Tango when Zendit is the active primary provider.
-      // Surface the exact Zendit error so the caller/logs see why Zendit failed instead of a confusing Tango error.
+      // If Zendit fails for a brand that exists in Tango (such as Mastercard or Tango catalog brands), try Tango
+      if (this.tango && BRAND_TO_TANGO_UTID[params.brandSlug]) {
+        console.warn(`[giftcard-provider] Zendit issue failed for "${params.brandSlug}", attempting Tango bridge fallback:`, err);
+        return await this.tango.issue(params);
+      }
+
       if (err instanceof ZenditUnfulfillableError) throw err;
       const msg = err instanceof Error ? err.message : String(err);
       console.warn(
@@ -818,7 +836,10 @@ export function buildProvider(country: CountryCode = resolveCountryFromHostOrEnv
         (physicalProvider ? ` + EGifterPhysicalProvider for US physical gift cards ` : ` `) +
         `(${mappedCount} brands mapped, account: ${getCountryEnv("ZENDIT_USERNAME", country, "sri@techladder.io")})`
     );
-    return new DeliveryAwareGiftCardProvider(zenditProvider, physicalProvider);
+    return new DeliveryAwareGiftCardProvider(
+      new HybridZenditProvider(zenditProvider, tangoProvider),
+      physicalProvider
+    );
   }
 
   // 3. Fall back to Tango if Zendit is not set up
