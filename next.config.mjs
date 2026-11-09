@@ -19,6 +19,7 @@ const nextConfig = {
       { source: "/amazon", destination: "/product/amazon", permanent: false },
       { source: "/target", destination: "/product/target", permanent: false },
       { source: "/walmart", destination: "/product/walmart", permanent: false },
+      { source: "/v1", destination: "/api/v1", permanent: false },
     ];
   },
   async headers() {

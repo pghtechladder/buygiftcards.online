@@ -15,6 +15,7 @@ export function middleware(req: NextRequest) {
   // --- Subdomain Routing: api.buygiftcards.online ---
   // api.buygiftcards.online/ -> /docs
   // api.buygiftcards.online/docs/* -> /docs/*
+  // api.buygiftcards.online/api/v1/* -> /api/v1/*
   // api.buygiftcards.online/v1/* -> /api/v1/*
   if (host.startsWith("api.")) {
     if (pathname === "/" || pathname === "") {
@@ -25,10 +26,13 @@ export function middleware(req: NextRequest) {
     if (pathname === "/docs" || pathname.startsWith("/docs/")) {
       return NextResponse.next();
     }
-    if (pathname.startsWith("/v1/")) {
+    if (pathname === "/v1" || pathname.startsWith("/v1/")) {
       const apiUrl = req.nextUrl.clone();
-      apiUrl.pathname = `/api${pathname}`;
+      apiUrl.pathname = pathname === "/v1" ? "/api/v1" : `/api${pathname}`;
       return NextResponse.rewrite(apiUrl);
+    }
+    if (pathname === "/api/v1" || pathname.startsWith("/api/v1/")) {
+      return NextResponse.next();
     }
   }
 
