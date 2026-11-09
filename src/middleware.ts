@@ -12,8 +12,25 @@ export function middleware(req: NextRequest) {
   const proto = req.headers.get("x-forwarded-proto") || "https";
   const pathname = req.nextUrl.pathname;
 
-  // --- Anti-automation: block scripted clients & rate-limit abuse-prone endpoints ---
-  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/webhooks/")) {
+  // --- Subdomain Routing: api.buygiftcards.online ---
+  // api.buygiftcards.online/ or api.buygiftcards.online/docs -> /docs
+  // api.buygiftcards.online/v1/* -> /api/v1/*
+  if (host.startsWith("api.")) {
+    if (pathname === "/" || pathname === "" || pathname === "/docs" || pathname.startsWith("/docs/")) {
+      const docsUrl = req.nextUrl.clone();
+      docsUrl.pathname = "/docs";
+      return NextResponse.rewrite(docsUrl);
+    }
+    if (pathname.startsWith("/v1/")) {
+      const apiUrl = req.nextUrl.clone();
+      apiUrl.pathname = `/api${pathname}`;
+      return NextResponse.rewrite(apiUrl);
+    }
+  }
+
+  // --- Anti-automation: block scripted clients & rate-limit abuse-prone consumer endpoints ---
+  // Note: /api/v1/ is the official Enterprise REST API and deliberately allows curl/python/scripts
+  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/webhooks/") && !pathname.startsWith("/api/v1/")) {
     const ua = req.headers.get("user-agent") || "";
     if (SENSITIVE_API.test(pathname) && req.method !== "GET" && (!ua || BOT_UA.test(ua))) {
       return NextResponse.json({ error: "Automated requests are not allowed." }, { status: 403 });
